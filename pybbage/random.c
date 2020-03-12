@@ -99,9 +99,8 @@ my_srandom(unsigned long seed)
 int main(int argc, char *argv) {
     printf("Hello and welcome to random, the randiculent random number printing utility.\n");
     //print A HUNDRED MILLION random numbers to compare to python version
-    /*
     for(int j=0;j<100000000;j++) {
         printf("%lu\n",random());
     }
-    */
+
 }
