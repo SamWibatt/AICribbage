@@ -93,10 +93,39 @@ def cardstring(card):
 # the LOL here is that this takes 208 bytes and I couldn't use it for vpok bc that's more RAM than a PIC 16F628 has.
 # Uno R3 / atmega328 has 2K ram, yes? Some taken by the arduino core but not lots
 # also returns the value associated with the lowest value in the list, which is the first card that will be dealt.
+# old version with non-rewritten order
+#def shuffle():
+#    deck = {'order':[random() for i in range(0,52)], 'dealt':[0 for i in range(0,52)] }
+#    deckmin = min(deck['order'])
+#    return (deck, deckmin)
+# this version will do rewriting of order from 0..51
+# and that will be the value of the card, the index won't be!
 def shuffle():
-    deck = [random() for i in range(0,52)]
-    deckmin = min(deck)
-    return (deck, deckmin)
+    deck = {'value':[random() for i in range(0,52)], 'dealt':[0 for i in range(0,52)] }
+    curmin = min(deck['value'])
+    # the arduino version will look quite different, searching instead of listbuilding
+    for val in range(0,52):
+        card = deck['value'].index(curmin)
+        deck['value'][card] = val
+        gtmin = list(filter(lambda x:x>curmin,deck['value']))
+        if len(gtmin) > 0:
+            curmin = min(gtmin)
+    return deck
+
+# cardnum is 0 when the deck is new
+def deal_card(deck,cardnum):
+    newcardnum = cardnum
+    while newcardnum < 52:
+        if deck['dealt'][newcardnum] == 1:
+            # card has already been dealt, go to next
+            print("Card",cardstring(newcardnum),"has been dealt! Moving on")
+            newcardnum += 1
+        else:
+            deck['dealt'][newcardnum] = 1
+            return (deck['value'][newcardnum],newcardnum+1)
+    print("End of deck")
+    return (None,None)
+
 
 # deal_card "deals" by finding the card with the value curmin. Then it scans deck for the next minimum value, i.e. the one
 # that is the next highest.
@@ -104,14 +133,47 @@ def shuffle():
 # i.e. index of curmin is the rank/suit value of the card that is dealt.
 # then can be called with deck, nextmin next time
 # if nextmin is the highest number in the deck, return None for nextmin, signifiying a need to reshuffle.
-def deal_card(deck, curmin):
-    if curmin not in deck:
-        return (None,None)
-    card = deck.index(curmin)
-    gtmin = list(filter(lambda x:x>curmin,deck))
-    if len(gtmin) == 0:
-        return (card,None)
-    return (card, min(gtmin))
+# OK THIS WORKS but does not account for things like a randomly yanked card, as from a cut.
+# Should I put a flag alongside the cards and if curmin's dealt-flag is set, go to next? yeah.
+#def deal_card(deck, curmin):
+# before using dealt flag
+#    if curmin not in deck['order']:
+#        return (None,None)
+#    card = deck['order'].index(curmin)
+#    gtmin = list(filter(lambda x:x>curmin,deck['order']))
+#    if len(gtmin) == 0:
+#        return (card,None)
+#    return (card, min(gtmin))
+
+# second version with non-rewritten order
+#def deal_card(deck, curmin):
+#    while curmin is not None:
+#        if curmin not in deck['order']:
+#            return (None,None)
+#        card = deck['order'].index(curmin)
+#        gtmin = list(filter(lambda x:x>curmin,deck['order']))
+#        if len(gtmin) == 0:
+#            # this is the last card - if it's been dealt, we're done
+#            if deck['dealt'][card] == 0:
+#                # hasn't been dealt: deal it!
+#                deck['dealt'][card] = 1
+#                return (card,None)
+#            else:
+#                # has been dealt - we're out!
+#                print("**** card", cardstring(card), "has been dealt and we're out")
+#                return (None,None)
+#        # if the card has been dealt, try another. If not, deal it!
+#        if deck['dealt'][card] == 0:
+#            #not been dealt, deal it
+#            deck['dealt'][card] = 1
+#            return (card, min(gtmin))
+#        else:
+#            print("**** card",cardstring(card),"has been dealt!!!! trying next")
+#            # advance curmin, try next card
+#            curmin = min(gtmin)
+#    # went to where curmin is None...
+#    return(None, None)
+
 
 # main -------------------------------------------------------------------------------------------
 
@@ -126,11 +188,13 @@ if __name__ == "__main__":
     #for j in range(0,100000000):
     #    print(random())
     srandom(1)
-    (deck,deckmin) = shuffle()
-    print("Starting deckmin is",deckmin)
-    #print("Here is a shuffled deck:")
-    #for j in range(0,52):
-    #    print(j,cardstring(j),deck[j])
+    deck = shuffle()
+    cardnum = 0;            # first card to be dealt, when dealing in order
+    # do a cut!
+    # WRITE THIS!!!!!!!!!!!
+    # then deal
     for j in range(0,54):
-        (card, deckmin) = deal_card(deck, deckmin)
-        print(j,cardstring(card),deckmin)
+        (card, cardnum) = deal_card(deck, cardnum)
+        print(j,cardstring(card),cardnum)
+    # MAKE SURE THIS IS RIGHT, MAYBE SEE IF OLD AND NEW CARD DEALS GET THE SAME ORDER? DOES IT MATTER?
+    # ALSO MAKE SURE NO CARD IS DUPLICATED OR ANYTHING
