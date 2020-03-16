@@ -88,91 +88,88 @@ def cardstring(card):
         return None
     return 'A234567890JQK'[card // 4] + '♥♦♣♠'[card % 4]
 
-# shuffle returns a 52 element list of random numbers, s.t. the index into the list is the card, like 0 = ace of horts,
-# .. 51 = King of Spades.
+# shuffle returns a data structure containing parallel lists of card value (rank/suit combo 0..51) and flag
+# for whether it's been dealt.
+# this representation lets you walk through the deck sequentially (deal) but also fish cards out random-access (cut).
+# only... that's not really what cut is, is it? it takes a position in the deck and swaps the 'halves' of the deck!
+# that being the case, do we need the dealt-flag? the cribbage cut and turn is just swap halves, then deal a card.
+# shuffle implemented by generating 52 32-bit random numbers and scanning it to determine their order.
 # the LOL here is that this takes 208 bytes and I couldn't use it for vpok bc that's more RAM than a PIC 16F628 has.
+# on ardy it can be discarded once the ordering is redone.
 # Uno R3 / atmega328 has 2K ram, yes? Some taken by the arduino core but not lots
-# also returns the value associated with the lowest value in the list, which is the first card that will be dealt.
-# old version with non-rewritten order
-#def shuffle():
-#    deck = {'order':[random() for i in range(0,52)], 'dealt':[0 for i in range(0,52)] }
-#    deckmin = min(deck['order'])
-#    return (deck, deckmin)
-# this version will do rewriting of order from 0..51
-# and that will be the value of the card, the index won't be!
 def shuffle():
-    deck = {'value':[random() for i in range(0,52)], 'dealt':[0 for i in range(0,52)] }
-    curmin = min(deck['value'])
+    newdeck = {'order':[random() for i in range(0,52)],
+            'value':[-1 for i in range(0,52)]}
+    curmin = min(newdeck['order'])
     # the arduino version will look quite different, searching instead of listbuilding
     for val in range(0,52):
-        card = deck['value'].index(curmin)
-        deck['value'][card] = val
-        gtmin = list(filter(lambda x:x>curmin,deck['value']))
+        card = newdeck['order'].index(curmin)
+        newdeck['value'][card] = val
+        gtmin = list(filter(lambda x:x>curmin,newdeck['order']))
         if len(gtmin) > 0:
             curmin = min(gtmin)
-    return deck
+    return newdeck['value']
 
-# cardnum is 0 when the deck is new
+# COULD ALSO TRY THE SHUFFLE WAY WHERE YOU JUST PICK TWO CARDS TO SWAP AND DO THAT A BUNCH OF TIMES.
+# THAT'S MORE THE TINY861 VERSION - how many times is enough, etc.
+# worry re later
+
+# cardnum is 0 when the deck is new - no longer using dealt flag
+# deck is just an array now
 def deal_card(deck,cardnum):
-    newcardnum = cardnum
-    while newcardnum < 52:
-        if deck['dealt'][newcardnum] == 1:
-            # card has already been dealt, go to next
-            print("Card",cardstring(newcardnum),"has been dealt! Moving on")
-            newcardnum += 1
-        else:
-            deck['dealt'][newcardnum] = 1
-            return (deck['value'][newcardnum],newcardnum+1)
-    print("End of deck")
+    if cardnum is not None and cardnum < 52:
+        return (deck[cardnum],cardnum+1)
     return (None,None)
 
+# Cut will take an index into a deck which is assumed not to have any cards removed from it, plus an index.
+# then it swaps the halves. returns the cut deck.
+# weirdness is that cut (deck,0) returns deck unchanged. so, disallow 0?
+def cut(deck,index):
+    if index >= 1 and index < len(deck):
+        return deck[index:] + deck[:index]
+    print("Illegal cut index",index,"- not doing cut")
+    return deck;
 
-# deal_card "deals" by finding the card with the value curmin. Then it scans deck for the next minimum value, i.e. the one
-# that is the next highest.
-# returns a tuple of (index of curmin, nextmin)
-# i.e. index of curmin is the rank/suit value of the card that is dealt.
-# then can be called with deck, nextmin next time
-# if nextmin is the highest number in the deck, return None for nextmin, signifiying a need to reshuffle.
-# OK THIS WORKS but does not account for things like a randomly yanked card, as from a cut.
-# Should I put a flag alongside the cards and if curmin's dealt-flag is set, go to next? yeah.
-#def deal_card(deck, curmin):
-# before using dealt flag
-#    if curmin not in deck['order']:
-#        return (None,None)
-#    card = deck['order'].index(curmin)
-#    gtmin = list(filter(lambda x:x>curmin,deck['order']))
-#    if len(gtmin) == 0:
-#        return (card,None)
-#    return (card, min(gtmin))
 
-# second version with non-rewritten order
-#def deal_card(deck, curmin):
-#    while curmin is not None:
-#        if curmin not in deck['order']:
-#            return (None,None)
-#        card = deck['order'].index(curmin)
-#        gtmin = list(filter(lambda x:x>curmin,deck['order']))
-#        if len(gtmin) == 0:
-#            # this is the last card - if it's been dealt, we're done
-#            if deck['dealt'][card] == 0:
-#                # hasn't been dealt: deal it!
-#                deck['dealt'][card] = 1
-#                return (card,None)
-#            else:
-#                # has been dealt - we're out!
-#                print("**** card", cardstring(card), "has been dealt and we're out")
-#                return (None,None)
-#        # if the card has been dealt, try another. If not, deal it!
-#        if deck['dealt'][card] == 0:
-#            #not been dealt, deal it
-#            deck['dealt'][card] = 1
-#            return (card, min(gtmin))
-#        else:
-#            print("**** card",cardstring(card),"has been dealt!!!! trying next")
-#            # advance curmin, try next card
-#            curmin = min(gtmin)
-#    # went to where curmin is None...
-#    return(None, None)
+# classes ----------------------------------------------------------------------------------------
+
+# So I expect in arduino I can use a struct for this stuff. As of this writing (3/14/20) I'm out of it on
+# codeine cough syrup - yay coronavirus panic and me being sick sick sick - so this may need a lot of ripping
+# out and redux. Still, one's soul requires programming.
+# Accordingly I've forgotten everything I knew about python classes so am consulting
+# https://www.w3schools.com/python/python_classes.asp
+# class Person:
+#   def __init__(self, name, age):
+#     self.name = name
+#     self.age = age
+#
+# p1 = Person("John", 36)
+#
+# print(p1.name)
+# print(p1.age)
+
+# how about an object to represent a hand.
+# it can have up to six cards in it
+# I don't think it needs to know if it's a crib
+# so: cards and parallel list of used flag
+# flag might also have discarded for cards given to the crib
+# so that they don't get restored e.g. between the play/countl and the scoring
+# any reason not to just use a list and numcards kind of arrangement?
+# fixed memory is helpful on tiny machines, just not pythonic
+class Hand:
+    def __init__(self):
+        pass
+
+# K so I have a player object. What do we know about players?
+# - what cards they hold and which are "used"?
+# - whether they're the dealer
+# - their score
+class Player:
+    def __init__(self):
+        pass
+
+
+
 
 
 # main -------------------------------------------------------------------------------------------
@@ -187,7 +184,7 @@ if __name__ == "__main__":
     # which worked!
     #for j in range(0,100000000):
     #    print(random())
-    srandom(1)
+    srandom(1043865)
     deck = shuffle()
     cardnum = 0;            # first card to be dealt, when dealing in order
     # do a cut!
@@ -196,5 +193,9 @@ if __name__ == "__main__":
     for j in range(0,54):
         (card, cardnum) = deal_card(deck, cardnum)
         print(j,cardstring(card),cardnum)
-    # MAKE SURE THIS IS RIGHT, MAYBE SEE IF OLD AND NEW CARD DEALS GET THE SAME ORDER? DOES IT MATTER?
-    # ALSO MAKE SURE NO CARD IS DUPLICATED OR ANYTHING
+
+    # let's dump the new one as csv and see what's up - seems correct! sorting by order made the value column
+    # consecutive. So away goes the auld way.
+    #print("card,value,order")
+    #for j in range(0,52):
+    #    print("{},{},{}".format(cardstring(deck['value'][j]),deck['value'][j],deck['order'][j]))
