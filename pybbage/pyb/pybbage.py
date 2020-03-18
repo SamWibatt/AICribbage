@@ -1,5 +1,6 @@
 import sys
 
+#print("I am pybbage!")
 
 # random number generator a la arduino -----------------------------------------------------------
 
@@ -97,6 +98,31 @@ def cardstring(card):
         print("Illegal card value",card)
         return None
     return 'A234567890JQK'[rank(card)] + '♥♦♣♠'[suit(card)]
+
+# this is mostly for debugging and unit testing
+def stringcard(strc):
+    '''strc is a 2 character code for a card. first character = rank, A234567890JQK, 2nd = suit, hdcs for heart diamond
+    club spade, case-insensitive, can also be ♥♦♣♠ '''
+    if strc is None:
+        return None
+    ranks = 'A234567890JQK'
+    suits = 'HDCS'
+    suits2 = '♥♦♣♠'
+    if len(strc) != 2:
+        print("ERROR: stringcard input must be 2 characters")
+        return None
+
+    stru = str.upper(strc)
+    if stru[0] not in ranks:
+        print("ERROR: rank",stru[0],"is not a legal rank from",ranks)
+        return None
+    if stru[1] not in suits and stru[1] not in suits2:
+        print("ERROR: suit",stru[1],"is not a legal suit from",suits)
+        return None
+
+    return (ranks.index(stru[0]) * 4) + (suits.index(stru[1]) if stru[1] in suits else suits2.index(stru[1]))
+
+
 
 # shuffle returns a data structure containing parallel lists of card value (rank/suit combo 0..51) and flag
 # for whether it's been dealt.
@@ -274,6 +300,13 @@ def score_shew(hand,starter):
         print("... 15 -", curscore)
 
     # look for big stuff like double double runs ======================================================================
+    # let's come at the big stuff slowly here. First let's count pairs
+    for i in range(0,4):
+        for j in range(i+1,5):
+            if rank(cards[i]) == rank(cards[j]):
+                curscore += 2
+                print(cardstring(cards[i]), cardstring(cards[j]), "... pair -", curscore)
+
 
 
 
