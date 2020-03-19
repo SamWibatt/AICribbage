@@ -25,7 +25,7 @@ class StrcardTestAllLegit(unittest.TestCase):
             suit2char = suits2[j%4]
             if pyb.stringcard(rankchar+suitchar) == j and pyb.stringcard(rankchar+suit2char) == j and \
                 pyb.stringcard(ranklchar+suitchar) == j and pyb.stringcard(ranklchar+suit2char) == j and \
-                pyb.stringcard(ranklchar + suitlchar) == j and pyb.stringcard(ranklchar+suitchar) == j:
+                pyb.stringcard(ranklchar + suitlchar) == j and pyb.stringcard(rankchar+suitlchar) == j:
                 numgood += 1
         self.assertEqual(numgood,52)
 
