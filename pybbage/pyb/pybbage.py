@@ -117,7 +117,7 @@ def stringcard(strc):
         print("ERROR: rank",stru[0],"is not a legal rank from",ranks)
         return None
     if stru[1] not in suits and stru[1] not in suits2:
-        print("ERROR: suit",stru[1],"is not a legal suit from",suits)
+        print("ERROR: suit",stru[1],"is not a legal suit from",suits,"or",suits2)
         return None
 
     return (ranks.index(stru[0]) * 4) + (suits.index(stru[1]) if stru[1] in suits else suits2.index(stru[1]))
@@ -307,7 +307,27 @@ def score_shew(hand,starter):
                 curscore += 2
                 print(cardstring(cards[i]), cardstring(cards[j]), "... pair -", curscore)
 
+    # runs ============================================================================================================
+    # TODO WRITE THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # so if we sort cards...
+    # we need to do this a) on arduino b) in the play/count
+    # so, a set of n cards whose ranks span n-1 and which have no pairs is a run, yes?
 
+    # flushes =========================================================================================================
+    # TODO WRITE THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # not quite clear on this - from the rules
+    # Four cards of the same suit held in the
+    # hand count four points; five cards of the
+    # same suit (including the starter card)
+    # count five points in the hand or crib.
+    # I think that means if the non-starters are all the same suit, it's 4, and the starter only counts
+    # as the 5th 
+
+    # and finally, nobs ===============================================================================================
+    for i in range(0,4):
+        if rank(hand[i]) == 10 and suit(hand[i]) == suit(starter):
+            curscore += 1
+            print(cardstring(hand[i]), cardstring(starter),"... nobs -", curscore)
 
 
 
@@ -357,3 +377,14 @@ if __name__ == "__main__":
     print("Starter:",cardstring(starter))
 
     score_shew(hand,starter)
+
+    print('---')
+
+    hand = [stringcard(x) for x in ['5h','jc','5s','5d']]
+    starter = stringcard('5c')
+    print("Hand is",[cardstring(x) for x in hand])
+    print("Starter:",cardstring(starter))
+
+    score_shew(hand,starter)
+
+    print('---')

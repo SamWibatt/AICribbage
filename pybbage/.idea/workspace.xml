@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2428a544-b4ca-425e-a062-d816a5c7fdf4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/pybbage-test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pybbage.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyb/pybbage.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyb/pybbage.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybbage-test.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybbage-test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,10 +107,10 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="295" y="59" width="800" height="684" key="#Inspections/35.27.1331.741@35.27.1331.741" timestamp="1584028080273" />
-    <state x="158" y="42" width="1084" height="726" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584571114078">
+    <state x="158" y="42" width="1084" height="726" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584572115869">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state x="158" y="42" width="1084" height="726" key="#com.intellij.execution.impl.EditConfigurationsDialog/35.27.1331.741@35.27.1331.741" timestamp="1584571114078" />
+    <state x="158" y="42" width="1084" height="726" key="#com.intellij.execution.impl.EditConfigurationsDialog/35.27.1331.741@35.27.1331.741" timestamp="1584572115869" />
     <state x="435" y="253" width="520" height="296" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1583705163824">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
@@ -119,22 +119,22 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="483" y="163" width="424" height="491" key="FileChooserDialogImpl/35.27.1331.741@35.27.1331.741" timestamp="1583705038302" />
-    <state width="1310" height="185" key="GridCell.Tab.0.bottom" timestamp="1584571116664">
+    <state width="1310" height="185" key="GridCell.Tab.0.bottom" timestamp="1584583213542">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state width="1310" height="185" key="GridCell.Tab.0.bottom/35.27.1331.741@35.27.1331.741" timestamp="1584571116664" />
-    <state width="1310" height="185" key="GridCell.Tab.0.center" timestamp="1584571116664">
+    <state width="1310" height="185" key="GridCell.Tab.0.bottom/35.27.1331.741@35.27.1331.741" timestamp="1584583213542" />
+    <state width="1310" height="185" key="GridCell.Tab.0.center" timestamp="1584583213542">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state width="1310" height="185" key="GridCell.Tab.0.center/35.27.1331.741@35.27.1331.741" timestamp="1584571116664" />
-    <state width="1310" height="185" key="GridCell.Tab.0.left" timestamp="1584571116663">
+    <state width="1310" height="185" key="GridCell.Tab.0.center/35.27.1331.741@35.27.1331.741" timestamp="1584583213542" />
+    <state width="1310" height="185" key="GridCell.Tab.0.left" timestamp="1584583213541">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state width="1310" height="185" key="GridCell.Tab.0.left/35.27.1331.741@35.27.1331.741" timestamp="1584571116663" />
-    <state width="1310" height="185" key="GridCell.Tab.0.right" timestamp="1584571116664">
+    <state width="1310" height="185" key="GridCell.Tab.0.left/35.27.1331.741@35.27.1331.741" timestamp="1584583213541" />
+    <state width="1310" height="185" key="GridCell.Tab.0.right" timestamp="1584583213542">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state width="1310" height="185" key="GridCell.Tab.0.right/35.27.1331.741@35.27.1331.741" timestamp="1584571116664" />
+    <state width="1310" height="185" key="GridCell.Tab.0.right/35.27.1331.741@35.27.1331.741" timestamp="1584583213542" />
     <state x="185" y="27" width="1022" height="737" key="SettingsEditor" timestamp="1584240219621">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
