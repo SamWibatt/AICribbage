@@ -266,52 +266,123 @@ def score_shew(hand,starter):
     # for convenience
     cards = hand + [starter]
 
+    # disabling fifteens for the moment *******************************************************************************
     # look for fifteens ===============================================================================================
     # what is the power set of cards? I suppose we need to check
     # all two-card sums (of which there are 5 choose 2 = 10)
-    for i in range(0,4):
-        for j in range(i+1,5):
-            if val(cards[i]) + val(cards[j]) == 15:
-                curscore += 2
-                print(cardstring(cards[i]),cardstring(cards[j]),"... 15 -",curscore)
-    # all three-card sums (of which there are 5 choose 3 = 10, which = inverse of 5 choose 2, I guess)
-    for i in range(0,3):
-        for j in range(i+1,4):
-            for k in range(j+1,5):
-                if val(cards[i]) + val(cards[j]) + val(cards[k]) == 15:
-                    curscore += 2
-                    print(cardstring(cards[i]), cardstring(cards[j]), cardstring(cards[k]), "... 15 -", curscore)
-    # all four-card sums (of which there are 5 choose 4 = 5)
-    for i in range(0,5):
-        subcards = [x for x in cards]           # need to make a new copy...??? yup
-        #print("About to remove",cards[i],"from",subcards)
-        subcards.remove(cards[i])
-        if sum([val(x) for x in subcards]) == 15:
-            curscore += 2
-            for cs in [cardstring(x) for x in subcards]:
-                print(cs,end=' ')
-            print("... 15 -",curscore)
-
-    # all 5 cards' sum (1 sum)
-    if sum([val(x) for x in cards]) == 15:
-        curscore += 2
-        for cs in [cardstring(x) for x in cards]:
-            print(cs, end=' ')
-        print("... 15 -", curscore)
+    # for i in range(0,4):
+    #     for j in range(i+1,5):
+    #         if val(cards[i]) + val(cards[j]) == 15:
+    #             curscore += 2
+    #             print(cardstring(cards[i]),cardstring(cards[j]),"... 15 -",curscore)
+    # # all three-card sums (of which there are 5 choose 3 = 10, which = inverse of 5 choose 2, I guess)
+    # for i in range(0,3):
+    #     for j in range(i+1,4):
+    #         for k in range(j+1,5):
+    #             if val(cards[i]) + val(cards[j]) + val(cards[k]) == 15:
+    #                 curscore += 2
+    #                 print(cardstring(cards[i]), cardstring(cards[j]), cardstring(cards[k]), "... 15 -", curscore)
+    # # all four-card sums (of which there are 5 choose 4 = 5)
+    # for i in range(0,5):
+    #     subcards = [x for x in cards]           # need to make a new copy...??? yup
+    #     #print("About to remove",cards[i],"from",subcards)
+    #     subcards.remove(cards[i])
+    #     if sum([val(x) for x in subcards]) == 15:
+    #         curscore += 2
+    #         for cs in [cardstring(x) for x in subcards]:
+    #             print(cs,end=' ')
+    #         print("... 15 -",curscore)
+    #
+    # # all 5 cards' sum (1 sum)
+    # if sum([val(x) for x in cards]) == 15:
+    #     curscore += 2
+    #     for cs in [cardstring(x) for x in cards]:
+    #         print(cs, end=' ')
+    #     print("... 15 -", curscore)
+    # end disabling fifteens for the moment ***************************************************************************
 
     # look for big stuff like double double runs ======================================================================
     # let's come at the big stuff slowly here. First let's count pairs
+    numpairs = 0
     for i in range(0,4):
         for j in range(i+1,5):
             if rank(cards[i]) == rank(cards[j]):
-                curscore += 2
-                print(cardstring(cards[i]), cardstring(cards[j]), "... pair -", curscore)
+                # let's not score pairs yet
+                #curscore += 2
+                #print(cardstring(cards[i]), cardstring(cards[j]), "... pair -", curscore)
+                numpairs +=1
+    print("Found",numpairs,"pairs")
 
     # runs ============================================================================================================
     # TODO WRITE THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # rules do not explicitly forbid ace-high straight but do not ever show one, so let's say there is none
+    # most popular answer at https://boardgames.stackexchange.com/questions/8060/is-ace-high-or-low-or-both
+    # says the same.
     # so if we sort cards...
     # we need to do this a) on arduino b) in the play/count
     # so, a set of n cards whose ranks span n-1 and which have no pairs is a run, yes?
+    # this needs a fizzbuzz thing, I suppose, that you check for 5 card run, and if there is one,
+    # disqualify any cards in it from participating in any smaller runs?
+    # maybe some examples
+    # I like the idea of pattern-rec the kinds of runs
+    # though for pure scoring purps there's no real reason... unless maybe it's an unrolled loop that's faster
+    #
+    # so from the rules:
+    # straight (or run), single
+    #
+    # Sequence of three or more consecutive cards in any order during the play of the cards; for example, 3-5-6-7-4
+    # (counts three when the 7 is played and counts five when the 4 is played).
+    #
+    # straight, multiple (used only in counting hands and crib):
+    #
+    # • Double run: two three-card or four-card straights, including one pair; for example, A-2-3-3 or A-2-3-3-4.
+    # • Double-double run: four three-card straights, including two pairs; for example, 8-8-9-9-10.
+    # • Triple run: three three-card straights, including three of a kind; for example, J-Q-Q-Q-K.
+    #
+    # what are all the patterns, assuming cards sorted? Going from 5-card on down, fizzbuzz style
+    #
+    # 6 pairs disqualifies any runs.
+    #
+    # triple run: sorted then normalized ranks, 3 pairs
+    # 0 0 0 1 2
+    # 0 1 1 1 2
+    # 0 1 2 2 2
+    #
+    # double double run: sorted then normalized ranks, 2 pairs
+    # 0 0 1 1 2
+    # 0 0 1 2 2
+    # 0 1 1 2 2
+    #
+    # double run of 4, sorted then normalized ranks, 1 pair
+    # 0 0 1 2 3
+    # 0 1 1 2 3
+    # 0 1 2 2 3
+    # 0 1 2 3 3
+    #
+    # ---
+    # then the smaller stuff:
+    # double run of 3, where c-a = 2 and x is outlier, 1 pair
+    # A A B C X
+    # A B B C X
+    # A B C C X
+    # X A A B C
+    # X A B B C
+    # X A B C C
+    #
+    # is there anything else that isn't scored purely as pairs/runs? I think we'd be ok after that.
+    # runs of 3 can spot by checking all sets of 3 cards for spread of 2, no pairs,
+    # runs of 4 similar. Need to make sure runs of 3 don't participate in a run of 4.
+    # if there is a run of 4, can there be runs of 3? I don't think so. Only 1 card doesn't participate
+    #
+    # now that I'm just counting pairs atm, what are the # pairs in these? Go above and label.
+    #
+    # so let's try some stuff. If it's wrong, fix it.
+
+    sortranks = sorted([rank(x) for x in cards])
+    normsranks = [x - min(sortranks) for x in sortranks]
+    print("sortranks =",sortranks,"normsranks =",normsranks)
+
+
 
     # flushes =========================================================================================================
     # TODO WRITE THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -321,13 +392,15 @@ def score_shew(hand,starter):
     # same suit (including the starter card)
     # count five points in the hand or crib.
     # I think that means if the non-starters are all the same suit, it's 4, and the starter only counts
-    # as the 5th 
+    # as the 5th
 
     # and finally, nobs ===============================================================================================
-    for i in range(0,4):
-        if rank(hand[i]) == 10 and suit(hand[i]) == suit(starter):
-            curscore += 1
-            print(cardstring(hand[i]), cardstring(starter),"... nobs -", curscore)
+    # disabling nobs for the moment ***********************************************************************************
+    #for i in range(0,4):
+    #    if rank(hand[i]) == 10 and suit(hand[i]) == suit(starter):
+    #        curscore += 1
+    #        print(cardstring(hand[i]), cardstring(starter),"... nobs -", curscore)
+    # end disabling nobs for the moment *******************************************************************************
 
 
 
@@ -382,6 +455,26 @@ if __name__ == "__main__":
 
     hand = [stringcard(x) for x in ['5h','jc','5s','5d']]
     starter = stringcard('5c')
+    print("Hand is",[cardstring(x) for x in hand])
+    print("Starter:",cardstring(starter))
+
+    score_shew(hand,starter)
+
+    print('---')
+
+    # triple run
+    hand = [stringcard(x) for x in ['6h','6c','5s','6d']]
+    starter = stringcard('7c')
+    print("Hand is",[cardstring(x) for x in hand])
+    print("Starter:",cardstring(starter))
+
+    score_shew(hand,starter)
+
+    print('---')
+
+    # double double run
+    hand = [stringcard(x) for x in ['9h','8c','7s','7d']]
+    starter = stringcard('9c')
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
