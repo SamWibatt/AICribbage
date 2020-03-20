@@ -266,7 +266,6 @@ def score_shew(hand,starter):
     # for convenience
     cards = hand + [starter]
 
-    # disabling fifteens for the moment *******************************************************************************
     # look for fifteens ===============================================================================================
     # what is the power set of cards? I suppose we need to check
     # all two-card sums (of which there are 5 choose 2 = 10)
@@ -299,7 +298,6 @@ def score_shew(hand,starter):
         for cs in [cardstring(x) for x in cards]:
             print(cs, end=' ')
         print("... 15 -", curscore)
-    # end disabling fifteens for the moment ***************************************************************************
 
     # look for big stuff like double double runs ======================================================================
 
@@ -413,11 +411,40 @@ def score_shew(hand,starter):
             print("...", fivey[1],"-",curscore)
             break
 
-
-
+    if found_fivecarder == 0:
+        # runs! first look for 4s - if there are any, can't be any 3s, yes?
+        found_fourcarders = 0
+        # so try the first 4 and last 4 among the normsranks, yes?
+        if normsranks[:4] == [0,1,2,3]:
+            found_fourcarders = 1
+            curscore += 4
+            for i in range(0,4):
+                print(cardstring(sortcards[i]),end=' ')
+            print("... run of 4 -",curscore)
+        elif normsranks[:4] == [0,0,1,2] or normsranks[:4] == [0,1,1,2] or normsranks[:4] == [0,1,2,2]:
+            found_fourcarders = 1
+            curscore += 8           # 2*3 + pr
+            for i in range(0,4):
+                print(cardstring(sortcards[i]),end=' ')
+            print("... double run -",curscore)
+        else:
+            nranks2 = [x - min(normsranks[1:]) for x in normsranks[1:]]
+            #print("normsranks =",normsranks,"nranks2 =",nranks2)
+            if nranks2 == [0,1,2,3]:
+                found_fourcarders = 2
+                curscore += 4
+                for i in range(1, 5):
+                    print(cardstring(sortcards[i]), end=' ')
+                print("... run of 4 -", curscore)
+            elif nranks2 == [0, 0, 1, 2] or nranks2 == [0, 1, 1, 2] or nranks2 == [0, 1, 2, 2]:
+                found_fourcarders = 2
+                curscore += 8  # 2*3 + pr
+                for i in range(1, 5):
+                    print(cardstring(sortcards[i]), end=' ')
+                print("... double run -", curscore)
 
     # Count pairs if no higher-order hand precludes
-    if found_fivecarder == 0:
+    if found_fivecarder == 0 and found_fourcarders == 0:
         pairranks = []
         numpairs = 0
         for i in range(0,4):
@@ -446,25 +473,7 @@ def score_shew(hand,starter):
                 print("... 4 of a kind",end=' ')
             print("-",curscore)
             #print("Found",numpairs,"pairs")  # debug do we need?
-        # runs! first look for 4s - if there are any, can't be any 3s, yes?
-        # TODO WRITE OTHER 4 AND 3 CARD RUN STUFF!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        found_fourcarders = 0
-        # so try the first 4 and last 4 among the normsranks, yes?
-        if normsranks[:4] == [0,1,2,3]:
-            found_fourcarders = 1
-            curscore += 4
-            for i in range(0,4):
-                print(cardstring(sortcards[i]),end=' ')
-            print("... run of 4 -",curscore)
-        else:
-            nranks2 = [x - min(normsranks[1:]) for x in normsranks[1:]]
-            #print("normsranks =",normsranks,"nranks2 =",nranks2)
-            if nranks2 == [0,1,2,3]:
-                found_fourcarders = 2
-                curscore += 4
-                for i in range(1, 5):
-                    print(cardstring(sortcards[i]), end=' ')
-                print("... run of 4 -", curscore)
+
         # so if found_fourcarders = 1, the first 4 were a run, so the last card can be in other scores?
         # if it's 2, the last 4 were, so first card can be in other scores? Does it matter?
         if found_fourcarders == 0:
@@ -500,16 +509,12 @@ def score_shew(hand,starter):
                 print(cs,end=' ')
             print("... 4 card flush -",curscore)
 
-
-
     # and finally, nobs ===============================================================================================
-    # disabling nobs for the moment ***********************************************************************************
     for i in range(0,4):
        if rank(hand[i]) == 10 and suit(hand[i]) == suit(starter):
             curscore += 1
             print(cardstring(hand[i]), cardstring(starter),"... nobs -", curscore)
             break
-    # end disabling nobs for the moment *******************************************************************************
 
 
 
@@ -642,6 +647,26 @@ if __name__ == "__main__":
     # run of 4, top
     hand = [stringcard(x) for x in ['5h','8c','7s','2d']]
     starter = stringcard('6c')
+    print("Hand is",[cardstring(x) for x in hand])
+    print("Starter:",cardstring(starter))
+
+    score_shew(hand,starter)
+
+    print('---')
+
+    # double run of 3 - bottom
+    hand = [stringcard(x) for x in ['2h','8c','4s','3d']]
+    starter = stringcard('2c')
+    print("Hand is",[cardstring(x) for x in hand])
+    print("Starter:",cardstring(starter))
+
+    score_shew(hand,starter)
+
+    print('---')
+
+    # double run of 3 - top
+    hand = [stringcard(x) for x in ['Qh','Jc','5s','0d']]
+    starter = stringcard('Jd')
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
