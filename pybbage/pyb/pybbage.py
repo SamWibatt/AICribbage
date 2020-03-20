@@ -516,7 +516,22 @@ def score_shew(hand,starter):
             print(cardstring(hand[i]), cardstring(starter),"... nobs -", curscore)
             break
 
+    # finally, at long last, return score - but if it's 0, say nineteen bc that's all clever
+    if curscore == 0:
+        for cs in [cardstring(x) for x in cards]:
+            print(cs,end=' ')
+        print("... NINETEEN!")
 
+    return curscore
+
+
+# SCORING THE PLAY / COUNT ============================================================================================
+# given: the cards that have been played so far, list of 0..51
+# and card to be played
+# return: (cards now played = cards so far + played, score for playing the given card or -1 for error)
+
+def play_card(curcards, newcard):
+    pass
 
 # main -------------------------------------------------------------------------------------------
 
@@ -553,7 +568,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -563,7 +579,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -573,7 +590,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -583,7 +601,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -592,7 +611,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -602,7 +622,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -612,7 +633,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -622,7 +644,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -632,7 +655,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
     # run of 4, bottom
@@ -641,7 +665,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
     # run of 4, top
@@ -650,7 +675,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -660,7 +686,8 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
 
@@ -670,6 +697,7 @@ if __name__ == "__main__":
     print("Hand is",[cardstring(x) for x in hand])
     print("Starter:",cardstring(starter))
 
-    score_shew(hand,starter)
+    score = score_shew(hand,starter)
+    print("Score:",score)
 
     print('---')
