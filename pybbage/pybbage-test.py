@@ -43,6 +43,8 @@ class CardstrTestAllLegit(unittest.TestCase):
 # SHOW-SCORING TESTS ==================================================================================================
 # would be nice if there were a way to grade these on all the internal printing, but let's just go by score
 # TODO VERIFY THESE AND DO VARIATIONS IN THEIR TODOS
+# If I really wanted to grit my teeth over this, I'd have the show-scoring return strings of all its sub-findings
+# and key the unit tests on that. The current way still needs visual inspection to verify.
 
 # nothing
 class ShowTestNothing(unittest.TestCase):

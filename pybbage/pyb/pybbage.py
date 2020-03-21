@@ -531,6 +531,38 @@ def score_shew(hand,starter):
 # return: (cards now played = cards so far + played, score for playing the given card or -1 for error)
 
 def play_card(curcards, newcard):
+    newcards = curcards if curcards is not None else []
+    curscore = 0
+
+    newcards = newcards + [newcard]
+    curtotal = sum([val(x) for x in newcards])
+
+    # figure out if newcard CAN be played on newcards, yes?
+    # - can't go over 31 - is that the only limitation? I suppose so
+    if curtotal > 31:
+        return(curcards,-1)         # error
+
+    # otherwise we should be ok.
+    # if total is now 15, 2 points!
+    if curtotal == 15:
+        curscore += 2
+        print("... fifteen -",curscore)
+    # if total is now 31, 2 points
+    elif curtotal == 31:
+        curscore += 2
+        print("... thirty-one -", curscore)
+
+    # what else? Pair, if same rank as the last card - and can be 3, 4 of a kind?
+    # and runs
+    # "go" for 1 point will have to be handled outside this, I guess, player must recognize they can't play
+    # and allow the other player to.
+    # - weird case there, they can keep playing until they can't place any more cards
+
+    # I'm going to say pairs and runs can't be interrupted, though runs don't have to be in order.
+    # that is, playing a 5, then a 7, then a 5, the second 5 doesn't make a pair.
+    # TODO WRITE THESE!
+
+    return(newcards,curscore)
     pass
 
 # main -------------------------------------------------------------------------------------------
@@ -561,143 +593,9 @@ if __name__ == "__main__":
     #for j in range(0,52):
     #    print("{},{},{}".format(cardstring(deck['value'][j]),deck['value'][j],deck['order'][j]))
 
-    # scoring!
-    hand = [stringcard(x) for x in ['5c','3c','Jc','7c']] #[18, 11, 42, 27]
-    starter = stringcard('5h') #19
+    # scoring! - now moved basically to unit tests - can recover from old commits if I want to, pre 3/20/20 8:36 pm
+    # such as e45edf3fcba455880b91da589c6d2f9842996641 "initial show unit tests"
 
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
+    # so ok, time for the play/count!
 
-    score = score_shew(hand,starter)
-    print("Score:",score)
 
-    print('---')
-
-    hand = [stringcard(x) for x in ['5c','3c','Jc','7c']] #[18, 11, 42, 27]
-    starter = stringcard('4c') #19
-
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    hand = [stringcard(x) for x in ['5c','3c','Jc','5h']] #[18, 11, 42, 27]
-    starter = stringcard('7c') #19
-
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    hand = [19, 10, 7, 25]
-    starter = 18
-
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    hand = [stringcard(x) for x in ['5h','jc','5s','5d']]
-    starter = stringcard('5c')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    # triple run
-    hand = [stringcard(x) for x in ['6h','6c','5s','6d']]
-    starter = stringcard('7c')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    # double double run
-    hand = [stringcard(x) for x in ['9h','8c','7s','7d']]
-    starter = stringcard('9c')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    # full house heh
-    hand = [stringcard(x) for x in ['9h','9c','7s','7d']]
-    starter = stringcard('9d')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    # 3 of a kind
-    hand = [stringcard(x) for x in ['0h','8c','7s','7d']]
-    starter = stringcard('7c')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-    # run of 4, bottom
-    hand = [stringcard(x) for x in ['5h','8c','7s','Kd']]
-    starter = stringcard('6c')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-    # run of 4, top
-    hand = [stringcard(x) for x in ['5h','8c','7s','2d']]
-    starter = stringcard('6c')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    # double run of 3 - bottom
-    hand = [stringcard(x) for x in ['2h','8c','4s','3d']]
-    starter = stringcard('2c')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
-
-    # double run of 3 - top
-    hand = [stringcard(x) for x in ['Qh','Jc','5s','0d']]
-    starter = stringcard('Jd')
-    print("Hand is",[cardstring(x) for x in hand])
-    print("Starter:",cardstring(starter))
-
-    score = score_shew(hand,starter)
-    print("Score:",score)
-
-    print('---')
