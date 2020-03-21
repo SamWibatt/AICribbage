@@ -529,13 +529,15 @@ def score_shew(hand,starter):
 # given: the cards that have been played so far, list of 0..51
 # and card to be played
 # return: (cards now played = cards so far + played, score for playing the given card or -1 for error)
-
+# not a serious error, I expect this to be a "lookahead" function for deciding what card to play for the computer
 def play_card(curcards, newcard):
     newcards = curcards if curcards is not None else []
     curscore = 0
 
     newcards = newcards + [newcard]
     curtotal = sum([val(x) for x in newcards])
+
+    print("-- running total",curtotal)
 
     # figure out if newcard CAN be played on newcards, yes?
     # - can't go over 31 - is that the only limitation? I suppose so
@@ -560,7 +562,70 @@ def play_card(curcards, newcard):
 
     # I'm going to say pairs and runs can't be interrupted, though runs don't have to be in order.
     # that is, playing a 5, then a 7, then a 5, the second 5 doesn't make a pair.
-    # TODO WRITE THESE!
+    # so - start noodling.
+    # pairs:
+    numrankmatch = 0
+    currank = rank(newcard)
+    # pairs are easy bc you can only go up to 4 of a kind. loopify this when I see a pattern
+    # or leave it like it is if I want to
+    # ifs are nested bc if there is a discontinuity, the chain breaks.
+    if len(curcards) >=1 and rank(curcards[-1]) == currank:
+        numrankmatch += 1
+        if len(curcards) >=2 and rank(curcards[-2]) == currank:
+            numrankmatch += 1
+            if len(curcards) >=3 and rank(curcards[-3]) == currank:
+                numrankmatch += 1
+    # so, numrankmatch + 1 is the number of matching cards, not including the played card.
+    if numrankmatch == 1:
+        curscore += 2
+        print("... pair - ",curscore)
+    elif numrankmatch == 2:
+        curscore += 6
+        print("... three of a kind - ",curscore)
+    elif numrankmatch == 3:
+        curscore += 12
+        print("... four of a kind - ",curscore)
+
+    # FIGURE OUT RUNS
+    # this works:
+    # >>> h = [5, 3, 7, 4, 6]
+    # >>> for i in range(-1, -(len(h)+1), -1):
+    # ...     print([x-min(h[i:]) for x in sorted(h[i:])])
+    # ...
+    # [0]
+    # [0, 2]
+    # [0, 2, 3]
+    # [0, 1, 3, 4]
+    # [0, 1, 2, 3, 4]
+    # that looks like a way to spot runs
+    # like pairs, go until you find a run...? an intervening non-run does not disqualify.
+    # what is the longest possible? The whole length of newcards, I suppose.
+    # look at them all, and pick the highest run, if any.
+    # >>> for i in range(-1, -(len(h)+1), -1):
+    # ...     ns = [x-min(h[i:]) for x in sorted(h[i:])]
+    # ...     if ns == list(range(0,-i)):
+    # ...         print(ns," = RUN!!!!!!!!! of",-i)
+    # ...     else:
+    # ...         print(ns," = not run :(")
+    # ...
+    # [0]  = RUN!!!!!!!!! of 1
+    # [0, 2]  = not run :(
+    # [0, 2, 3]  = not run :(
+    # [0, 1, 3, 4]  = not run :(
+    # [0, 1, 2, 3, 4]  = RUN!!!!!!!!! of 5
+    # so there you have it. just start at -3 bc no shorter run matters
+    # ALSO: need to get rank of card, not just card
+    longestrun = 0
+    for i in range(-3, -(len(newcards)+1), -1):
+        sorty = [rank(x) for x in sorted(newcards[i:])]
+        ns = [x-min(sorty) for x in sorty]
+        if ns == list(range(0,-i)):
+            longestrun = -i
+
+    if longestrun != 0:
+        curscore += longestrun
+        print(" ... run of",longestrun,"-",curscore)
+
 
     return(newcards,curscore)
     pass
@@ -597,5 +662,25 @@ if __name__ == "__main__":
     # such as e45edf3fcba455880b91da589c6d2f9842996641 "initial show unit tests"
 
     # so ok, time for the play/count!
+    print("Time for play. ----------------------")
+    totalscore = 0
+    curcards = []
+    handcards = ['5h','5c','5d','5s','4h','6d','as','qh']
+    for nc in handcards:
+        newcard = stringcard(nc)
+        print("playing",cardstring(newcard),"on",[cardstring(x) for x in curcards])
+        (resultcards,resscore) = play_card(curcards,newcard)
+        print("Result cards:",[cardstring(x) for x in resultcards],"score",resscore)
+        if resscore == -1:
+            print("done")
+            break
+        else:
+            # accumulate total score and played cards
+            curcards = resultcards
+            totalscore += resscore
+    print("total score:",totalscore)
+
+
+
 
 
