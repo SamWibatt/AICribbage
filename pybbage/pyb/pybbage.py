@@ -150,11 +150,13 @@ def shuffle():
 # THAT'S MORE THE TINY861 VERSION - how many times is enough, etc.
 # worry re later
 
-# cardnum is 0 when the deck is new - no longer using dealt flag
 # deck is just an array now
-def deal_card(deck,cardnum):
-    if cardnum is not None and cardnum < 52:
-        return (deck[cardnum],cardnum+1)
+# let's just have the deck be an array and pull cards off of its front
+def deal_card(deck):
+    if deck is not None and len(deck) > 0:
+        card = deck[0]
+        deck = deck[1:]
+        return (deck,card)
     return (None,None)
 
 # Cut will take an index into a deck which is assumed not to have any cards removed from it, plus an index.
@@ -169,7 +171,7 @@ def deal_card(deck,cardnum):
 # c. When cutting before each deal and for the starter
 # card, no less than four cards shall be taken from
 # the top and no less than four left on the bottom.
-# TODO encode all this!!!!!!!!!!!!!!!!!!!!!!!!!
+# This will be enforced by the calls to the random number gettors below.
 def cut(deck,index):
     if index >= 1 and index < len(deck):
         return deck[index:] + deck[:index]
@@ -630,58 +632,137 @@ def play_card(curcards, newcard):
     return(newcards,curtotal,curscore)
     pass
 
+# input ===============================================================================================================
+
+# get_input gets numeric input from min (inclusive) to max (inclusive)
+# for choosing cut, discard, play6
+
+def get_input(inmin,inmax,inexclude=None):
+    got_legit = False
+    while not got_legit:
+        try:
+            if inexclude is None:
+                prompt = "input a number from {} to {} --> ".format(inmin,inmax)
+                num = int(input(prompt))
+                if num >= inmin and num <= inmax:
+                    got_legit = True
+                else:
+                    print("out of range!")
+            else:
+                prompt = "input a number from {} to {} except {} --> ".format(inmin,inmax,sorted(inexclude))
+                num = int(input(prompt))
+                if num >= inmin and num <= inmax and num not in inexclude:
+                    got_legit = True
+                else:
+                    print("out of range or one of the exceptions!")
+        except ValueError as e:
+            print("Please enter a number.")
+    return num
+
+# computer version
+def get_computer_input(inmin,inmax,inexclude = None):
+    # ok, so random() gets us a 32 bit number
+    # how to spread that out evenly over the possibilities?
+    # modulo isn't - what do we get if we do num // ((inmax-inmin) + 1)
+    # then add inmin, should be a number from inmin...inmax, yes?
+    # this might be it:
+    # https://stackoverflow.com/questions/2509679/how-to-generate-a-random-integer-number-from-within-a-range
+    # which has this commentary and C code:
+    # All the answers so far are mathematically wrong. Returning rand() % N does not uniformly give a number in the
+    # range [0, N) unless N divides the length of the interval into which rand() returns (i.e. is a power of 2).
+    # Furthermore, one has no idea whether the moduli of rand() are independent: it's possible that they go
+    # 0, 1, 2, ..., which is uniform but not very random. The only assumption it seems reasonable to make is that
+    # rand() puts out a Poisson distribution: any two nonoverlapping subintervals of the same size are equally likely
+    # and independent. For a finite set of values, this implies a uniform distribution and also ensures that the values
+    # of rand() are nicely scattered.
+    #
+    # This means that the only correct way of changing the range of rand() is to divide it into boxes; for example, if
+    # RAND_MAX == 11 and you want a range of 1..6, you should assign {0,1} to 1, {2,3} to 2, and so on. These are
+    # disjoint, equally-sized intervals and thus are uniformly and independently distributed.
+    #
+    # The suggestion to use floating-point division is mathematically plausible but suffers from rounding issues in
+    # principle. Perhaps double is high-enough precision to make it work; perhaps not. I don't know and I don't want
+    # to have to figure it out; in any case, the answer is system-dependent.
+    #
+    # The correct way is to use integer arithmetic. That is, you want something like the following:
+    # ---
+    # #include <stdlib.h> // For random(), RAND_MAX
+    #
+    # // Assumes 0 <= max <= RAND_MAX
+    # // Returns in the closed interval [0, max]
+    # long random_at_most(long max) {
+    #   unsigned long
+    #     // max <= RAND_MAX < ULONG_MAX, so this is okay.
+    #     num_bins = (unsigned long) max + 1,
+    #     num_rand = (unsigned long) RAND_MAX + 1,
+    #     bin_size = num_rand / num_bins,
+    #     defect   = num_rand % num_bins;
+    #
+    #   long x;
+    #   do {
+    #    x = random();
+    #   }
+    #   // This is carefully written not to overflow
+    #   while (num_rand - defect <= (unsigned long)x);
+    #
+    #   // Truncated division is intentional
+    #   return x/bin_size;
+    # }
+    # ---
+    # The loop is necessary to get a perfectly uniform distribution. For example, if you are given random numbers from
+    # 0 to 2 and you want only ones from 0 to 1, you just keep pulling until you don't get a 2; it's not hard to check
+    # that this gives 0 or 1 with equal probability. This method is also described in the link that nos gave in their
+    # answer, though coded differently. I'm using random() rather than rand() as it has a better distribution (as
+    # noted by the man page for rand()).
+    #
+    # random_max is my version of RAND_MAX, recall, 0x7FFF FFFF
+    num = random()
+    FINISH THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
 # main -------------------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
     print("Hello and welcome to PYBBAGE, the python cribbage mockup for my mcu cribbage games.")
-    #print("Let's see some cards")
-    #for j in range(0,53):
-    #    print(j,cardstring(j))
-    # print the first hundred million random numbers and see if they agree with the c version
-    # which worked!
-    #for j in range(0,100000000):
-    #    print(random())
+
+    # OK NOW FOR THE REAL THING ======================================================================================
+    # Create players
+    # Initial shuffle
+    print("*** Initial shuffle...")
     srandom(1043865)
     deck = shuffle()
-    cardnum = 0;            # first card to be dealt, when dealing in order
-    # do a cut!
-    # WRITE THIS!!!!!!!!!!!
-    # then deal
-    #for j in range(0,54):
-    #    (card, cardnum) = deal_card(deck, cardnum)
-    #    print(j,cardstring(card),cardnum)
+    cardnum = 0;  # first card to be dealt, when dealing in order
+    print("deck is",deck)
+    print("---")
 
-    # let's dump the new one as csv and see what's up - seems correct! sorting by order made the value column
-    # consecutive. So away goes the auld way.
-    #print("card,value,order")
-    #for j in range(0,52):
-    #    print("{},{},{}".format(cardstring(deck['value'][j]),deck['value'][j],deck['order'][j]))
+    # Cut for deal
+    #     Each player cuts
+    #         according to their class's algorithm, human player or computer
+    #     Low card is dealer
+    #         i.e., set dealer flag in the player who got the low card
+    #         Per cribbage.org Thereafter the loser of the previous game deals first.
+    print("*** Cut for deal!")
+    cutspot = get_input(4,48)
+    deck = cut(deck,cutspot)
+    print("Deck is now",deck)
+    (deck,playercard) = deal_card(deck)
+    print("Turned up ", cardstring(playercard))
+    print("*** Now I cut!")
 
-    # scoring! - now moved basically to unit tests - can recover from old commits if I want to, pre 3/20/20 8:36 pm
-    # such as e45edf3fcba455880b91da589c6d2f9842996641 "initial show unit tests"
+    print("---")
 
-    # so ok, time for the play/count!
-    # this quick test worked - go write some unit tests
-    print("Time for play. ----------------------")
-    totalscore = 0
-    curcards = []
-    handcards = ['5h','5c','5d','5s','4h','6d','as','qh']
-    for nc in handcards:
-        newcard = stringcard(nc)
-        print("playing",cardstring(newcard),"on",[cardstring(x) for x in curcards])
-        (resultcards,curtotal,resscore) = play_card(curcards,newcard)
-        print("Result cards:",[cardstring(x) for x in resultcards],"total",curtotal,"score",resscore)
-        if resscore == -1:
-            print("done")
-            break
-        else:
-            # accumulate total score and played cards
-            curcards = resultcards
-            totalscore += resscore
-    print("total score:",totalscore)
-
-
-
+    # Until somebody wins:
+    #     Shuffle
+    #     Pone Cut
+    #     Deal
+    #     Discard
+    #         See below re: thoughts on how to do this
+    #     Pone Cuts to get starter card
+    #         If it's a jack, dealer gets 2
+    #     Play
+    #         I believe this is done as of 3/21, other than "go"
+    #     Shew
 
 
