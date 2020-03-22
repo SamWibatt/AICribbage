@@ -528,7 +528,7 @@ def score_shew(hand,starter):
 # SCORING THE PLAY / COUNT ============================================================================================
 # given: the cards that have been played so far, list of 0..51
 # and card to be played
-# return: (cards now played = cards so far + played, score for playing the given card or -1 for error)
+# return: (cards now played = cards so far + played, running total, score for playing the given card or -1 for error)
 # not a serious error, I expect this to be a "lookahead" function for deciding what card to play for the computer
 def play_card(curcards, newcard):
     newcards = curcards if curcards is not None else []
@@ -537,12 +537,12 @@ def play_card(curcards, newcard):
     newcards = newcards + [newcard]
     curtotal = sum([val(x) for x in newcards])
 
-    print("-- running total",curtotal)
-
     # figure out if newcard CAN be played on newcards, yes?
     # - can't go over 31 - is that the only limitation? I suppose so
     if curtotal > 31:
-        return(curcards,-1)         # error
+        return(curcards,curtotal-val(newcard),-1)         # error
+
+    #print("-- running total",curtotal)
 
     # otherwise we should be ok.
     # if total is now 15, 2 points!
@@ -578,13 +578,13 @@ def play_card(curcards, newcard):
     # so, numrankmatch + 1 is the number of matching cards, not including the played card.
     if numrankmatch == 1:
         curscore += 2
-        print("... pair - ",curscore)
+        print("... pair -",curscore)
     elif numrankmatch == 2:
         curscore += 6
-        print("... three of a kind - ",curscore)
+        print("... three of a kind -",curscore)
     elif numrankmatch == 3:
         curscore += 12
-        print("... four of a kind - ",curscore)
+        print("... four of a kind -",curscore)
 
     # FIGURE OUT RUNS
     # this works:
@@ -627,7 +627,7 @@ def play_card(curcards, newcard):
         print(" ... run of",longestrun,"-",curscore)
 
 
-    return(newcards,curscore)
+    return(newcards,curtotal,curscore)
     pass
 
 # main -------------------------------------------------------------------------------------------
@@ -662,6 +662,7 @@ if __name__ == "__main__":
     # such as e45edf3fcba455880b91da589c6d2f9842996641 "initial show unit tests"
 
     # so ok, time for the play/count!
+    # this quick test worked - go write some unit tests
     print("Time for play. ----------------------")
     totalscore = 0
     curcards = []
@@ -669,8 +670,8 @@ if __name__ == "__main__":
     for nc in handcards:
         newcard = stringcard(nc)
         print("playing",cardstring(newcard),"on",[cardstring(x) for x in curcards])
-        (resultcards,resscore) = play_card(curcards,newcard)
-        print("Result cards:",[cardstring(x) for x in resultcards],"score",resscore)
+        (resultcards,curtotal,resscore) = play_card(curcards,newcard)
+        print("Result cards:",[cardstring(x) for x in resultcards],"total",curtotal,"score",resscore)
         if resscore == -1:
             print("done")
             break
