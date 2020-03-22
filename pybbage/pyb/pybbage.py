@@ -722,6 +722,10 @@ def get_input(inmin,inmax,inexclude=None):
 # Assumes 0 <= max <= random_max
 # Returns in the closed interval [0, max]
 # OK, going to need a comparison test for this.
+# and done, c and python agreed on a million random_at_most(52) then a million random_at_most(6).
+# TODO maybe make the c version used by the python script - learn how to write py libs in c
+# might be more trouble than it's worth - https://docs.python.org/3.7/extending/extending.html
+# though not if I end up having to do a bunch of iteration for learning models &c.
 def random_at_most(max):
 #   unsigned long
 #     // max <= RAND_MAX < ULONG_MAX, so this is okay.
@@ -747,10 +751,17 @@ def random_at_most(max):
 
 
 
-# computer version of get_input
+# computer version of get_input - inmin and inmax are both inclusive
+# can loop forever if inexclude excludes all possible values, TODO fix that
+# in arduino version we can assume caller gets it right bc that is the spirit of C
 def get_computer_input(inmin, inmax, inexclude=None):
-    num = random()
-    #FINISH THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    while True:
+        num = inmin + random_at_most((inmax-inmin)+1)
+        if inexclude is None:
+            return num
+        if num not in inexclude:
+            return num
+
 
 
 
@@ -778,7 +789,7 @@ if __name__ == "__main__":
     srandom(1043865)
     deck = shuffle()
     cardnum = 0;  # first card to be dealt, when dealing in order
-    print("deck is",deck)
+    #print("deck is",deck)
     print("---")
 
     # Cut for deal
@@ -787,15 +798,38 @@ if __name__ == "__main__":
     #     Low card is dealer
     #         i.e., set dealer flag in the player who got the low card
     #         Per cribbage.org Thereafter the loser of the previous game deals first.
-    print("*** Cut for deal!")
-    cutspot = get_input(4,48)
-    deck = cut(deck,cutspot)
-    print("Deck is now",deck)
-    (deck,playercard) = deal_card(deck)
-    print("Turned up ", cardstring(playercard))
-    print("*** Now I cut!")
+    # I guess do this until there is a clear difference in rank
+    # with the usual seed, choosing 38 gets a tie, then 11 gets another one! if deck reused
+    # let's reshuffle between the cuts so we never run out of cards
+    comprank = -1
+    playerrank = -1
+    while comprank == playerrank:
+        print("*** Cut for deal!")
+        cutspot = get_input(4,48)
+        deck = cut(deck,cutspot)
+        #print("Deck is now",deck)
+        (deck,playercard) = deal_card(deck)
+        print("You turned up ", cardstring(playercard))
+        print("*** Now I cut!")
+        compcutspot = get_computer_input(4,len(deck)-4)
+        print("my cut spot",compcutspot)
+        deck = cut(deck,compcutspot)
+        #print("Deck is now",deck)
+        (deck,compcard) = deal_card(deck)
+        print("I turned up", cardstring(compcard))
+        playerrank = rank(playercard)
+        comprank = rank(compcard)
+        if playerrank < comprank:
+            print("You get first deal!")
+            # todo reflect this somehow
+        elif playerrank > comprank:
+            print("I get first deal!")
+            # todo reflect this somehow
+        else:
+            print("Tie! do it again! - reshuffling")
+            deck = shuffle()
 
-    print("---")
+        print("---")
 
     # Until somebody wins:
     #     Shuffle
