@@ -179,85 +179,7 @@ def cut(deck,index):
     return deck;
 
 
-# classes ----------------------------------------------------------------------------------------
-
-# So I expect in arduino I can use a struct for this stuff. As of this writing (3/14/20) I'm out of it on
-# codeine cough syrup - yay coronavirus panic and me being sick sick sick - so this may need a lot of ripping
-# out and redux. Still, one's soul requires programming.
-# Accordingly I've forgotten everything I knew about python classes so am consulting
-# https://www.w3schools.com/python/python_classes.asp
-# class Person:
-#   def __init__(self, name, age):
-#     self.name = name
-#     self.age = age
-#
-# p1 = Person("John", 36)
-#
-# print(p1.name)
-# print(p1.age)
-
-# how about an object to represent a hand.
-# it can have up to six cards in it
-# I don't think it needs to know if it's a crib
-# so: cards and parallel list of used flag
-# flag might also have discarded for cards given to the crib
-# so that they don't get restored e.g. between the play/countl and the scoring
-# any reason not to just use a list and numcards kind of arrangement?
-# fixed memory is helpful on tiny machines, just not pythonic
-# This cards and flags thing seems super clumsy
-# may resurrect for doing hypothetical hands, but currently just overthinking
-# let's just try without it
-# class Hand:
-#     # constants for card flags
-#     # Held means it is currently in hand and playable
-#     # Discarded means given to crib (should it even still be in the hand?)
-#     # in_play means it's not discarded but has been played in the play/count
-#     HELD = 0
-#     DISCARDED = 1
-#     IN_PLAY = 2
-#
-#
-#     # ctor
-#     def __init__(self, cards = None, flags = None):
-#         # I can imagine that we may need to spin up "hypothetical" hands directly without calling add_card
-#         self.cards = cards
-#         self.flags = flags
-#         pass
-#
-#     # add_card assumes the card is legit (0..51, non-duplicate) and it's not in play or otherwise
-#     # unusual (flag=0) though you can override the flag.
-#     # returns the index of the new card
-#     def add_card(self,card,flag=HELD):
-#         if self.cards is None:
-#             self.cards = []
-#             self.flags = []
-#         self.cards.append(card)
-#         self.flags.append(flag)
-#         return len(cards)-1
-#
-#     def get_card(self,i):
-#         if self.cards is None or len(self.cards) <=i:
-#             return None
-#         return self.cards[i]
-#
-#     def get_flag(self,i):
-#         if self.flags is None or len(self.flags) <=i:
-#             return None
-#         return self.flags[i]
-
-# K so I have a player object. What do we know about players?
-# - what cards they hold and which are "used"
-# - whether they're the dealer
-# - their score
-class Player:
-    def __init__(self):
-        self.cards = []
-        self.used_cards = []
-        pass
-
-    def add_card(self,card):
-        self.cards.append(card)
-
+# SCORING -------------------------------------------------------------------------------------------------------------
 
 # let's just try scoring a show, damn the data structures for now
 # where hand is a list of 0..51, starter is the up-card 0..51
@@ -762,8 +684,141 @@ def get_computer_input(inmin, inmax, inexclude=None):
         if num not in inexclude:
             return num
 
+# classes ----------------------------------------------------------------------------------------
+
+# So I expect in arduino I can use a struct for this stuff. As of this writing (3/14/20) I'm out of it on
+# codeine cough syrup - yay coronavirus panic and me being sick sick sick - so this may need a lot of ripping
+# out and redux. Still, one's soul requires programming.
+# Accordingly I've forgotten everything I knew about python classes so am consulting
+# https://www.w3schools.com/python/python_classes.asp
+# class Person:
+#   def __init__(self, name, age):
+#     self.name = name
+#     self.age = age
+#
+# p1 = Person("John", 36)
+#
+# print(p1.name)
+# print(p1.age)
+
+# how about an object to represent a hand.
+# it can have up to six cards in it
+# I don't think it needs to know if it's a crib
+# so: cards and parallel list of used flag
+# flag might also have discarded for cards given to the crib
+# so that they don't get restored e.g. between the play/countl and the scoring
+# any reason not to just use a list and numcards kind of arrangement?
+# fixed memory is helpful on tiny machines, just not pythonic
+# This cards and flags thing seems super clumsy
+# may resurrect for doing hypothetical hands, but currently just overthinking
+# let's just try without it
+# class Hand:
+#     # constants for card flags
+#     # Held means it is currently in hand and playable
+#     # Discarded means given to crib (should it even still be in the hand?)
+#     # in_play means it's not discarded but has been played in the play/count
+#     HELD = 0
+#     DISCARDED = 1
+#     IN_PLAY = 2
+#
+#
+#     # ctor
+#     def __init__(self, cards = None, flags = None):
+#         # I can imagine that we may need to spin up "hypothetical" hands directly without calling add_card
+#         self.cards = cards
+#         self.flags = flags
+#         pass
+#
+#     # add_card assumes the card is legit (0..51, non-duplicate) and it's not in play or otherwise
+#     # unusual (flag=0) though you can override the flag.
+#     # returns the index of the new card
+#     def add_card(self,card,flag=HELD):
+#         if self.cards is None:
+#             self.cards = []
+#             self.flags = []
+#         self.cards.append(card)
+#         self.flags.append(flag)
+#         return len(cards)-1
+#
+#     def get_card(self,i):
+#         if self.cards is None or len(self.cards) <=i:
+#             return None
+#         return self.cards[i]
+#
+#     def get_flag(self,i):
+#         if self.flags is None or len(self.flags) <=i:
+#             return None
+#         return self.flags[i]
+
+# Default computer player --------------------------------------------------------------------------------------------
+# K so I have a player object. What do we know about players?
+# - what cards they hold and which are "used"
+# - whether they're the dealer
+# - their score
+class Player:
+    def __init__(self, cards = [], used_cards = [], crib = [], dealer = False, score = 0, name = "Player"):
+        self.cards = cards
+        self.used_cards = used_cards
+        self.crib = crib
+        self.dealer = dealer
+        self.score = score
+        self.name = name
+        pass
+
+    def set_score(self,points):
+        self.score = points
+
+    def add_score(self,points):
+        self.score += points
+
+    def get_score(self):
+        return self.points
+
+    def set_dealer(self,isdealer):
+        self.dealer = isdealer;
+
+    def is_dealer(self):
+        return self.dealer
+
+    def add_card(self,card):
+        self.cards.append(card)
+
+    # TODO IN HERE HAVE OVERRIDEABLE STRATEGY METHODS like playing a card in the play or shew
+    # easy ones are using human input and choosing cards at random
+    # might also have one for initial cut or subsequent cuts
+    def cut(self,deck):
+        # default: assume computer, and that deck is big enough to do this. Should be called right after a shuffle
+        cutspot = get_computer_input(4,len(deck)-4)
+        print("*** cutting.... at",cutspot)
+        return cut(deck,cutspot)
 
 
+    def print_hand(self):
+        print("Hand:",[cardstring(x) for x in self.cards])
+
+    def print_crib(self):
+        if self.is_dealer():
+            print("Crib:", [cardstring(x) for x in self.crib])
+        else:
+            print("Crib: (not dealer)")
+
+    def print(self):
+        print("Name:",self.name,"Dealer:",self.is_dealer(),"score:",self.score)
+        self.print_hand()
+        if self.is_dealer():
+            self.print_crib()
+
+
+# Default human player ------------------------------------------------------------------------------------------------
+class HumanPlayer(Player):
+
+    def __init__(self, cards = [], used_cards = [], crib = [], dealer = False, score = 0, name = "Player"):
+        super().__init__(cards, used_cards, crib, dealer, score, name)
+
+    def cut(self,deck):
+        # humqn version!
+        print("*** enter cut!")
+        return cut(deck,get_input(4,len(deck)-4))
 
 # main -------------------------------------------------------------------------------------------
 
@@ -784,6 +839,12 @@ if __name__ == "__main__":
 
     # OK NOW FOR THE REAL THING ======================================================================================
     # Create players
+    print("Creating players...")
+    players = [HumanPlayer(name="Human"),Player(name="Computer")]
+    for player in players:
+        player.print()
+    print("-----------------------------------------------------")
+
     # Initial shuffle
     print("*** Initial shuffle...")
     srandom(1043865)
@@ -821,20 +882,52 @@ if __name__ == "__main__":
         comprank = rank(compcard)
         if playerrank < comprank:
             print("You get first deal!")
-            # todo reflect this somehow
+            players[0].set_dealer(True)
+            players[1].set_dealer(False)
+            dealer = players[0]
+            pone = players[1]
         elif playerrank > comprank:
             print("I get first deal!")
-            # todo reflect this somehow
+            players[0].set_dealer(False)
+            players[1].set_dealer(True)
+            dealer = players[1]
+            pone = players[0]
         else:
             print("Tie! do it again! - reshuffling")
             deck = shuffle()
 
-        print("---")
+    print("************************* THE GAME BEGINS! *************************************************")
 
     # Until somebody wins:
     #     Shuffle
+
+    print("*** Shuffling...")
+    deck = shuffle()
+
     #     Pone Cut
-    #     Deal
+    #print("Deck is now",deck)
+    deck = pone.cut(deck)
+    #print("Deck is now",deck)
+    (deck,starter) = deal_card(deck)
+    print("*** starter card is",cardstring(starter))
+    # 2 points to dealer if it's a jack - cut at 34 to get this w/default
+    if rank(starter) == rank(stringcard('JH')):
+        print("*** 2 points to dealer!")
+        dealer.add_score(2)
+
+    #     Deal 6 cards to each player
+    print("*** Dealing...")
+    for j in range(0,6):
+        (deck,nextcard) = deal_card(deck)
+        pone.add_card(nextcard)
+        (deck,nextcard) = deal_card(deck)
+        dealer.add_card(nextcard)
+
+    # 38 then 11 gets a chance for a double run 8 9 10 10
+    print("*** now players are like this")
+    for player in players:
+        player.print()
+
     #     Discard
     #         See below re: thoughts on how to do this
     #     Pone Cuts to get starter card
