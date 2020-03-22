@@ -659,65 +659,98 @@ def get_input(inmin,inmax,inexclude=None):
             print("Please enter a number.")
     return num
 
-# computer version
-def get_computer_input(inmin,inmax,inexclude = None):
-    # ok, so random() gets us a 32 bit number
-    # how to spread that out evenly over the possibilities?
-    # modulo isn't - what do we get if we do num // ((inmax-inmin) + 1)
-    # then add inmin, should be a number from inmin...inmax, yes?
-    # this might be it:
-    # https://stackoverflow.com/questions/2509679/how-to-generate-a-random-integer-number-from-within-a-range
-    # which has this commentary and C code:
-    # All the answers so far are mathematically wrong. Returning rand() % N does not uniformly give a number in the
-    # range [0, N) unless N divides the length of the interval into which rand() returns (i.e. is a power of 2).
-    # Furthermore, one has no idea whether the moduli of rand() are independent: it's possible that they go
-    # 0, 1, 2, ..., which is uniform but not very random. The only assumption it seems reasonable to make is that
-    # rand() puts out a Poisson distribution: any two nonoverlapping subintervals of the same size are equally likely
-    # and independent. For a finite set of values, this implies a uniform distribution and also ensures that the values
-    # of rand() are nicely scattered.
-    #
-    # This means that the only correct way of changing the range of rand() is to divide it into boxes; for example, if
-    # RAND_MAX == 11 and you want a range of 1..6, you should assign {0,1} to 1, {2,3} to 2, and so on. These are
-    # disjoint, equally-sized intervals and thus are uniformly and independently distributed.
-    #
-    # The suggestion to use floating-point division is mathematically plausible but suffers from rounding issues in
-    # principle. Perhaps double is high-enough precision to make it work; perhaps not. I don't know and I don't want
-    # to have to figure it out; in any case, the answer is system-dependent.
-    #
-    # The correct way is to use integer arithmetic. That is, you want something like the following:
-    # ---
-    # #include <stdlib.h> // For random(), RAND_MAX
-    #
-    # // Assumes 0 <= max <= RAND_MAX
-    # // Returns in the closed interval [0, max]
-    # long random_at_most(long max) {
-    #   unsigned long
-    #     // max <= RAND_MAX < ULONG_MAX, so this is okay.
-    #     num_bins = (unsigned long) max + 1,
-    #     num_rand = (unsigned long) RAND_MAX + 1,
-    #     bin_size = num_rand / num_bins,
-    #     defect   = num_rand % num_bins;
-    #
+
+# support routine for the computer version of get_input - need to get this right
+# ok, so random() gets us a 32 bit number
+# how to spread that out evenly over the possibilities?
+# modulo isn't - what do we get if we do num // ((inmax-inmin) + 1)
+# then add inmin, should be a number from inmin...inmax, yes?
+# this might be it. from @Ryan Reich:
+# https://stackoverflow.com/questions/2509679/how-to-generate-a-random-integer-number-from-within-a-range
+# which has this commentary and C code:
+# All the answers so far are mathematically wrong. Returning rand() % N does not uniformly give a number in the
+# range [0, N) unless N divides the length of the interval into which rand() returns (i.e. is a power of 2).
+# Furthermore, one has no idea whether the moduli of rand() are independent: it's possible that they go
+# 0, 1, 2, ..., which is uniform but not very random. The only assumption it seems reasonable to make is that
+# rand() puts out a Poisson distribution: any two nonoverlapping subintervals of the same size are equally likely
+# and independent. For a finite set of values, this implies a uniform distribution and also ensures that the values
+# of rand() are nicely scattered.
+#
+# This means that the only correct way of changing the range of rand() is to divide it into boxes; for example, if
+# RAND_MAX == 11 and you want a range of 1..6, you should assign {0,1} to 1, {2,3} to 2, and so on. These are
+# disjoint, equally-sized intervals and thus are uniformly and independently distributed.
+#
+# The suggestion to use floating-point division is mathematically plausible but suffers from rounding issues in
+# principle. Perhaps double is high-enough precision to make it work; perhaps not. I don't know and I don't want
+# to have to figure it out; in any case, the answer is system-dependent.
+#
+# The correct way is to use integer arithmetic. That is, you want something like the following:
+# ---
+# #include <stdlib.h> // For random(), RAND_MAX
+#
+# // Assumes 0 <= max <= RAND_MAX
+# // Returns in the closed interval [0, max]
+# long random_at_most(long max) {
+#   unsigned long
+#     // max <= RAND_MAX < ULONG_MAX, so this is okay.
+#     num_bins = (unsigned long) max + 1,
+#     num_rand = (unsigned long) RAND_MAX + 1,
+#     bin_size = num_rand / num_bins,
+#     defect   = num_rand % num_bins;
+#
+#   long x;
+#   do {
+#    x = random();
+#   }
+#   // This is carefully written not to overflow
+#   while (num_rand - defect <= (unsigned long)x);
+#
+#   // Truncated division is intentional
+#   return x/bin_size;
+# }
+# ---
+# The loop is necessary to get a perfectly uniform distribution. For example, if you are given random numbers from
+# 0 to 2 and you want only ones from 0 to 1, you just keep pulling until you don't get a 2; it's not hard to check
+# that this gives 0 or 1 with equal probability. This method is also described in the link that nos gave in their
+# answer, though coded differently. I'm using random() rather than rand() as it has a better distribution (as
+# noted by the man page for rand()).
+#
+# THERE ARE OTHER VERSIONS TOO BUT THIS ONE IS HIGHEST VOTED
+# I wonder if my old vpok 0..51 thing was similar
+
+
+# Assumes 0 <= max <= random_max
+# Returns in the closed interval [0, max]
+# OK, going to need a comparison test for this.
+def random_at_most(max):
+#   unsigned long
+#     // max <= RAND_MAX < ULONG_MAX, so this is okay.
+    num_bins = max + 1
+    num_rand = random_max + 1
+    bin_size = num_rand // num_bins
+    defect   = num_rand % num_bins
+
     #   long x;
     #   do {
     #    x = random();
     #   }
     #   // This is carefully written not to overflow
     #   while (num_rand - defect <= (unsigned long)x);
-    #
-    #   // Truncated division is intentional
-    #   return x/bin_size;
-    # }
-    # ---
-    # The loop is necessary to get a perfectly uniform distribution. For example, if you are given random numbers from
-    # 0 to 2 and you want only ones from 0 to 1, you just keep pulling until you don't get a 2; it's not hard to check
-    # that this gives 0 or 1 with equal probability. This method is also described in the link that nos gave in their
-    # answer, though coded differently. I'm using random() rather than rand() as it has a better distribution (as
-    # noted by the man page for rand()).
-    #
-    # random_max is my version of RAND_MAX, recall, 0x7FFF FFFF
+    # no "do" loop in python
+    firstloop = True
+    while (firstloop or (num_rand - defect <= x)):
+        firstloop = False
+        x = random()
+
+    # Truncated division is intentional
+    return x//bin_size;
+
+
+
+# computer version of get_input
+def get_computer_input(inmin, inmax, inexclude=None):
     num = random()
-    FINISH THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #FINISH THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -726,6 +759,17 @@ def get_computer_input(inmin,inmax,inexclude = None):
 
 if __name__ == "__main__":
     print("Hello and welcome to PYBBAGE, the python cribbage mockup for my mcu cribbage games.")
+
+    # quick random_at_most test paralleling the one in random.c
+    # do a million of 52, then a million of 6 - matched!
+    #for j in range(0,1000000):
+    #    print(random_at_most(52))
+    #for j in range(0,1000000):
+    #    print(random_at_most(6))
+    #sys.exit(0)
+
+    # end quick random_at_most test
+
 
     # OK NOW FOR THE REAL THING ======================================================================================
     # Create players

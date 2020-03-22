@@ -96,11 +96,40 @@ my_srandom(unsigned long seed)
 	next = seed;
 }
 
+// then this is from  @Ryan Reich:
+// at https://stackoverflow.com/questions/2509679/how-to-generate-a-random-integer-number-from-within-a-range
+// Assumes 0 <= max <= RAND_MAX
+// Returns in the closed interval [0, max]
+long random_at_most(long max) {
+    unsigned long
+        // max <= RAND_MAX < ULONG_MAX, so this is okay.
+        num_bins = (unsigned long) max + 1,
+        num_rand = (unsigned long) RAND_MAX + 1,
+        bin_size = num_rand / num_bins,
+        defect   = num_rand % num_bins;
+    long x;
+    do {
+        x = random();
+    }
+    // This is carefully written not to overflow
+    while (num_rand - defect <= (unsigned long)x);
+    // Truncated division is intentional
+    return x/bin_size;
+}
+
+
 int main(int argc, char *argv) {
     printf("Hello and welcome to random, the randiculent random number printing utility.\n");
     //print A HUNDRED MILLION random numbers to compare to python version
-    for(int j=0;j<100000000;j++) {
-        printf("%lu\n",random());
+    //for(int j=0;j<100000000;j++) {
+    //    printf("%lu\n",random());
+    //}
+    //let's test random_at_most, say 1000,000 each of 52 and 6, just for fun
+    for(int j=0;j<1000000;j++) {
+        printf("%ld\n",random_at_most(52));
+    }
+    for(int j=0;j<1000000;j++) {
+        printf("%ld\n",random_at_most(6));
     }
 
 }
