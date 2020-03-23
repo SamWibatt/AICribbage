@@ -552,7 +552,6 @@ def play_card(curcards, newcard):
 
 
     return(newcards,curtotal,curscore)
-    pass
 
 # input ===============================================================================================================
 
@@ -772,7 +771,7 @@ class Player:
         self.score += points
 
     def get_score(self):
-        return self.points
+        return self.score
 
     def set_dealer(self,isdealer):
         self.dealer = isdealer;
@@ -783,7 +782,11 @@ class Player:
     def add_card(self,card):
         self.cards.append(card)
 
-    # TODO IN HERE HAVE OVERRIDEABLE STRATEGY METHODS like playing a card in the play or shew
+    def add_crib(self,card):
+        self.crib.append(card)
+
+    # =================================================================================================================
+    # HERE ARE OVERRIDEABLE STRATEGY METHODS like playing a card in the play or shew
     # easy ones are using human input and choosing cards at random
     # might also have one for initial cut or subsequent cuts
     def cut(self,deck):
@@ -792,9 +795,49 @@ class Player:
         print("*** cutting.... at",cutspot)
         return cut(deck,cutspot)
 
+    def discard(self,otherplayer):
+        # here, choose two cards from self.hand and into the dealer's crib, either own if self.is_dealer
+        # or otherplayer if not.
+        # default implementation, just choose two at random. Can use deal to pull a card off.
+        # or, just yank the card out.
+        for j in range(0,2):
+            cardind = random_at_most(len(self.cards)-1)
+            card = self.cards[cardind]              # split out the card
+            self.cards = self.cards[:cardind] + self.cards[cardind + 1:]  # remove card from hand
+            if self.is_dealer():
+                self.add_crib(card)
+            else:
+                otherplayer.add_crib(card)
+
+    # in the play, we get the stack of cards to date
+    # choose a card and play it, if one is legal, returning the new stack of cards and the score for this round
+    # (which also gets added on here.) can be 0. If -1, no legal play was available, and card stack unchanged,
+    # which means "go"
+    # card that gets played, if any, is appended to used_cards so hand can be restored for show.
+    def play(self,curcards):
+        # choose a card for the play, if there is one that works
+        # let's just go with the first one
+        # def play_card(curcards, newcard):
+        # return (newcards, curtotal, curscore)
+        for i in range(0,len(self.cards)):
+            card = self.cards[i]
+            (newcards,curtotal,curscore) = play_card(curcards,card)
+            if curscore != -1:
+                # play this one!
+                print("playing",cardstring(card),"on",[cardstring(x) for x in curcards])
+                self.cards = self.cards[:i] + self.cards[i + 1:]  # remove card from hand
+                self.used_cards.append(card)        # memorize it so can be restored
+                self.score += curscore;
+                return (newcards,curscore)
+                pass
+        # if we get here, it's a go, I guess
+        print("Go!")
+        return (curcards,-1)
+
+    # =================================================================================================================
 
     def print_hand(self):
-        print("Hand:",[cardstring(x) for x in self.cards])
+        print("Hand:",[cardstring(x) for x in self.cards],"used",[cardstring(x) for x in self.used_cards])
 
     def print_crib(self):
         if self.is_dealer():
@@ -820,6 +863,26 @@ class HumanPlayer(Player):
         print("*** enter cut!")
         return cut(deck,get_input(4,len(deck)-4))
 
+
+    def discard(self, otherplayer):
+        # here, choose two cards from self.hand and into the dealer's crib, either own if self.is_dealer
+        # or otherplayer if not.
+        # default implementation, let user input
+        # or, just yank the card out.
+        for j in range(0, 2):
+            print("Cards:")
+            for k in range(0,len(self.cards)):
+                print("{}) {}".format(k,cardstring(self.cards[k])))
+            print("Enter a card to discard")
+            cardind = get_input(0,len(self.cards) - 1)
+            card = self.cards[cardind]  # split out the card
+            self.cards = self.cards[:cardind] + self.cards[cardind + 1:]  # remove card from hand
+            if self.is_dealer():
+                self.add_crib(card)
+            else:
+                otherplayer.add_crib(card)
+
+
 # main -------------------------------------------------------------------------------------------
 
 
@@ -841,6 +904,8 @@ if __name__ == "__main__":
     # Create players
     print("Creating players...")
     players = [HumanPlayer(name="Human"),Player(name="Computer")]
+    dealer = None
+    pone = None
     for player in players:
         player.print()
     print("-----------------------------------------------------")
@@ -899,41 +964,80 @@ if __name__ == "__main__":
     print("************************* THE GAME BEGINS! *************************************************")
 
     # Until somebody wins:
-    #     Shuffle
+    while players[0].get_score() < 121 and players[1].get_score() < 121:
+        #     Shuffle
 
-    print("*** Shuffling...")
-    deck = shuffle()
+        print("*** Shuffling...")
+        deck = shuffle()
 
-    #     Pone Cut
-    #print("Deck is now",deck)
-    deck = pone.cut(deck)
-    #print("Deck is now",deck)
-    (deck,starter) = deal_card(deck)
-    print("*** starter card is",cardstring(starter))
-    # 2 points to dealer if it's a jack - cut at 34 to get this w/default
-    if rank(starter) == rank(stringcard('JH')):
-        print("*** 2 points to dealer!")
-        dealer.add_score(2)
+        #     Pone Cut
+        #print("Deck is now",deck)
+        print("*** cut...")
+        deck = pone.cut(deck)
+        #print("Deck is now",deck)
 
-    #     Deal 6 cards to each player
-    print("*** Dealing...")
-    for j in range(0,6):
-        (deck,nextcard) = deal_card(deck)
-        pone.add_card(nextcard)
-        (deck,nextcard) = deal_card(deck)
-        dealer.add_card(nextcard)
+        #     Deal 6 cards to each player
+        print("*** Dealing...")
+        for j in range(0,6):
+            (deck,nextcard) = deal_card(deck)
+            pone.add_card(nextcard)
+            (deck,nextcard) = deal_card(deck)
+            dealer.add_card(nextcard)
 
-    # 38 then 11 gets a chance for a double run 8 9 10 10
-    print("*** now players are like this")
-    for player in players:
-        player.print()
+        print("*** now players are like this")
+        for player in players:
+            player.print()
 
-    #     Discard
-    #         See below re: thoughts on how to do this
-    #     Pone Cuts to get starter card
-    #         If it's a jack, dealer gets 2
-    #     Play
-    #         I believe this is done as of 3/21, other than "go"
-    #     Shew
+        #     Discard
+        #         See below re: thoughts on how to do this
+        print("Discard...")
+        players[0].discard(players[1])
+        players[1].discard(players[0])
+
+        #     Pone Cuts to get starter card
+        #         If it's a jack, dealer gets 2
+        print("Cut for starter ...")
+        pone.cut(deck)
+        (deck,starter) = deal_card(deck)
+        print("*** starter card is",cardstring(starter))
+        # 2 points to dealer if it's a jack - cut at 34 to get this w/default
+        if rank(starter) == rank(stringcard('JH')):
+            print("*** Heels! 2 points to dealer!")
+            dealer.add_score(2)
+            if dealer.get_score() >= 121:
+                print("DEALER WINS!!!!!!!!!!!!!!!!!!!")
+                break
+
+        print("*** now players are like this")
+        for player in players:
+            player.print()
+
+        #     Play
+        #         I believe this is done as of 3/21, other than "go"
+        print("*** now for the play!")
+        play_is_done = False
+        curcards = []
+        while not play_is_done:
+            # who goes first? The pone shall play the first card face up on the
+            # table, announcing its value.
+            # TEMP! TODO! just have each player play once and swh
+            print("Non-dealer play:")
+            (curcards, newscore) = pone.play(curcards)
+            print("curcards now",[cardstring(x) for x in curcards])
+            if newscore == -1:
+                print("EEEEP now what")
+                play_is_done = True
+            print("Dealer play:")
+            (curcards, newscore) = dealer.play(curcards)
+            print("curcards now",[cardstring(x) for x in curcards])
+            if newscore == -1:
+                print("EEEEP now what")
+                play_is_done = True
+        break       # TEMP TODO RIP OUT
+
+        #     Shew
+        # TODO restore players' used_cards back to their hand
+        print("*** and then the shew!")
+
 
 
