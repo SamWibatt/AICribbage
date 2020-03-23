@@ -1027,6 +1027,61 @@ if __name__ == "__main__":
             if newscore == -1:
                 print("EEEEP now what")
                 play_is_done = True
+                # OK SO TODO THIS IS NOT RIGHT
+                # but close. What is right? When the score is -1, that means "go";
+                # IIRC other player scores a point right then, and then they must
+                # play as many addtional cards as they can.
+                # VERIFY.
+                # also: need some more state, to tell that the other player said "go",
+                # and know that it's time to play as many cards as possible. I think I can do that with a flag.
+                # so, if neither player can play, and there are still cards left, start a new count.
+                # the highest possible count would be if all 8 cards in the players' hands were valued at 10,
+                # so you'd get (player 1)10, (player 2)20, (1)30, go
+                # who starts the next count?
+                # cribbage.org's site is goobered, so check http://cribbagecorner.com/cribbage-rules-go
+                # An example sequence of play showing the rules for pegging points by both players:
+                #
+                # Alice (pone) plays a 4, for a total of 4, and says 'Four.'
+                # Bob plays a 7, for a total of 11, and says 'Eleven'.
+                # Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+                # Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
+                # Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
+                # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
+                #
+                # The count now goes back to zero, and the play continues. Since Bob played the last card, Alice goes
+                # first now.
+                #
+                # Alice plays a 7, for a total of 7, and says 'Seven'.
+                # Bob plays an 8, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+                # Alice plays a 9, for a total of 24, and says 'Twenty-four for three'. [and pegs 3 points for her run
+                # of 7-8-9]
+                # Bob cannot go, as he has run out of cards. He therefore says 'Go', and Alice pegs a point for the go.
+                # She also has run out of cards and so the game proceeds to the next phase.
+                #
+                # Another example:
+                #
+                # Bob (pone) plays a 4, for a total of 4, and says 'Four.'
+                # Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
+                # Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
+                # royal ]
+                # Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+                # Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
+                # Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
+                # 5-4-3-2]]
+                # Bob cannot go without going over 31, and so says 'Go'.
+                # Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
+                # go' is only scored when the scoring player does not make 31. ]
+                #
+                # The count is now reset, and Bob plays first, as Alice played last.
+                #
+                # Bob plays a Queen, for a total of 10, and says 'Ten.'
+                # Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
+                #
+                # For tips on how to make the most of the go, see the cribbage strategy section.
+                #
+                # If you say 'Go' when you had a card you could legally play, this is a breach of the rules called a
+                # renege. (I will disallow this, have the machine yell)
+
             print("Dealer play:")
             (curcards, newscore) = dealer.play(curcards)
             print("curcards now",[cardstring(x) for x in curcards])

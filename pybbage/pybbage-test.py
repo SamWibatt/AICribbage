@@ -474,6 +474,23 @@ class PlayTest090_runof3intervening(unittest.TestCase):
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(resscore,0)
 
+# TODO HEY DO THIS ONE from http://cribbagecorner.com/cribbage-rules-play
+#
+#scoring sequence in play
+#Submitted by Meade (not verified) on Tue, 04/06/2010 - 01:50.
+#
+#How do you score the following sequence made in play? A 7 was played first followed by a 9 and then a 8 to make a
+# sequence of three for 3 points. Here is the questions: My playing partner then played a 7. Is this another sequence
+# of three for 3 points and 2 points for 31?
+#
+#re: scoring sequence
+#Submitted by Joan (not verified) on Thu, 06/24/2010 - 17:44.
+#
+#Yes, your parntner gets 3 points for the run of 7, 8, 9, the last 3 cards played where the sequence was not broken.
+# And the 2 points for 31. If 8 or 9 were played first your partner would be out of luck because the first 7 played
+# would have interrupted the second sequence.
+
+
 class PlayTest100_runof4(unittest.TestCase):
     def test_playtest_runof4(self):
         print("Play run of 4 ----------------------------------------------------------------------------------------")
