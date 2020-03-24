@@ -779,11 +779,26 @@ class Player:
     def is_dealer(self):
         return self.dealer
 
+    def get_cards(self):
+        return self.cards
+
+    def set_cards(self,cards):
+        self.cards = cards
+
     def add_card(self,card):
         self.cards.append(card)
 
     def add_crib(self,card):
         self.crib.append(card)
+
+    def get_used_cards(self):
+        return self.used_cards
+
+    def get_crib(self):
+        return self.crib
+
+    def set_crib(self,crib):
+        self.crib = crib
 
     # =================================================================================================================
     # HERE ARE OVERRIDEABLE STRATEGY METHODS like playing a card in the play or shew
@@ -828,11 +843,11 @@ class Player:
                 self.cards = self.cards[:i] + self.cards[i + 1:]  # remove card from hand
                 self.used_cards.append(card)        # memorize it so can be restored
                 self.score += curscore;
-                return (newcards,curscore)
+                return (newcards,curtotal,curscore)
                 pass
         # if we get here, it's a go, I guess
         print("Go!")
-        return (curcards,-1)
+        return (curcards,sum([val(x) for x in curcards]),-1)
 
     # =================================================================================================================
 
@@ -1016,17 +1031,47 @@ if __name__ == "__main__":
         #         I believe this is done as of 3/21, other than "go"
         print("*** now for the play!")
         play_is_done = False
-        curcards = []
+        # k so play consists of some number of hands.
+        # TODO THIS LOOKS LIKE IT'S WORKING but need to do the scoring parts
         while not play_is_done:
-            # who goes first? The pone shall play the first card face up on the
-            # table, announcing its value.
-            # TEMP! TODO! just have each player play once and swh
-            print("Non-dealer play:")
-            (curcards, newscore) = pone.play(curcards)
-            print("curcards now",[cardstring(x) for x in curcards])
-            if newscore == -1:
-                print("EEEEP now what")
+            curcards = []
+            player_called_go = -1  # 0 means dealer, 1 means pone, -1 means nobody yet
+            hand_is_done = False
+            while not hand_is_done:
+                print("play not done infinite loop spotter")
+                # who goes first? The pone shall play the first card face up on the
+                # table, announcing its value.
+                # TEMP! TODO! just have each player play once and swh
+                if player_called_go != 1:
+                    print("Pone play:")
+                    (curcards, curtotal, newscore) = pone.play(curcards)
+                    print("curcards now",[cardstring(x) for x in curcards], "curtotal", curtotal)
+                    if newscore == -1:
+                        # so: this means "go." if player_called_go is -1, mark that pone has said "go"
+                        if player_called_go == -1:
+                            print("Pone calls go!")
+                            player_called_go = 1
+                        elif player_called_go == 0:
+                            # other player called go and so now we're done with this count
+                            print("Pone played out after dealer said go")
+                            hand_is_done = True     # TODO still not right, but.
+                if player_called_go != 0:
+                    print("Dealer play:")
+                    (curcards, curtotal, newscore) = dealer.play(curcards)
+                    print("curcards now",[cardstring(x) for x in curcards], "curtotal", curtotal)
+                    if newscore == -1:
+                        if player_called_go == -1:
+                            print("Dealer calls go!")
+                            player_called_go = 0        # dealer said go
+                        elif player_called_go == 1:
+                            # other player called go and so now we're done with this count
+                            print("Dealer played out after pone said go")
+                            hand_is_done = True     # TODO still not right, but.
+            # ok, hand is done, if nobody has any cards left, play is done
+            if len(pone.get_cards()) == 0 and len(dealer.get_cards()) ==0:
+                print("Play is done!")
                 play_is_done = True
+
                 # OK SO TODO THIS IS NOT RIGHT
                 # but close. What is right? When the score is -1, that means "go";
                 # IIRC other player scores a point right then, and then they must
@@ -1082,17 +1127,22 @@ if __name__ == "__main__":
                 # If you say 'Go' when you had a card you could legally play, this is a breach of the rules called a
                 # renege. (I will disallow this, have the machine yell)
 
-            print("Dealer play:")
-            (curcards, newscore) = dealer.play(curcards)
-            print("curcards now",[cardstring(x) for x in curcards])
-            if newscore == -1:
-                print("EEEEP now what")
-                play_is_done = True
-        break       # TEMP TODO RIP OUT
-
         #     Shew
-        # TODO restore players' used_cards back to their hand
+        # restore players' used_cards back to their hand
+        pone.set_cards(pone.get_used_cards())
+        dealer.set_cards(dealer.get_used_cards())
         print("*** and then the shew!")
+        print("*** pone shew:")
+        score_shew(pone.get_cards(),starter)
+        print("*** dealer shew:")
+        score_shew(dealer.get_cards(),starter)
+        print("*** dealer crib shew:")
+        score_shew(dealer.get_crib(),starter)
 
+        # clear hands and get ready for another round
+        # swap dealer and pone - or rather, says whoever lost the last hand deals next
+        pone.set_cards([])
+        dealer.set_cards([])
+        dealer.set_crib([])
 
-
+        #break           # TODO: temp!!!!!!!!!!!!!!!!!
