@@ -794,6 +794,9 @@ class Player:
     def get_used_cards(self):
         return self.used_cards
 
+    def set_used_cards(self,used_cards):
+        self.used_cards = used_cards
+
     def get_crib(self):
         return self.crib
 
@@ -1031,13 +1034,13 @@ if __name__ == "__main__":
         #         I believe this is done as of 3/21, other than "go"
         print("*** now for the play!")
         play_is_done = False
-        # k so play consists of some number of hands.
+        # k so play consists of some number of counts.
         # TODO THIS LOOKS LIKE IT'S WORKING but need to do the scoring parts
         while not play_is_done:
             curcards = []
             player_called_go = -1  # 0 means dealer, 1 means pone, -1 means nobody yet
-            hand_is_done = False
-            while not hand_is_done:
+            count_is_done = False
+            while not count_is_done:
                 print("play not done infinite loop spotter")
                 # who goes first? The pone shall play the first card face up on the
                 # table, announcing its value.
@@ -1054,7 +1057,7 @@ if __name__ == "__main__":
                         elif player_called_go == 0:
                             # other player called go and so now we're done with this count
                             print("Pone played out after dealer said go")
-                            hand_is_done = True     # TODO still not right, but.
+                            count_is_done = True     # TODO still not right, but.
                 if player_called_go != 0:
                     print("Dealer play:")
                     (curcards, curtotal, newscore) = dealer.play(curcards)
@@ -1066,7 +1069,7 @@ if __name__ == "__main__":
                         elif player_called_go == 1:
                             # other player called go and so now we're done with this count
                             print("Dealer played out after pone said go")
-                            hand_is_done = True     # TODO still not right, but.
+                            count_is_done = True     # TODO still not right, but.
             # ok, hand is done, if nobody has any cards left, play is done
             if len(pone.get_cards()) == 0 and len(dealer.get_cards()) ==0:
                 print("Play is done!")
@@ -1130,7 +1133,9 @@ if __name__ == "__main__":
         #     Shew
         # restore players' used_cards back to their hand
         pone.set_cards(pone.get_used_cards())
+        pone.set_used_cards([])
         dealer.set_cards(dealer.get_used_cards())
+        dealer.set_used_cards([])
         print("*** and then the shew!")
         print("*** pone shew:")
         score_shew(pone.get_cards(),starter)
@@ -1142,7 +1147,8 @@ if __name__ == "__main__":
         # clear hands and get ready for another round
         # swap dealer and pone - or rather, says whoever lost the last hand deals next
         pone.set_cards([])
+
         dealer.set_cards([])
         dealer.set_crib([])
 
-        #break           # TODO: temp!!!!!!!!!!!!!!!!!
+        break           # TODO: temp!!!!!!!!!!!!!!!!!
