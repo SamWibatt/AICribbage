@@ -1041,7 +1041,7 @@ if __name__ == "__main__":
             player_called_go = -1  # 0 means dealer, 1 means pone, -1 means nobody yet
             count_is_done = False
             while not count_is_done:
-                print("play not done infinite loop spotter")
+                #print("play not done infinite loop spotter")
                 # who goes first? The pone shall play the first card face up on the
                 # table, announcing its value.
                 # TEMP! TODO! just have each player play once and swh
@@ -1058,6 +1058,13 @@ if __name__ == "__main__":
                             # other player called go and so now we're done with this count
                             print("Pone played out after dealer said go")
                             count_is_done = True     # TODO still not right, but.
+                            # at this point, if pone played any cards and total is not 31, that means pone
+                            # gets the one-for last, yes?
+                            # how do we know pone played any cards? This happens bc they *couldn't*,
+                            # so it would have had to have been last time through, then skip dealer.
+                    else:
+                        print("Adding score for pone:",newscore)
+                        pone.add_score(newscore)
                 if player_called_go != 0:
                     print("Dealer play:")
                     (curcards, curtotal, newscore) = dealer.play(curcards)
@@ -1070,6 +1077,10 @@ if __name__ == "__main__":
                             # other player called go and so now we're done with this count
                             print("Dealer played out after pone said go")
                             count_is_done = True     # TODO still not right, but.
+                            # SEE ABOVE re: how pone handles one-for-last n stuff
+                    else:
+                        print("Adding score for dealer:", newscore)
+                        dealer.add_score(newscore)
             # ok, hand is done, if nobody has any cards left, play is done
             if len(pone.get_cards()) == 0 and len(dealer.get_cards()) ==0:
                 print("Play is done!")
@@ -1138,11 +1149,23 @@ if __name__ == "__main__":
         dealer.set_used_cards([])
         print("*** and then the shew!")
         print("*** pone shew:")
-        score_shew(pone.get_cards(),starter)
+        ponescore = score_shew(pone.get_cards(),starter)
+        print("Adding score for pone:",ponescore)
+        pone.add_score(ponescore)
+        # TODO CHECK FOR WIN
         print("*** dealer shew:")
-        score_shew(dealer.get_cards(),starter)
+        dealerscore = score_shew(dealer.get_cards(),starter)
+        print("Adding score for dealer:",dealerscore)
+        dealer.add_score(dealerscore)
+        # TODO CHECK FOR WIN
         print("*** dealer crib shew:")
-        score_shew(dealer.get_crib(),starter)
+        cribscore = score_shew(dealer.get_crib(),starter)
+        print("Adding crib score for dealer:",cribscore)
+        dealer.add_score(cribscore)
+        # TODO CHECK FOR WIN
+
+        print("Pone score:",pone.get_score())
+        print("Dealer score:",dealer.get_score())
 
         # clear hands and get ready for another round
         # swap dealer and pone - or rather, says whoever lost the last hand deals next
