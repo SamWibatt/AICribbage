@@ -2,6 +2,7 @@
 a.out
 crandom.txt
 prandom.txt
+venv37/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
