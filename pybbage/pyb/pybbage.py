@@ -803,6 +803,12 @@ class Player:
     def set_crib(self,crib):
         self.crib = crib
 
+    def get_name(self):
+        return self.name
+
+    def set_name(self,name):
+        self.name = name
+
     # =================================================================================================================
     # HERE ARE OVERRIDEABLE STRATEGY METHODS like playing a card in the play or shew
     # easy ones are using human input and choosing cards at random
@@ -832,6 +838,8 @@ class Player:
     # (which also gets added on here.) can be 0. If -1, no legal play was available, and card stack unchanged,
     # which means "go"
     # card that gets played, if any, is appended to used_cards so hand can be restored for show.
+    # THIS VERSION SHOULD STAY AS THE DEFAULT, OR AT LEAST BE AVAILABLE THROUGH A PlayFirstLegalPlayer
+    # SUBCLASS, BC THAT WILL MAKE FOR EASY UNIT TESTING!!!!!!!
     def play(self,curcards):
         # choose a card for the play, if there is one that works
         # let's just go with the first one
@@ -900,6 +908,146 @@ class HumanPlayer(Player):
             else:
                 otherplayer.add_crib(card)
 
+# Player for Unit Testing that plays the first card in their hand that is legal.
+class PlayFirstLegalCardPlayer(Player):
+    def __init__(self, cards = [], used_cards = [], crib = [], dealer = False, score = 0, name = "Player"):
+        super().__init__(cards, used_cards, crib, dealer, score, name)
+
+    def play(self,curcards):
+        # choose a card for the play, if there is one that works
+        # let's just go with the first one
+        # def play_card(curcards, newcard):
+        # return (newcards, curtotal, curscore)
+        for i in range(0,len(self.cards)):
+            card = self.cards[i]
+            (newcards,curtotal,curscore) = play_card(curcards,card)
+            if curscore != -1:
+                # play this one!
+                print("playing",cardstring(card),"on",[cardstring(x) for x in curcards])
+                self.cards = self.cards[:i] + self.cards[i + 1:]  # remove card from hand
+                self.used_cards.append(card)        # memorize it so can be restored
+                self.score += curscore;
+                return (newcards,curtotal,curscore)
+                pass
+        # if we get here, it's a go, I guess
+        print("Go!")
+        return (curcards,sum([val(x) for x in curcards]),-1)
+
+
+
+# THE PLAY -----------------------------------------------------------------------------------------------------------
+
+# the play: pone and dealer are players, after discard, but with full hand
+# this can now play the following correctly from http://cribbagecorner.com/cribbage-rules-go
+# An example sequence of play showing the rules for pegging points by both players:
+#
+# Alice (pone) plays a 4, for a total of 4, and says 'Four.'
+# Bob plays a 7, for a total of 11, and says 'Eleven'.
+# Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+# Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
+# Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
+# Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
+#
+# The count now goes back to zero, and the play continues. Since Bob played the last card, Alice goes
+# first now.
+#
+# Alice plays a 7, for a total of 7, and says 'Seven'.
+# Bob plays an 8, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+# Alice plays a 9, for a total of 24, and says 'Twenty-four for three'. [and pegs 3 points for her run
+# of 7-8-9]
+# Bob cannot go, as he has run out of cards. He therefore says 'Go', and Alice pegs a point for the go.
+# She also has run out of cards and so the game proceeds to the next phase.
+#
+# Another example:
+#
+# Bob (pone) plays a 4, for a total of 4, and says 'Four.'
+# Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
+# Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
+# royal ]
+# Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+# Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
+# Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
+# 5-4-3-2]]
+# Bob cannot go without going over 31, and so says 'Go'.
+# Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
+# go' is only scored when the scoring player does not make 31. ]
+#
+# The count is now reset, and Bob plays first, as Alice played last.
+#
+# Bob plays a Queen, for a total of 10, and says 'Ten.'
+# Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
+#
+# For tips on how to make the most of the go, see the cribbage strategy section.
+#
+# If you say 'Go' when you had a card you could legally play, this is a breach of the rules called a
+# renege. (I will disallow this, have the machine yell)
+
+def do_play(dealer,pone):
+    play_is_done = False
+    # k so play consists of some number of counts.
+    # TODO THIS LOOKS LIKE IT'S WORKING but need to do the scoring parts
+    while not play_is_done:
+        print("New count -----------------------------------------------------------")
+        curcards = []
+        player_called_go = -1  # 0 means dealer, 1 means pone, -1 means nobody yet
+        count_is_done = False
+        while not count_is_done:
+            # print("play not done infinite loop spotter")
+            # who goes first? The pone shall play the first card face up on the
+            # table, announcing its value.
+            if player_called_go != 1:
+                print(pone.get_name(),"the pone play:")
+                (curcards, curtotal, newscore) = pone.play(curcards)
+                print("curcards now", [cardstring(x) for x in curcards], "curtotal", curtotal)
+                if newscore == -1:
+                    # so: this means "go." if player_called_go is -1, mark that pone has said "go"
+                    if player_called_go == -1:
+                        print("Pone calls go!")
+                        player_called_go = 1
+                    elif player_called_go == 0:
+                        # other player called go and so now we're done with this count
+                        print("Pone played out after dealer said go")
+                        count_is_done = True
+                        # at this point, if pone played any cards and total is not 31, that means pone
+                        # gets the one-for last, yes?
+                        # how do we know pone played any cards? This happens bc they *couldn't*,
+                        # so it would have had to have been last time through, then skip dealer.
+                        # or is it that pone has to have played to get here?
+                        if curtotal != 31:
+                            print(pone.get_name()," the pone pegs 1 for last")
+                            pone.add_score(1)
+                        else:
+                            print("########### Total is 31, nobody gets 1")
+                else:
+                    print("Adding score for pone:", newscore)
+                    pone.add_score(newscore)
+
+            if player_called_go != 0:
+                print(dealer.get_name(),"the dealer play:")
+                (curcards, curtotal, newscore) = dealer.play(curcards)
+                print("curcards now", [cardstring(x) for x in curcards], "curtotal", curtotal)
+                if newscore == -1:
+                    if player_called_go == -1:
+                        print("Dealer calls go!")
+                        player_called_go = 0  # dealer said go
+                    elif player_called_go == 1:
+                        # other player called go and so now we're done with this count
+                        print("Dealer played out after pone said go")
+                        count_is_done = True  # TODO still not right, but.
+                        # SEE ABOVE re: how pone handles one-for-last n stuff
+                        if curtotal != 31:
+                            print(dealer.get_name()," the dealer pegs 1 for last")
+                            dealer.add_score(1)
+                        else:
+                            print("########### Total is 31, nobody gets 1")
+                else:
+                    print("Adding score for dealer:", newscore)
+                    dealer.add_score(newscore)
+        # ok, hand is done, if nobody has any cards left, play is done
+        if len(pone.get_cards()) == 0 and len(dealer.get_cards()) == 0:
+            play_is_done = True
+
+
 
 # main -------------------------------------------------------------------------------------------
 
@@ -916,6 +1064,81 @@ if __name__ == "__main__":
     #sys.exit(0)
 
     # end quick random_at_most test
+
+    # quick play tests that could turn into unit tests
+    # print ("TEMP PLAY TESTS ===================================================================")
+    #
+    # # let's enact this, with players that play the first legal card in their hand.
+    # # Alice (pone) plays a 4, for a total of 4, and says 'Four.'
+    # # Bob plays a 7, for a total of 11, and says 'Eleven'.
+    # # Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+    # # Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
+    # # Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
+    # # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
+    #
+    # # players don't need a crib for this, I reckon
+    #
+    # print("SENERIO 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # # Alice the Pone
+    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
+    #                                 dealer=False,score=0,name="Alice")
+    # # Bob the Dealer
+    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','5h','0c']],
+    #                                   dealer=True,score=0,name="Bob")
+    # do_play(dealer,pone)
+    # # YAY that seems to have worked
+    #
+    # print("SENERIO 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # # then try a variant where Bob's got a 2 and a 4, so he can play 2 cards after Alice says go, and gets 31
+    # # Alice the Pone
+    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
+    #                                 dealer=False,score=0,name="Alice")
+    # # Bob the Dealer
+    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','4h']],
+    #                                   dealer=True,score=0,name="Bob")
+    # do_play(dealer,pone)
+    # # WORKY!!!!!!!!!!!!!!!!
+    #
+    # print("SENERIO 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # # then try a variant where Bob's got a 2 and a A, so he can play 2 cards after Alice says go, and gets 1 for last
+    # # Alice the Pone
+    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
+    #                                 dealer=False,score=0,name="Alice")
+    # # Bob the Dealer
+    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','Ah']],
+    #                                   dealer=True,score=0,name="Bob")
+    # do_play(dealer,pone)
+    # # WORKY!!!!!!!!!!!!!!!!
+    #
+    # print("SENERIO 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # # Bob (pone) plays a 4, for a total of 4, and says 'Four.'
+    # # Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
+    # # Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
+    # # royal ]
+    # # Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+    # # Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
+    # # Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
+    # # 5-4-3-2]]
+    # # Bob cannot go without going over 31, and so says 'Go'.
+    # # Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
+    # # go' is only scored when the scoring player does not make 31. ]
+    # #
+    # # The count is now reset, and Bob plays first, as Alice played last.
+    # #
+    # # Bob plays a Queen, for a total of 10, and says 'Ten.'
+    # # Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
+    #
+    # # Bob the Pone
+    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4h','4d','2c','Qh']],
+    #                                   dealer=False,score=0,name="Bob")
+    # # Alice the Dealer
+    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','3d','5c','9d']],
+    #                                 dealer=True,score=0,name="Alice")
+    # do_play(dealer,pone)
+    # # WORKY!!!!!!!!!!!!!!!!!!
+    #
+    # print("TEMP END ===========================================================================")
+    # sys.exit(0)
 
 
     # OK NOW FOR THE REAL THING ======================================================================================
@@ -1032,115 +1255,11 @@ if __name__ == "__main__":
 
         #     Play
         #         I believe this is done as of 3/21, other than "go"
-        print("*** now for the play!")
-        play_is_done = False
-        # k so play consists of some number of counts.
-        # TODO THIS LOOKS LIKE IT'S WORKING but need to do the scoring parts
-        while not play_is_done:
-            curcards = []
-            player_called_go = -1  # 0 means dealer, 1 means pone, -1 means nobody yet
-            count_is_done = False
-            while not count_is_done:
-                #print("play not done infinite loop spotter")
-                # who goes first? The pone shall play the first card face up on the
-                # table, announcing its value.
-                # TEMP! TODO! just have each player play once and swh
-                if player_called_go != 1:
-                    print("Pone play:")
-                    (curcards, curtotal, newscore) = pone.play(curcards)
-                    print("curcards now",[cardstring(x) for x in curcards], "curtotal", curtotal)
-                    if newscore == -1:
-                        # so: this means "go." if player_called_go is -1, mark that pone has said "go"
-                        if player_called_go == -1:
-                            print("Pone calls go!")
-                            player_called_go = 1
-                        elif player_called_go == 0:
-                            # other player called go and so now we're done with this count
-                            print("Pone played out after dealer said go")
-                            count_is_done = True     # TODO still not right, but.
-                            # at this point, if pone played any cards and total is not 31, that means pone
-                            # gets the one-for last, yes?
-                            # how do we know pone played any cards? This happens bc they *couldn't*,
-                            # so it would have had to have been last time through, then skip dealer.
-                    else:
-                        print("Adding score for pone:",newscore)
-                        pone.add_score(newscore)
-                if player_called_go != 0:
-                    print("Dealer play:")
-                    (curcards, curtotal, newscore) = dealer.play(curcards)
-                    print("curcards now",[cardstring(x) for x in curcards], "curtotal", curtotal)
-                    if newscore == -1:
-                        if player_called_go == -1:
-                            print("Dealer calls go!")
-                            player_called_go = 0        # dealer said go
-                        elif player_called_go == 1:
-                            # other player called go and so now we're done with this count
-                            print("Dealer played out after pone said go")
-                            count_is_done = True     # TODO still not right, but.
-                            # SEE ABOVE re: how pone handles one-for-last n stuff
-                    else:
-                        print("Adding score for dealer:", newscore)
-                        dealer.add_score(newscore)
-            # ok, hand is done, if nobody has any cards left, play is done
-            if len(pone.get_cards()) == 0 and len(dealer.get_cards()) ==0:
-                print("Play is done!")
-                play_is_done = True
+        print("*** now for the play! ================================================= ")
+        # let's break this out into a function that can be unit-tested!
+        do_play(dealer,pone)
 
-                # OK SO TODO THIS IS NOT RIGHT
-                # but close. What is right? When the score is -1, that means "go";
-                # IIRC other player scores a point right then, and then they must
-                # play as many addtional cards as they can.
-                # VERIFY.
-                # also: need some more state, to tell that the other player said "go",
-                # and know that it's time to play as many cards as possible. I think I can do that with a flag.
-                # so, if neither player can play, and there are still cards left, start a new count.
-                # the highest possible count would be if all 8 cards in the players' hands were valued at 10,
-                # so you'd get (player 1)10, (player 2)20, (1)30, go
-                # who starts the next count?
-                # cribbage.org's site is goobered, so check http://cribbagecorner.com/cribbage-rules-go
-                # An example sequence of play showing the rules for pegging points by both players:
-                #
-                # Alice (pone) plays a 4, for a total of 4, and says 'Four.'
-                # Bob plays a 7, for a total of 11, and says 'Eleven'.
-                # Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
-                # Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
-                # Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
-                # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
-                #
-                # The count now goes back to zero, and the play continues. Since Bob played the last card, Alice goes
-                # first now.
-                #
-                # Alice plays a 7, for a total of 7, and says 'Seven'.
-                # Bob plays an 8, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
-                # Alice plays a 9, for a total of 24, and says 'Twenty-four for three'. [and pegs 3 points for her run
-                # of 7-8-9]
-                # Bob cannot go, as he has run out of cards. He therefore says 'Go', and Alice pegs a point for the go.
-                # She also has run out of cards and so the game proceeds to the next phase.
-                #
-                # Another example:
-                #
-                # Bob (pone) plays a 4, for a total of 4, and says 'Four.'
-                # Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
-                # Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
-                # royal ]
-                # Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
-                # Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
-                # Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
-                # 5-4-3-2]]
-                # Bob cannot go without going over 31, and so says 'Go'.
-                # Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
-                # go' is only scored when the scoring player does not make 31. ]
-                #
-                # The count is now reset, and Bob plays first, as Alice played last.
-                #
-                # Bob plays a Queen, for a total of 10, and says 'Ten.'
-                # Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
-                #
-                # For tips on how to make the most of the go, see the cribbage strategy section.
-                #
-                # If you say 'Go' when you had a card you could legally play, this is a breach of the rules called a
-                # renege. (I will disallow this, have the machine yell)
-
+        print("*** now for the shew! ================================================= ")
         #     Shew
         # restore players' used_cards back to their hand
         pone.set_cards(pone.get_used_cards())
