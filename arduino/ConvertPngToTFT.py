@@ -62,17 +62,17 @@ if __name__ == '__main__':
         j = 1
         while sys.argv[j].startswith('-'):
             if sys.argv[j] == '-r0':
-                print("*** will not rotate")
+                print("//*** will not rotate")
                 rotfactor = 0
             elif sys.argv[j] == '-r1':
                 rotfactor = 1
-                print("*** will rotate clockwise 90 degrees")
+                print("//*** will rotate clockwise 90 degrees")
             elif sys.argv[j] == '-r2':
                 rotfactor = 2
-                print("*** will rotate clockwise 180 degrees")
+                print("//*** will rotate clockwise 180 degrees")
             elif sys.argv[j] == '-r3':
                 rotfactor = 3
-                print("*** will rotate clockwise 270 degrees")
+                print("//*** will rotate clockwise 270 degrees")
             # ********************************************************************************************************
             # PARSE OTHER CMDLINE ARGS HERE like byteswap, compression or whatever
             # ********************************************************************************************************
@@ -200,7 +200,7 @@ if __name__ == '__main__':
         # >>> l = [ 0,0,0,255,255,255 ]
         # >>> [ l[3*x:(3*x)+3] for x in range(len(l)//3) ]
         # [[0, 0, 0], [255, 255, 255]]
-        # so
+        # so conversion to 565 is like this:
         # colr = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3)
         # # SWAP BYTES TEST see if that helps with pushimage
         # colr = (colr >> 8) | ((colr & 0xFF) << 8)
@@ -208,10 +208,14 @@ if __name__ == '__main__':
         # ((l[3*x] & 0xF8) << 8) | ((l[(3*x)+1] & 0xFC) << 3) | ((l[(3*x)+2] & 0xF8) >> 3)
 
         # so here is the non-byteswapped version
-        rows565 = [ [ ((l[3*x] & 0xF8) << 8) | ((l[(3*x)+1] & 0xFC) << 3) | ((l[(3*x)+2] & 0xF8) >> 3)
-                      for x in range(len(l)//3) ] for l in pngRows ]
-        if byteswap == True:
-            rows565  =[ [(colr >> 8) | ((colr & 0xFF) << 8) for colr in r] for r in rows565 ]
+        rows565 = None
+        if hasAlpha == False:
+            rows565 = [ [ ((l[3*x] & 0xF8) << 8) | ((l[(3*x)+1] & 0xFC) << 3) | ((l[(3*x)+2] & 0xF8) >> 3)
+                          for x in range(len(l)//3) ] for l in pngRows ]
+            if byteswap == True:
+                rows565  =[ [(colr >> 8) | ((colr & 0xFF) << 8) for colr in r] for r in rows565 ]
+        else:
+            print("//HEY ALPHA NOT HANDLED YET")
 
         if rotfactor == 1:
             # rotate 90 deg clockwise: we want
@@ -220,11 +224,10 @@ if __name__ == '__main__':
             #        FC
             # swap width and height
 
-            # *********************************************************************************************************
-            # DO THE ROT CODE HERE
-            # *********************************************************************************************************
-            print("HEY rot1 not supported")
-            sys.exit(1)
+            # >>> l = [ ['a','b','c'],['d','e','f']]
+            # >>> [ [l[i][j] for i in range(len(l)-1,-1,-1)] for j in range(0,len(l[0])) ]
+            # [['d', 'a'], ['e', 'b'], ['f', 'c']]
+            rows565 = [[rows565[i][j] for i in range(len(rows565) - 1, -1, -1)] for j in range(0, len(rows565[0]))]
             (pngHeight,pngWidth) = (pngWidth,pngHeight)
 
         elif rotfactor == 2:
@@ -242,12 +245,10 @@ if __name__ == '__main__':
             # DEF    BE
             #        AD
             # swap width and height
-
-            # *********************************************************************************************************
-            # DO THE ROT CODE HERE
-            # *********************************************************************************************************
-            print("HEY rot3 not supported")
-            sys.exit(1)
+            # >>> l = [ ['a','b','c'],['d','e','f']]
+            # >>> [ [l[i][j] for i in range(0,len(l))] for j in range(len(l[0])-1,-1,-1) ]
+            # [['c', 'f'], ['b', 'e'], ['a', 'd']]
+            rows565 = [ [rows565[i][j] for i in range(0,len(rows565))] for j in range(len(rows565[0])-1,-1,-1) ]
             (pngHeight,pngWidth) = (pngWidth,pngHeight)
 
         # so now can check hasAlpha for when I do that stuff
