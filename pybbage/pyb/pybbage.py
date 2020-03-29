@@ -981,68 +981,92 @@ class PlayFirstLegalCardPlayer(Player):
 #
 # If you say 'Go' when you had a card you could legally play, this is a breach of the rules called a
 # renege. (I will disallow this, have the machine yell)
+# TODO: come up with test cases and how to make this work as unit tests with visibility into what happens
+# inside the play; perhaps play function should return an ordering of how the cards were played, one list
+# of cards per count, also noting who played them, and final scores?
 
 def do_play(dealer,pone):
     play_is_done = False
-    # k so play consists of some number of counts.
-    # TODO THIS LOOKS LIKE IT'S WORKING but need to do the scoring parts
+    # k so play consists of some number of counts. Whoever did not go last in the previous count gets to go
+    # first in a new count.
+    dealer_played_last = True  # bc for first count, pone goes first
     while not play_is_done:
         print("New count -----------------------------------------------------------")
+        print("Pone" if dealer_played_last == True else "Dealer","plays first")
         curcards = []
         player_called_go = -1  # 0 means dealer, 1 means pone, -1 means nobody yet
         count_is_done = False
+
         while not count_is_done:
             # print("play not done infinite loop spotter")
-            # who goes first? The pone shall play the first card face up on the
+            # who goes first? for the first coune: The pone shall play the first card face up on the
             # table, announcing its value.
-            if player_called_go != 1:
-                print(pone.get_name(),"the pone play:")
-                (curcards, curtotal, newscore) = pone.play(curcards)
-                print("curcards now", [cardstring(x) for x in curcards], "curtotal", curtotal)
-                if newscore == -1:
-                    # so: this means "go." if player_called_go is -1, mark that pone has said "go"
-                    if player_called_go == -1:
-                        print("Pone calls go!")
-                        player_called_go = 1
-                    elif player_called_go == 0:
-                        # other player called go and so now we're done with this count
-                        print("Pone played out after dealer said go")
-                        count_is_done = True
-                        # at this point, if pone played any cards and total is not 31, that means pone
-                        # gets the one-for last, yes?
-                        # how do we know pone played any cards? This happens bc they *couldn't*,
-                        # so it would have had to have been last time through, then skip dealer.
-                        # or is it that pone has to have played to get here?
-                        if curtotal != 31:
-                            print(pone.get_name()," the pone pegs 1 for last")
-                            pone.add_score(1)
-                        else:
-                            print("########### Total is 31, nobody gets 1")
-                else:
-                    print("Adding score for pone:", newscore)
-                    pone.add_score(newscore)
-
-            if player_called_go != 0:
-                print(dealer.get_name(),"the dealer play:")
-                (curcards, curtotal, newscore) = dealer.play(curcards)
-                print("curcards now", [cardstring(x) for x in curcards], "curtotal", curtotal)
-                if newscore == -1:
-                    if player_called_go == -1:
-                        print("Dealer calls go!")
-                        player_called_go = 0  # dealer said go
-                    elif player_called_go == 1:
-                        # other player called go and so now we're done with this count
-                        print("Dealer played out after pone said go")
-                        count_is_done = True  # TODO still not right, but.
-                        # SEE ABOVE re: how pone handles one-for-last n stuff
-                        if curtotal != 31:
-                            print(dealer.get_name()," the dealer pegs 1 for last")
-                            dealer.add_score(1)
-                        else:
-                            print("########### Total is 31, nobody gets 1")
-                else:
-                    print("Adding score for dealer:", newscore)
-                    dealer.add_score(newscore)
+            # Subsequent, the player who didn't play last.
+            if dealer_played_last == True:          # dealer played last, so pone plays
+                print("Dealer played last so pone goes")
+                dealer_played_last = False          # let's try setting this in every case?
+                if player_called_go != 1:
+                    print(pone.get_name(),"the pone play:")
+                    (curcards, curtotal, newscore) = pone.play(curcards)
+                    print("curcards now", [cardstring(x) for x in curcards], "curtotal", curtotal)
+                    if newscore == -1:
+                        # so: this means "go." if player_called_go is -1, mark that pone has said "go"
+                        if player_called_go == -1:
+                            print("Pone calls go!")
+                            player_called_go = 1
+                        elif player_called_go == 0:
+                            # other player called go and so now we're done with this count
+                            print("Pone played out after dealer said go")
+                            count_is_done = True
+                            # at this point, if pone played any cards and total is not 31, that means pone
+                            # gets the one-for last, yes?
+                            # how do we know pone played any cards? This happens bc they *couldn't*,
+                            # so it would have had to have been last time through, then skip dealer.
+                            # or is it that pone has to have played to get here?
+                            if curtotal != 31:
+                                print(pone.get_name()," the pone pegs 1 for last")
+                                pone.add_score(1)
+                            else:
+                                print("########### Total is 31, nobody gets 1")
+                            # let's force dealer played last = false here so next count starts with dealer
+                            dealer_played_last = False
+                    else:
+                        # actually played a card, so dealer played last is False
+                        # ok this doesn't stop infinite loops
+                        # dealer_played_last = False
+                        if newscore != 0:
+                            print("Adding score for pone:", newscore)
+                            pone.add_score(newscore)
+            else:       # dealer_played_last == False, so dealer plays
+                print("Pone played last so dealer goes")
+                dealer_played_last = True          # let's try setting this in every case?
+                if player_called_go != 0:
+                    print(dealer.get_name(),"the dealer play:")
+                    (curcards, curtotal, newscore) = dealer.play(curcards)
+                    print("curcards now", [cardstring(x) for x in curcards], "curtotal", curtotal)
+                    if newscore == -1:
+                        if player_called_go == -1:
+                            print("Dealer calls go!")
+                            player_called_go = 0  # dealer said go
+                        elif player_called_go == 1:
+                            # other player called go and so now we're done with this count
+                            print("Dealer played out after pone said go")
+                            count_is_done = True  # TODO still not right, but.
+                            # SEE ABOVE re: how pone handles one-for-last n stuff
+                            if curtotal != 31:
+                                print(dealer.get_name()," the dealer pegs 1 for last")
+                                dealer.add_score(1)
+                            else:
+                                print("########### Total is 31, nobody gets 1")
+                            # let's force dealer played last = true here so next count starts with pone
+                            dealer_played_last = True
+                    else:
+                        # actually played a card, so dealer played last is True
+                        # doesn't stop infinite loops
+                        #dealer_played_last = True
+                        if newscore != 0:
+                            print("Adding score for dealer:", newscore)
+                            dealer.add_score(newscore)
         # ok, hand is done, if nobody has any cards left, play is done
         if len(pone.get_cards()) == 0 and len(dealer.get_cards()) == 0:
             play_is_done = True
@@ -1077,7 +1101,7 @@ if __name__ == "__main__":
     # # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
     #
     # # players don't need a crib for this, I reckon
-    #
+    # # + I do know how to spell "scenario" but I've seen it wrong online so much that the right spelling looks weird
     # print("SENERIO 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     # # Alice the Pone
     # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
@@ -1136,6 +1160,21 @@ if __name__ == "__main__":
     #                                 dealer=True,score=0,name="Alice")
     # do_play(dealer,pone)
     # # WORKY!!!!!!!!!!!!!!!!!!
+    #
+    # print("SENERIO 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # # then try a variant of the first senerio so Alice plays last in 1st count, ensure dealer plays first
+    # # Alice the Pone
+    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','5h','Qd']],
+    #                                 dealer=False,score=0,name="Alice")
+    # # Bob the Dealer
+    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','Qh','Jh']],
+    #                                   dealer=True,score=0,name="Bob")
+    # do_play(dealer,pone)
+    # # WORKY!!!!!!!!!!!!
+    #
+    # # TODO: come up with other cases and how to make this work as unit tests with visibility into what happens
+    # # inside the play; perhaps play function should return an ordering of how the cards were played, one list
+    # # of cards per count, also noting who played them, and final scores?
     #
     # print("TEMP END ===========================================================================")
     # sys.exit(0)
@@ -1207,6 +1246,8 @@ if __name__ == "__main__":
     # Until somebody wins:
     while players[0].get_score() < 121 and players[1].get_score() < 121:
         #     Shuffle
+
+        print("NEW HAND %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
         print("*** Shuffling...")
         deck = shuffle()
