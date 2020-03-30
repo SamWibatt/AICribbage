@@ -984,6 +984,7 @@ class PlayFirstLegalCardPlayer(Player):
 # TODO: come up with test cases and how to make this work as unit tests with visibility into what happens
 # inside the play; perhaps play function should return an ordering of how the cards were played, one list
 # of cards per count, also noting who played them, and final scores?
+# TODO: check for win with each peg, and cut the play short if somebody wins.
 
 def do_play(dealer,pone):
     play_is_done = False
@@ -1090,94 +1091,101 @@ if __name__ == "__main__":
     # end quick random_at_most test
 
     # quick play tests that could turn into unit tests
-    # print ("TEMP PLAY TESTS ===================================================================")
+    print ("TEMP PLAY TESTS ===================================================================")
+
+    # let's enact this, with players that play the first legal card in their hand.
+    # Alice (pone) plays a 4, for a total of 4, and says 'Four.'
+    # Bob plays a 7, for a total of 11, and says 'Eleven'.
+    # Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+    # Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
+    # Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
+    # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
+
+    # The count now goes back to zero, and the play continues. Since Bob played the last card, Alice goes first now.
+
+    # Alice plays a 7, for a total of 7, and says 'Seven'.
+    # Bob plays an 8, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+    # Alice plays a 9, for a total of 24, and says 'Twenty-four for three'. [and pegs 3 points for her run of 7-8-9]
+    # Bob cannot go, as he has run out of cards. He therefore says 'Go', and Alice pegs a point for the go. She also
+    # has run out of cards and so the game proceeds to the next phase.
+    # players don't need a crib for this, I reckon
+    # + I do know how to spell "scenario" but I've seen it wrong online so much that the right spelling looks weird
+    print("SENERIO 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # Alice the Pone
+    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','7h','9d']],
+                                    dealer=False,score=0,name="Alice")
+    # Bob the Dealer
+    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','5h','8c']],
+                                      dealer=True,score=0,name="Bob")
+    do_play(dealer,pone)
+    # YAY that seems to have worked
+
+    print("SENERIO 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # then try a variant where Bob's got a 2 and a 4, so he can play 2 cards after Alice says go, and gets 31
+    # Alice the Pone
+    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
+                                    dealer=False,score=0,name="Alice")
+    # Bob the Dealer
+    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','4h']],
+                                      dealer=True,score=0,name="Bob")
+    do_play(dealer,pone)
+    # WORKY!!!!!!!!!!!!!!!!
+
+    print("SENERIO 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # then try a variant where Bob's got a 2 and a A, so he can play 2 cards after Alice says go, and gets 1 for last
+    # Alice the Pone
+    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
+                                    dealer=False,score=0,name="Alice")
+    # Bob the Dealer
+    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','Ah']],
+                                      dealer=True,score=0,name="Bob")
+    do_play(dealer,pone)
+    # WORKY!!!!!!!!!!!!!!!!
+
+    print("SENERIO 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # Bob (pone) plays a 4, for a total of 4, and says 'Four.'
+    # Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
+    # Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
+    # royal ]
+    # Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+    # Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
+    # Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
+    # 5-4-3-2]]
+    # Bob cannot go without going over 31, and so says 'Go'.
+    # Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
+    # go' is only scored when the scoring player does not make 31. ]
     #
-    # # let's enact this, with players that play the first legal card in their hand.
-    # # Alice (pone) plays a 4, for a total of 4, and says 'Four.'
-    # # Bob plays a 7, for a total of 11, and says 'Eleven'.
-    # # Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
-    # # Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
-    # # Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
-    # # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
+    # The count is now reset, and Bob plays first, as Alice played last.
     #
-    # # players don't need a crib for this, I reckon
-    # # + I do know how to spell "scenario" but I've seen it wrong online so much that the right spelling looks weird
-    # print("SENERIO 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # # Alice the Pone
-    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
-    #                                 dealer=False,score=0,name="Alice")
-    # # Bob the Dealer
-    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','5h','0c']],
-    #                                   dealer=True,score=0,name="Bob")
-    # do_play(dealer,pone)
-    # # YAY that seems to have worked
-    #
-    # print("SENERIO 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # # then try a variant where Bob's got a 2 and a 4, so he can play 2 cards after Alice says go, and gets 31
-    # # Alice the Pone
-    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
-    #                                 dealer=False,score=0,name="Alice")
-    # # Bob the Dealer
-    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','4h']],
-    #                                   dealer=True,score=0,name="Bob")
-    # do_play(dealer,pone)
-    # # WORKY!!!!!!!!!!!!!!!!
-    #
-    # print("SENERIO 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # # then try a variant where Bob's got a 2 and a A, so he can play 2 cards after Alice says go, and gets 1 for last
-    # # Alice the Pone
-    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
-    #                                 dealer=False,score=0,name="Alice")
-    # # Bob the Dealer
-    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','Ah']],
-    #                                   dealer=True,score=0,name="Bob")
-    # do_play(dealer,pone)
-    # # WORKY!!!!!!!!!!!!!!!!
-    #
-    # print("SENERIO 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # # Bob (pone) plays a 4, for a total of 4, and says 'Four.'
-    # # Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
-    # # Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
-    # # royal ]
-    # # Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
-    # # Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
-    # # Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
-    # # 5-4-3-2]]
-    # # Bob cannot go without going over 31, and so says 'Go'.
-    # # Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
-    # # go' is only scored when the scoring player does not make 31. ]
-    # #
-    # # The count is now reset, and Bob plays first, as Alice played last.
-    # #
-    # # Bob plays a Queen, for a total of 10, and says 'Ten.'
-    # # Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
-    #
-    # # Bob the Pone
-    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4h','4d','2c','Qh']],
-    #                                   dealer=False,score=0,name="Bob")
-    # # Alice the Dealer
-    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','3d','5c','9d']],
-    #                                 dealer=True,score=0,name="Alice")
-    # do_play(dealer,pone)
-    # # WORKY!!!!!!!!!!!!!!!!!!
-    #
-    # print("SENERIO 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # # then try a variant of the first senerio so Alice plays last in 1st count, ensure dealer plays first
-    # # Alice the Pone
-    # pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','5h','Qd']],
-    #                                 dealer=False,score=0,name="Alice")
-    # # Bob the Dealer
-    # dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','Qh','Jh']],
-    #                                   dealer=True,score=0,name="Bob")
-    # do_play(dealer,pone)
-    # # WORKY!!!!!!!!!!!!
-    #
-    # # TODO: come up with other cases and how to make this work as unit tests with visibility into what happens
-    # # inside the play; perhaps play function should return an ordering of how the cards were played, one list
-    # # of cards per count, also noting who played them, and final scores?
-    #
-    # print("TEMP END ===========================================================================")
-    # sys.exit(0)
+    # Bob plays a Queen, for a total of 10, and says 'Ten.'
+    # Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
+
+    # Bob the Pone
+    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4h','4d','2c','Qh']],
+                                      dealer=False,score=0,name="Bob")
+    # Alice the Dealer
+    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','3d','5c','9d']],
+                                    dealer=True,score=0,name="Alice")
+    do_play(dealer,pone)
+    # WORKY!!!!!!!!!!!!!!!!!!
+
+    print("SENERIO 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # then try a variant of the first senerio so Alice plays last in 1st count, ensure dealer plays first
+    # Alice the Pone
+    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','5h','Qd']],
+                                    dealer=False,score=0,name="Alice")
+    # Bob the Dealer
+    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','Qh','Jh']],
+                                      dealer=True,score=0,name="Bob")
+    do_play(dealer,pone)
+    # WORKY!!!!!!!!!!!!
+
+    # TODO: come up with other cases and how to make this work as unit tests with visibility into what happens
+    # inside the play; perhaps play function should return an ordering of how the cards were played, one list
+    # of cards per count, also noting who played them, and final scores?
+
+    print("TEMP END ===========================================================================")
+    sys.exit(0)
 
 
     # OK NOW FOR THE REAL THING ======================================================================================
@@ -1198,6 +1206,8 @@ if __name__ == "__main__":
     #print("deck is",deck)
     print("---")
 
+    # TODO: ACC rules say cut for deal of the first game, thereafter the loser of the previous game is dealer.
+    # TODO: am I planning to do multiple game sessions? I guess so
     # Cut for deal
     #     Each player cuts
     #         according to their class's algorithm, human player or computer
@@ -1334,4 +1344,15 @@ if __name__ == "__main__":
         dealer.set_cards([])
         dealer.set_crib([])
 
-        break           # TODO: temp!!!!!!!!!!!!!!!!!
+        # TODO: choose new dealer - per ACC rules, The pack is cut to determine which player will
+        # deal first in the first game of a match; the low card wins the deal. Thereafter the loser of the
+        # previous game deals first.
+        # but that's over games; cribbage corner says deal alternates bt hands, so let's do that.
+        if players[0].is_dealer():
+            pone = players[0]
+            dealer = players[1]
+        else:
+            pone = players[1]
+            dealer = players[0]
+        pone.set_dealer(False)
+        dealer.set_dealer(True)
