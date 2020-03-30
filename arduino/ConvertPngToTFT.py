@@ -24,6 +24,7 @@
 
 import sys
 import png
+import itertools
 
 # int16_t x,y;
 # uint8_t r, g, b;
@@ -54,9 +55,14 @@ if __name__ == '__main__':
     # *********************************************************************************
     rotfactor = 0           # rotation: 0 = none, 1 = 90 deg cl, 2 = 180 deg cl, 3 = 270 deg cl
     byteswap = True         # byteswap of 16 bit 565 pixels for pushColors
+    debugWrite = True       # write a png to make sure rotation and such worked SHOULD BE DEFAULT FALSE
 
     if(len(sys.argv) < 3):
-        print("Usage: ConvertPNGToTFT <input png name> <pixel array name> > <output.inc>")
+        print("Usage: ConvertPNGToTFT [-r0,-r1,-r2,-r3] <input png name> <pixel array name> > <output.inc>")
+        print("-r0 = do not rotate")
+        print("-r1 = rotate 90 degrees clockwise")
+        print("-r2 = rotate 180 degrees clockwise")
+        print("-r3 = rotate 270 degrees clockwise")
         print("  prints C array of the png to stdout in the RGB 565 format")
     else:
         j = 1
@@ -74,7 +80,7 @@ if __name__ == '__main__':
                 rotfactor = 3
                 print("//*** will rotate clockwise 270 degrees")
             # ********************************************************************************************************
-            # PARSE OTHER CMDLINE ARGS HERE like byteswap, compression or whatever
+            # PARSE OTHER CMDLINE ARGS HERE like byteswap, debug, compression or whatever
             # ********************************************************************************************************
             j += 1
 
@@ -250,6 +256,57 @@ if __name__ == '__main__':
             # [['c', 'f'], ['b', 'e'], ['a', 'd']]
             rows565 = [ [rows565[i][j] for i in range(0,len(rows565))] for j in range(len(rows565[0])-1,-1,-1) ]
             (pngHeight,pngWidth) = (pngWidth,pngHeight)
+
+
+        if debugWrite == True:
+            # HERE WRITE DEBUG version of png
+
+            debugPngName = pngFileName.replace('.png','')+"-debug.png"
+            if hasAlpha:
+                print("// ALPHA NOT SUPPORTED YET FOR DEBUG PNG")
+                # DO CONVERSION TO RGBA
+                #png.from_array(pixels, 'RGBA').save(debugPngName)
+            else:
+                # convert to RGB
+                rowsrgb = rows565.copy()
+                if byteswap == True:
+                    #unswap bytes
+                    rowsrgb = [[(colr >> 8) | ((colr & 0xFF) << 8) for colr in r] for r in rowsrgb]
+                # then unpack RGB
+                # pack was this: colr = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3)
+                # so r = topmost 5 bits, shifted down to be top 5 bits of a byte
+                # r = (colr & 0xF800) >> 8
+                # g = next 6 bits so mask off 0000 0111 1110 0000 = 0x7E, shift down 3 to get in top of a byte
+                # g = (colr & 0x07E0) >> 3
+                # b = bottom 5 bits shifted up
+                # b = (colr & 0x001F) << 3
+                # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-list-of-lists
+                # shawn chin's answer, leads to this
+                # >>> r = [ [0xffff, 0x7fff],[0x0400,0x0200]]
+                # >>> r2 = [ [ [c[i] // 2, c[i]//4] for i in range(len(c))] for c in r]
+                # >>> r2
+                # [[[32767, 16383], [16383, 8191]], [[512, 256], [256, 128]]]
+                # >>> merged = [ list(itertools.chain.from_iterable(s)) for s in r2 ]
+                # >>> merged
+                # [[32767, 16383, 16383, 8191], [512, 256, 256, 128]]
+                # so, first let's get a list of r,g,b for each pixel in the row lists
+                # so it'll be [ [packedrgb1, packedrgb2], [packedrgb3, packedrgb4] ] ->
+                # [ [ [r1,g1,b1], [r2, g2, b2] ], [ [ r3, g3, b3 ], [ r4, g4, b4 ] ]
+                # then use the the itertools thing to flatten the rows to
+                # [ [ r1, g1, b1, r2, g2, b2 ], [ r3, g3, b3, r4, g4, b4 ] ]
+                # or can I use itertools to avoid the unflat list in the first place?
+                # itertools is super cool
+                # might be able to use map
+                # beh, gets the same kind of thing and I don't want to spend all day on this
+                rowsrgb = [ [ [ (row[i] & 0xF800) >> 8, (row[i] & 0x07E0) >> 3, (row[i] & 0x001F) << 3 ]
+                              for i in range(len(row)) ] for row in rowsrgb ]
+                # then flatten
+                rowsrgb = [list(itertools.chain.from_iterable(s)) for s in rowsrgb]
+
+                png.from_array(rowsrgb, 'RGB').save(debugPngName)
+            print("//************* Wrote debug PNG:",debugPngName)
+
+
 
         # so now can check hasAlpha for when I do that stuff
         print("const uint32_t {}_w = {};".format(pngArrayName,pngWidth))
