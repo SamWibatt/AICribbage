@@ -326,6 +326,7 @@ def score_shew(hand,starter):
         [[0, 1, 2, 3, 3], "double run of 4", 10]]
 
     found_fivecarder = 0            # flag: if any five-carders found, don't use pairs
+    found_fourcarders = 0
     for fivey in fivecarders:
         if normsranks == fivey[0]:
             found_fivecarder = 1
@@ -337,7 +338,6 @@ def score_shew(hand,starter):
 
     if found_fivecarder == 0:
         # runs! first look for 4s - if there are any, can't be any 3s, yes?
-        found_fourcarders = 0
         # so try the first 4 and last 4 among the normsranks, yes?
         if normsranks[:4] == [0,1,2,3]:
             found_fourcarders = 1
@@ -767,8 +767,14 @@ class Player:
     def set_score(self,points):
         self.score = points
 
+    # add_score is a pegging - if the score goes past 120, force it to 121 (game hole) and return True.
+    # otherwise return False.
     def add_score(self,points):
         self.score += points
+        if self.score > 120:
+            self.score = 121
+            return True
+        return False
 
     def get_score(self):
         return self.score
@@ -853,7 +859,7 @@ class Player:
                 print("playing",cardstring(card),"on",[cardstring(x) for x in curcards])
                 self.cards = self.cards[:i] + self.cards[i + 1:]  # remove card from hand
                 self.used_cards.append(card)        # memorize it so can be restored
-                self.score += curscore;
+                #self.score += curscore;
                 return (newcards,curtotal,curscore)
                 pass
         # if we get here, it's a go, I guess
@@ -884,10 +890,12 @@ class HumanPlayer(Player):
     def __init__(self, cards = [], used_cards = [], crib = [], dealer = False, score = 0, name = "Player"):
         super().__init__(cards, used_cards, crib, dealer, score, name)
 
-    def cut(self,deck):
-        # humqn version!
-        print("*** enter cut!")
-        return cut(deck,get_input(4,len(deck)-4))
+    # TEMP just do random cut like computer
+    # TODO restore this later but cuts are annoying
+    # def cut(self,deck):
+    #     # humqn version!
+    #     print("*** enter cut!")
+    #     return cut(deck,get_input(4,len(deck)-4))
 
 
     def discard(self, otherplayer):
@@ -907,6 +915,38 @@ class HumanPlayer(Player):
                 self.add_crib(card)
             else:
                 otherplayer.add_crib(card)
+
+    # in the play, we get the stack of cards to date
+    # choose a card and play it, if one is legal, returning the new stack of cards and the score for this round
+    # (which also gets added on here.) can be 0. If -1, no legal play was available, and card stack unchanged,
+    # which means "go"
+    # card that gets played, if any, is appended to used_cards so hand can be restored for show.
+    # THIS VERSION SHOULD STAY AS THE DEFAULT, OR AT LEAST BE AVAILABLE THROUGH A PlayFirstLegalPlayer
+    # SUBCLASS, BC THAT WILL MAKE FOR EASY UNIT TESTING!!!!!!!
+    def play(self,curcards):
+        # choose a card for the play, if there is one that works
+        # so scan through and make sure there is a legal play. If not,
+        legalcards = []
+        for i in range(0,len(self.cards)):
+            card = self.cards[i]
+            (newcards,curtotal,curscore) = play_card(curcards,card)
+            if curscore != -1:
+                legalcards.append(card)
+        if legalcards == []:
+            print("No legal card to play! you say go")
+            return (curcards,sum([val(x) for x in curcards]),-1)
+
+        # limit choices to legal cards
+        print("Legal Cards:")
+        for k in range(0, len(legalcards)):
+            print("{}) {}".format(k, cardstring(legalcards[k])))
+        print("Enter a card to play:")
+        cardind = get_input(0,len(legalcards) - 1)
+        card = legalcards[cardind]  # split out the card
+        self.cards = self.cards[:cardind] + self.cards[cardind + 1:]  # remove card from hand
+        self.used_cards.append(card)  # memorize it so can be restored
+        (newcards, curtotal, curscore) = play_card(curcards, card)
+        return (newcards,curtotal,curscore)
 
 # Player for Unit Testing that plays the first card in their hand that is legal.
 class PlayFirstLegalCardPlayer(Player):
@@ -984,8 +1024,8 @@ class PlayFirstLegalCardPlayer(Player):
 # TODO: come up with test cases and how to make this work as unit tests with visibility into what happens
 # inside the play; perhaps play function should return an ordering of how the cards were played, one list
 # of cards per count, also noting who played them, and final scores?
-# TODO: check for win with each peg, and cut the play short if somebody wins.
 
+# return True if somebody won
 def do_play(dealer,pone):
     play_is_done = False
     # k so play consists of some number of counts. Whoever did not go last in the previous count gets to go
@@ -1026,7 +1066,9 @@ def do_play(dealer,pone):
                             # or is it that pone has to have played to get here?
                             if curtotal != 31:
                                 print(pone.get_name()," the pone pegs 1 for last")
-                                pone.add_score(1)
+                                if pone.add_score(1) == True:
+                                    # pone wins!
+                                    return True
                             else:
                                 print("########### Total is 31, nobody gets 1")
                             # let's force dealer played last = false here so next count starts with dealer
@@ -1037,7 +1079,9 @@ def do_play(dealer,pone):
                         # dealer_played_last = False
                         if newscore != 0:
                             print("Adding score for pone:", newscore)
-                            pone.add_score(newscore)
+                            if pone.add_score(newscore) == True:
+                                # pone wins
+                                return True
             else:       # dealer_played_last == False, so dealer plays
                 print("Pone played last so dealer goes")
                 dealer_played_last = True          # let's try setting this in every case?
@@ -1056,7 +1100,9 @@ def do_play(dealer,pone):
                             # SEE ABOVE re: how pone handles one-for-last n stuff
                             if curtotal != 31:
                                 print(dealer.get_name()," the dealer pegs 1 for last")
-                                dealer.add_score(1)
+                                if dealer.add_score(1) == True:
+                                    # dealer wins!
+                                    return True
                             else:
                                 print("########### Total is 31, nobody gets 1")
                             # let's force dealer played last = true here so next count starts with pone
@@ -1067,7 +1113,10 @@ def do_play(dealer,pone):
                         #dealer_played_last = True
                         if newscore != 0:
                             print("Adding score for dealer:", newscore)
-                            dealer.add_score(newscore)
+                            if dealer.add_score(newscore) == True:
+                                # dealer wins
+                                return True
+
         # ok, hand is done, if nobody has any cards left, play is done
         if len(pone.get_cards()) == 0 and len(dealer.get_cards()) == 0:
             play_is_done = True
@@ -1091,101 +1140,103 @@ if __name__ == "__main__":
     # end quick random_at_most test
 
     # quick play tests that could turn into unit tests
-    print ("TEMP PLAY TESTS ===================================================================")
+    do_play_tests = False
+    if do_play_tests:
+        print ("TEMP PLAY TESTS ===================================================================")
 
-    # let's enact this, with players that play the first legal card in their hand.
-    # Alice (pone) plays a 4, for a total of 4, and says 'Four.'
-    # Bob plays a 7, for a total of 11, and says 'Eleven'.
-    # Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
-    # Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
-    # Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
-    # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
+        # let's enact this, with players that play the first legal card in their hand.
+        # Alice (pone) plays a 4, for a total of 4, and says 'Four.'
+        # Bob plays a 7, for a total of 11, and says 'Eleven'.
+        # Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+        # Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
+        # Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
+        # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
 
-    # The count now goes back to zero, and the play continues. Since Bob played the last card, Alice goes first now.
+        # The count now goes back to zero, and the play continues. Since Bob played the last card, Alice goes first now.
 
-    # Alice plays a 7, for a total of 7, and says 'Seven'.
-    # Bob plays an 8, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
-    # Alice plays a 9, for a total of 24, and says 'Twenty-four for three'. [and pegs 3 points for her run of 7-8-9]
-    # Bob cannot go, as he has run out of cards. He therefore says 'Go', and Alice pegs a point for the go. She also
-    # has run out of cards and so the game proceeds to the next phase.
-    # players don't need a crib for this, I reckon
-    # + I do know how to spell "scenario" but I've seen it wrong online so much that the right spelling looks weird
-    print("SENERIO 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # Alice the Pone
-    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','7h','9d']],
-                                    dealer=False,score=0,name="Alice")
-    # Bob the Dealer
-    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','5h','8c']],
-                                      dealer=True,score=0,name="Bob")
-    do_play(dealer,pone)
-    # YAY that seems to have worked
+        # Alice plays a 7, for a total of 7, and says 'Seven'.
+        # Bob plays an 8, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+        # Alice plays a 9, for a total of 24, and says 'Twenty-four for three'. [and pegs 3 points for her run of 7-8-9]
+        # Bob cannot go, as he has run out of cards. He therefore says 'Go', and Alice pegs a point for the go. She also
+        # has run out of cards and so the game proceeds to the next phase.
+        # players don't need a crib for this, I reckon
+        # + I do know how to spell "scenario" but I've seen it wrong online so much that the right spelling looks weird
+        print("SENERIO 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        # Alice the Pone
+        pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','7h','9d']],
+                                        dealer=False,score=0,name="Alice")
+        # Bob the Dealer
+        dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','5h','8c']],
+                                          dealer=True,score=0,name="Bob")
+        do_play(dealer,pone)
+        # YAY that seems to have worked
 
-    print("SENERIO 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # then try a variant where Bob's got a 2 and a 4, so he can play 2 cards after Alice says go, and gets 31
-    # Alice the Pone
-    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
-                                    dealer=False,score=0,name="Alice")
-    # Bob the Dealer
-    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','4h']],
-                                      dealer=True,score=0,name="Bob")
-    do_play(dealer,pone)
-    # WORKY!!!!!!!!!!!!!!!!
+        print("SENERIO 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        # then try a variant where Bob's got a 2 and a 4, so he can play 2 cards after Alice says go, and gets 31
+        # Alice the Pone
+        pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
+                                        dealer=False,score=0,name="Alice")
+        # Bob the Dealer
+        dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','4h']],
+                                          dealer=True,score=0,name="Bob")
+        do_play(dealer,pone)
+        # WORKY!!!!!!!!!!!!!!!!
 
-    print("SENERIO 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # then try a variant where Bob's got a 2 and a A, so he can play 2 cards after Alice says go, and gets 1 for last
-    # Alice the Pone
-    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
-                                    dealer=False,score=0,name="Alice")
-    # Bob the Dealer
-    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','Ah']],
-                                      dealer=True,score=0,name="Bob")
-    do_play(dealer,pone)
-    # WORKY!!!!!!!!!!!!!!!!
+        print("SENERIO 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        # then try a variant where Bob's got a 2 and a A, so he can play 2 cards after Alice says go, and gets 1 for last
+        # Alice the Pone
+        pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','Jh','Qd']],
+                                        dealer=False,score=0,name="Alice")
+        # Bob the Dealer
+        dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','2h','Ah']],
+                                          dealer=True,score=0,name="Bob")
+        do_play(dealer,pone)
+        # WORKY!!!!!!!!!!!!!!!!
 
-    print("SENERIO 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # Bob (pone) plays a 4, for a total of 4, and says 'Four.'
-    # Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
-    # Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
-    # royal ]
-    # Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
-    # Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
-    # Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
-    # 5-4-3-2]]
-    # Bob cannot go without going over 31, and so says 'Go'.
-    # Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
-    # go' is only scored when the scoring player does not make 31. ]
-    #
-    # The count is now reset, and Bob plays first, as Alice played last.
-    #
-    # Bob plays a Queen, for a total of 10, and says 'Ten.'
-    # Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
+        print("SENERIO 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        # Bob (pone) plays a 4, for a total of 4, and says 'Four.'
+        # Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
+        # Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
+        # royal ]
+        # Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+        # Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
+        # Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
+        # 5-4-3-2]]
+        # Bob cannot go without going over 31, and so says 'Go'.
+        # Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
+        # go' is only scored when the scoring player does not make 31. ]
+        #
+        # The count is now reset, and Bob plays first, as Alice played last.
+        #
+        # Bob plays a Queen, for a total of 10, and says 'Ten.'
+        # Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
 
-    # Bob the Pone
-    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4h','4d','2c','Qh']],
-                                      dealer=False,score=0,name="Bob")
-    # Alice the Dealer
-    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','3d','5c','9d']],
-                                    dealer=True,score=0,name="Alice")
-    do_play(dealer,pone)
-    # WORKY!!!!!!!!!!!!!!!!!!
+        # Bob the Pone
+        pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4h','4d','2c','Qh']],
+                                          dealer=False,score=0,name="Bob")
+        # Alice the Dealer
+        dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','3d','5c','9d']],
+                                        dealer=True,score=0,name="Alice")
+        do_play(dealer,pone)
+        # WORKY!!!!!!!!!!!!!!!!!!
 
-    print("SENERIO 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    # then try a variant of the first senerio so Alice plays last in 1st count, ensure dealer plays first
-    # Alice the Pone
-    pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','5h','Qd']],
-                                    dealer=False,score=0,name="Alice")
-    # Bob the Dealer
-    dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','Qh','Jh']],
-                                      dealer=True,score=0,name="Bob")
-    do_play(dealer,pone)
-    # WORKY!!!!!!!!!!!!
+        print("SENERIO 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        # then try a variant of the first senerio so Alice plays last in 1st count, ensure dealer plays first
+        # Alice the Pone
+        pone = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['4c','4d','5h','Qd']],
+                                        dealer=False,score=0,name="Alice")
+        # Bob the Dealer
+        dealer = PlayFirstLegalCardPlayer(cards=[stringcard(x) for x in ['7c','Jd','Qh','Jh']],
+                                          dealer=True,score=0,name="Bob")
+        do_play(dealer,pone)
+        # WORKY!!!!!!!!!!!!
 
-    # TODO: come up with other cases and how to make this work as unit tests with visibility into what happens
-    # inside the play; perhaps play function should return an ordering of how the cards were played, one list
-    # of cards per count, also noting who played them, and final scores?
+        # TODO: come up with other cases and how to make this work as unit tests with visibility into what happens
+        # inside the play; perhaps play function should return an ordering of how the cards were played, one list
+        # of cards per count, also noting who played them, and final scores?
 
-    print("TEMP END ===========================================================================")
-    sys.exit(0)
+        print("TEMP END ===========================================================================")
+        sys.exit(0)
 
 
     # OK NOW FOR THE REAL THING ======================================================================================
@@ -1295,9 +1346,8 @@ if __name__ == "__main__":
         # 2 points to dealer if it's a jack - cut at 34 to get this w/default
         if rank(starter) == rank(stringcard('JH')):
             print("*** Heels! 2 points to dealer!")
-            dealer.add_score(2)
-            if dealer.get_score() >= 121:
-                print("DEALER WINS!!!!!!!!!!!!!!!!!!!")
+            if dealer.add_score(2) == True:
+                # dealer wins
                 break
 
         print("*** now players are like this")
@@ -1317,42 +1367,62 @@ if __name__ == "__main__":
         pone.set_used_cards([])
         dealer.set_cards(dealer.get_used_cards())
         dealer.set_used_cards([])
-        print("*** and then the shew!")
+
+        # looks like the show counts as a single pegging per player, so no need to fiddle with score_shew, I think.
+        # per rules,
+        # When both players have played all their cards,
+        # the pone’s hand is counted and pegged by the
+        # pone (see scoring chart). The dealer then does
+        # the same for the dealer’s hand and then for the
+        # crib.
+
         print("*** pone shew:")
         ponescore = score_shew(pone.get_cards(),starter)
         print("Adding score for pone:",ponescore)
-        pone.add_score(ponescore)
-        # TODO CHECK FOR WIN
+        if pone.add_score(ponescore) == True:
+            # pone wins!
+            break
         print("*** dealer shew:")
         dealerscore = score_shew(dealer.get_cards(),starter)
         print("Adding score for dealer:",dealerscore)
-        dealer.add_score(dealerscore)
-        # TODO CHECK FOR WIN
+        if dealer.add_score(dealerscore) == True:
+            # dealer wins
+            break
         print("*** dealer crib shew:")
         cribscore = score_shew(dealer.get_crib(),starter)
         print("Adding crib score for dealer:",cribscore)
-        dealer.add_score(cribscore)
-        # TODO CHECK FOR WIN
+        if dealer.add_score(cribscore) == True:
+            # dealer wins
+            break
 
-        print("Pone score:",pone.get_score())
-        print("Dealer score:",dealer.get_score())
+        print(pone.get_name(),"score:",pone.get_score())
+        print(dealer.get_name(),"score:",dealer.get_score())
 
-        # clear hands and get ready for another round
-        # swap dealer and pone - or rather, says whoever lost the last hand deals next
-        pone.set_cards([])
+        # if nobody won,
+        if dealer.get_score() < 121 and pone.get_score() < 121:
+            # clear hands and get ready for another round
+            # swap dealer and pone - or rather, says whoever lost the last hand deals next
+            pone.set_cards([])
 
-        dealer.set_cards([])
-        dealer.set_crib([])
+            dealer.set_cards([])
+            dealer.set_crib([])
 
-        # TODO: choose new dealer - per ACC rules, The pack is cut to determine which player will
-        # deal first in the first game of a match; the low card wins the deal. Thereafter the loser of the
-        # previous game deals first.
-        # but that's over games; cribbage corner says deal alternates bt hands, so let's do that.
-        if players[0].is_dealer():
-            pone = players[0]
-            dealer = players[1]
-        else:
-            pone = players[1]
-            dealer = players[0]
-        pone.set_dealer(False)
-        dealer.set_dealer(True)
+            # choose new dealer - per ACC rules, The pack is cut to determine which player will
+            # deal first in the first game of a match; the low card wins the deal. Thereafter the loser of the
+            # previous game deals first.
+            # but that's over games; cribbage corner says deal alternates bt hands, so let's do that.
+            if players[0].is_dealer():
+                pone = players[0]
+                dealer = players[1]
+            else:
+                pone = players[1]
+                dealer = players[0]
+            pone.set_dealer(False)
+            dealer.set_dealer(True)
+
+    # OK, somebody won!
+    print("THE GAME ENDS! ###########################################################################################")
+    if dealer.get_score() > 120:
+        print(dealer.get_name(),"WINS!!!!!!!!!!!!!!!!!!!")
+    else:
+        print(pone.get_name(),"WINS!!!!!!!!!!!!!!!!!!!")
