@@ -70,30 +70,32 @@ SCORE_PAIRROYAL = 13    # 13. pair royal - 6
 SCORE_RUN7 = 14         # 14. run of 7 - 7
 SCORE_DBLRUN3 = 15      # 15. double run of 3 - 8
 SCORE_DBLRUN4 = 16      # 16. double run of 4 - 10
-SCORE_TRIPLERUN = 17    # 17. triple run - 15
-SCORE_DBLDBLRUN = 18    # 18. double double run - 16
+SCORE_4KIND = 17        # 17. 4 of a kind
+SCORE_TRIPLERUN = 18    # 17. triple run - 15
+SCORE_DBLDBLRUN = 19    # 18. double double run - 16
 
 # name and score for each of these
 scoreStringsNPoints = [
-    ("nobs",1),           # SCORE_NOBS = 0
-    ("go",1),    # SCORE_GO = 1
-    ("fifteen",2),   # SCORE_FIFTEEN = 2
-    ("thirty-one",2),   # SCORE_THIRTYONE = 3
-    ("pair",2),      # SCORE_PAIR = 4
-    ("heels",2),     # SCORE_HEELS = 5
-    ("run of 3",3),  # SCORE_RUN3 = 6
-    ("run of 4",4),  # SCORE_RUN4 = 7
-    ("two pair",4),    # SCORE_TWOPAIR = 8
-    ("flush",4),    # SCORE_FLUSH = 9
-    ("run of 5",5),  # SCORE_RUN5 = 10
-    ("5 card flush",5),      # SCORE_FLUSH5 = 11
-    ("run of 6",6),  # SCORE_RUN6 = 12
-    ("pair royal",6),    # SCORE_PAIRROYAL = 13
-    ("run of 7",7),      # SCORE_RUN7 = 14
-    ("double run of 3",8),     # SCORE_DBLRUN3 = 15
-    ("double run of 4",10),  # SCORE_DBLRUN4 = 16
-    ("triple run",15),       # SCORE_TRIPLERUN = 17
-    ("double double run",16)    # SCORE_DBLDBLRUN = 18
+    ("nobs",1),                 # SCORE_NOBS = 0
+    ("go",1),                   # SCORE_GO = 1
+    ("fifteen",2),              # SCORE_FIFTEEN = 2
+    ("thirty-one",2),           # SCORE_THIRTYONE = 3
+    ("pair",2),                 # SCORE_PAIR = 4
+    ("heels",2),                # SCORE_HEELS = 5
+    ("run of 3",3),             # SCORE_RUN3 = 6
+    ("run of 4",4),             # SCORE_RUN4 = 7
+    ("two pair",4),             # SCORE_TWOPAIR = 8
+    ("flush",4),                # SCORE_FLUSH = 9
+    ("run of 5",5),             # SCORE_RUN5 = 10
+    ("5 card flush",5),         # SCORE_FLUSH5 = 11
+    ("run of 6",6),             # SCORE_RUN6 = 12
+    ("pair royal",6),           # SCORE_PAIRROYAL = 13
+    ("run of 7",7),             # SCORE_RUN7 = 14
+    ("double run of 3",8),      # SCORE_DBLRUN3 = 15
+    ("double run of 4",10),     # SCORE_DBLRUN4 = 16
+    ("4 of a kind",12),         # SCORE_4KIND = 17
+    ("triple run",15),          # SCORE_TRIPLERUN = 18
+    ("double double run",16)    # SCORE_DBLDBLRUN = 19
 ]
 
 
