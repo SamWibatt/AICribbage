@@ -49,10 +49,53 @@ import sys
 
 # icky global "next" for random
 from typing import List, Any
-
-global rand_next, random_max
 rand_next = 1
 random_max = 0x7FFFFFFF
+
+# global score list
+SCORE_NOBS = 0          #  0. nobs - 1
+SCORE_GO = 1            #  1. go - 1
+SCORE_FIFTEEN = 2       #  2. fifteen - 2
+SCORE_THIRTYONE = 3     #  3. thirty-one - 2
+SCORE_PAIR = 4          #  4. pair - 2
+SCORE_HEELS = 5         #  5. heels - 2
+SCORE_RUN3 = 6          #  6. run of 3 - 3
+SCORE_RUN4 = 7          #  7. run of 4 - 4
+SCORE_TWOPAIR = 8       #  8. two pair - 4
+SCORE_FLUSH = 9         #  9. flush - 4
+SCORE_RUN5 = 10         # 10. run of 5 - 5
+SCORE_FLUSH5 = 11       # 11. 5 card flush - 5
+SCORE_RUN6 = 12         # 12. run of 6 - 6
+SCORE_PAIRROYAL = 13    # 13. pair royal - 6
+SCORE_RUN7 = 14         # 14. run of 7 - 7
+SCORE_DBLRUN3 = 15      # 15. double run of 3 - 8
+SCORE_DBLRUN4 = 16      # 16. double run of 4 - 10
+SCORE_TRIPLERUN = 17    # 17. triple run - 15
+SCORE_DBLDBLRUN = 18    # 18. double double run - 16
+
+# name and score for each of these
+scoreStringsNPoints = [
+    ("nobs",1),           # SCORE_NOBS = 0
+    ("go",1),    # SCORE_GO = 1
+    ("fifteen",2),   # SCORE_FIFTEEN = 2
+    ("thirty-one",2),   # SCORE_THIRTYONE = 3
+    ("pair",2),      # SCORE_PAIR = 4
+    ("heels",2),     # SCORE_HEELS = 5
+    ("run of 3",3),  # SCORE_RUN3 = 6
+    ("run of 4",4),  # SCORE_RUN4 = 7
+    ("two pair",4),    # SCORE_TWOPAIR = 8
+    ("flush",4),    # SCORE_FLUSH = 9
+    ("run of 5",5),  # SCORE_RUN5 = 10
+    ("5 card flush",5),      # SCORE_FLUSH5 = 11
+    ("run of 6",6),  # SCORE_RUN6 = 12
+    ("pair royal",6),    # SCORE_PAIRROYAL = 13
+    ("run of 7",7),      # SCORE_RUN7 = 14
+    ("double run of 3",8),     # SCORE_DBLRUN3 = 15
+    ("double run of 4",10),  # SCORE_DBLRUN4 = 16
+    ("triple run",15),       # SCORE_TRIPLERUN = 17
+    ("double double run",16)    # SCORE_DBLDBLRUN = 18
+]
+
 
 def do_random(ctx):
     global rand_next
@@ -377,8 +420,12 @@ def score_shew(hand,starter):
                     numpairs +=1
                     if rank(cards[i]) not in pairranks:
                         pairranks.append(rank(cards[i]))
+
+        # TODO this will go away with the score lumps
         curscore += 2 * numpairs
         # if there were pairs, emit participating cards
+        # TODO WE NEED TO BUILD SCORE LUMPS with card indices and then index into score table
+
         for ranky in pairranks:
             for i in range(0,5):
                 if rank(cards[i]) == ranky:
@@ -392,6 +439,9 @@ def score_shew(hand,starter):
                 print("... 3 of a kind",end=' ')
             elif numpairs == 4:
                 # this is kind of gross but w/e
+                # TODO: just add two entries to the score list a 3 of a kind and a pair
+                # although need to figure out which cards participate in each, which was why I did
+                # this clumsy thin gin the first place
                 print("... 3 of a kind and pair",end=' ')
             elif numpairs == 6:
                 print("... 4 of a kind",end=' ')
