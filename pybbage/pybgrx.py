@@ -20,15 +20,34 @@ If Python and Arcade are installed, this example can be run from the command lin
 python -m arcade.examples.sprite_move_keyboard
 """
 
+# then extended with background functionality from
+# https://arcade.academy/examples/sprite_collect_coins_background.html#sprite-collect-coins-background
+
 import arcade
 import os
 
 SPRITE_SCALING = 0.5
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+# original:
+#SCREEN_WIDTH = 800
+#SCREEN_HEIGHT = 600
+
+# changing to use a background image: cribbage board mockup 3, for now.
+# kept in pybgrx_assets/CribbageBoardBackground.png which is 320x240, intended for arduino.
+# hence,
+BG_WIDTH = 320
+BG_HEIGHT = 240
+
+# for shewing on pc, scale up by a factor of 3 in each dimension (later settable)
+# for a total of 960x720, which should fit on my ancient laptop's screen OK.
+# nah let's try 2, 640 x 480
+SCALE_FACTOR = 2
+
+SCREEN_WIDTH = (BG_WIDTH * SCALE_FACTOR)
+SCREEN_HEIGHT = (BG_HEIGHT * SCALE_FACTOR)
 SCREEN_TITLE = "Fifteen Two and The Rest Is Poo"
 
+# for old sprite demo
 MOVEMENT_SPEED = 5
 
 
@@ -69,17 +88,29 @@ class MyGame(arcade.Window):
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
 
+        # from bg image demo
+        # Background image will be stored in this variable
+        self.background = None
+
         # Variables that will hold sprite lists
         self.player_list = None
+        #self.coin_list = None
 
         # Set up the player info
         self.player_sprite = None
+        #self.score = 0
+        #self.score_text = None
 
         # Set the background color
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
         """ Set up the game and initialize the variables. """
+        # Load the background image. Do this in the setup so we don't keep reloading it all the time.
+        # Image from:
+        # http://wallpaper-gallery.net/single/free-background-images/free-background-images-22.html
+        # self.background = arcade.load_texture(":resources:images/backgrounds/abstract_1.jpg")
+        self.background = arcade.load_texture("pybgrx_assets/CribbageBoardBackground.png")      # hopework
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
@@ -97,6 +128,12 @@ class MyGame(arcade.Window):
 
         # This command has to happen before we start drawing
         arcade.start_render()
+
+        # Draw the background texture
+        scale = SCREEN_WIDTH / self.background.width
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
 
         # Draw all the sprites.
         self.player_list.draw()
