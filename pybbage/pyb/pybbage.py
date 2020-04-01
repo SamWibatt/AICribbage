@@ -229,8 +229,16 @@ def cut(deck,index):
 # let's just try scoring a show, damn the data structures for now
 # where hand is a list of 0..51, starter is the up-card 0..51
 # assumed to be correct i.e. no duplicates or illegal values
+# returns (total score for hand, [scoring subsets])
+# where a scoring subset is [[indices of participating cards],score constant]
+# where indices of participating cards are 0..3 for cards in hand, 4 = starter
+# and score constant is from the global score list above, e.g. SCORE_NOBS
+# through SCORE_DBLDBLRUN - which is an index into scoreStringsNPoints that
+# stores the name of the scoring subset e.g. "nobs" and the number of points it's worth.
+
 def score_shew(hand,starter):
     curscore = 0
+    score_subsets = []
 
     # for convenience
     cards = hand + [starter]
@@ -242,14 +250,16 @@ def score_shew(hand,starter):
         for j in range(i+1,5):
             if val(cards[i]) + val(cards[j]) == 15:
                 curscore += 2
-                print(cardstring(cards[i]),cardstring(cards[j]),"... 15 -",curscore)
+                score_subsets.append([[i,j],SCORE_FIFTEEN])
+                #print(cardstring(cards[i]),cardstring(cards[j]),"... 15 -",curscore)
     # all three-card sums (of which there are 5 choose 3 = 10, which = inverse of 5 choose 2, I guess)
     for i in range(0,3):
         for j in range(i+1,4):
             for k in range(j+1,5):
                 if val(cards[i]) + val(cards[j]) + val(cards[k]) == 15:
                     curscore += 2
-                    print(cardstring(cards[i]), cardstring(cards[j]), cardstring(cards[k]), "... 15 -", curscore)
+                    score_subsets.append([[i, j, k], SCORE_FIFTEEN])
+                    #print(cardstring(cards[i]), cardstring(cards[j]), cardstring(cards[k]), "... 15 -", curscore)
     # all four-card sums (of which there are 5 choose 4 = 5)
     for i in range(0,5):
         subcards = [x for x in cards]           # need to make a new copy...??? yup
@@ -257,16 +267,20 @@ def score_shew(hand,starter):
         subcards.remove(cards[i])
         if sum([val(x) for x in subcards]) == 15:
             curscore += 2
-            for cs in [cardstring(x) for x in subcards]:
-                print(cs,end=' ')
-            print("... 15 -",curscore)
+            #for cs in [cardstring(x) for x in subcards]:
+            #    print(cs,end=' ')
+            #print("... 15 -",curscore)
+            partcards = list(range(5))
+            partcards.remove(i)
+            score_subsets.append([partcards, SCORE_FIFTEEN])
 
     # all 5 cards' sum (1 sum)
     if sum([val(x) for x in cards]) == 15:
         curscore += 2
-        for cs in [cardstring(x) for x in cards]:
-            print(cs, end=' ')
-        print("... 15 -", curscore)
+        #for cs in [cardstring(x) for x in cards]:
+        #    print(cs, end=' ')
+        #print("... 15 -", curscore)
+        score_subsets.append([list(range(5)), SCORE_FIFTEEN])
 
     # look for big stuff like double double runs ======================================================================
 
@@ -350,7 +364,11 @@ def score_shew(hand,starter):
     # if there is a run of 4, can there be runs of 3? I don't think so. Only 1 card doesn't participate
 
     # start with sorting the cards, so as to preserve order all throughout
+    # to reckon participating cards, we need to build a parallel list of the
+    # original indices of the cards. That is sortinds.
+    # this is all slow and gross, arduino rewrite will need to be more elegant
     sortcards = sorted(cards)
+    sortinds = [cards.index(x) for x in sortcards]
     sortranks = [rank(x) for x in sortcards]
     normsranks = [x - min(sortranks) for x in sortranks]
     #print("sortcards =",[cardstring(x) for x in sortcards],"sortranks =",sortranks,"normsranks =",normsranks)
@@ -358,28 +376,30 @@ def score_shew(hand,starter):
     # 5-card scores: sequence, name, points. VERIFY SCORING
     # 5-carders preclude any other scores for runs or pairs. 15s, flushes, nobs still ok.
     fivecarders = [
-        [[0, 1, 2, 3, 4], "run of 5", 5],           #  5 = 5*1 per card
-        [[0, 0, 0, 1, 2], "triple run", 15],        # 15 = 3*3 runs + 3*2 pairs
-        [[0, 1, 1, 1, 2], "triple run", 15],
-        [[0, 1, 2, 2, 2], "triple run", 15],
-        [[0, 0, 1, 1, 2], "double double run", 16], # 16 = 4*3 runs + 2*2 pairs
-        [[0, 0, 1, 2, 2], "double double run", 16],
-        [[0, 1, 1, 2, 2], "double double run", 16],
-        [[0, 0, 1, 2, 3], "double run of 4", 10],   # 10 = 2*4 runs + 1*2 pairs
-        [[0, 1, 1, 2, 3], "double run of 4", 10],
-        [[0, 1, 2, 2, 3], "double run of 4", 10],
-        [[0, 1, 2, 3, 3], "double run of 4", 10]]
+        [[0, 1, 2, 3, 4], SCORE_RUN5], #"run of 5", 5],           #  5 = 5*1 per card
+        [[0, 0, 0, 1, 2], SCORE_TRIPLERUN], #"triple run", 15],        # 15 = 3*3 runs + 3*2 pairs
+        [[0, 1, 1, 1, 2], SCORE_TRIPLERUN], #"triple run", 15],
+        [[0, 1, 2, 2, 2], SCORE_TRIPLERUN], #"triple run", 15],
+        [[0, 0, 1, 1, 2], SCORE_DBLDBLRUN], #"double double run", 16], # 16 = 4*3 runs + 2*2 pairs
+        [[0, 0, 1, 2, 2], SCORE_DBLDBLRUN], #"double double run", 16],
+        [[0, 1, 1, 2, 2], SCORE_DBLDBLRUN], #"double double run", 16],
+        [[0, 0, 1, 2, 3], SCORE_DBLRUN4], #"double run of 4", 10],   # 10 = 2*4 runs + 1*2 pairs
+        [[0, 1, 1, 2, 3], SCORE_DBLRUN4], #"double run of 4", 10],
+        [[0, 1, 2, 2, 3], SCORE_DBLRUN4], #"double run of 4", 10],
+        [[0, 1, 2, 3, 3], SCORE_DBLRUN4]] #"double run of 4", 10]]
 
     found_fivecarder = 0            # flag: if any five-carders found, don't use pairs
     found_fourcarders = 0
     for fivey in fivecarders:
         if normsranks == fivey[0]:
             found_fivecarder = 1
-            curscore += fivey[2]
-            for cs in [cardstring(x) for x in cards]:
-                print(cs,end=' ')
-            print("...", fivey[1],"-",curscore)
+            curscore += scoreStringsNPoints[fivey[1]][1]
+            #for cs in [cardstring(x) for x in cards]:
+            #    print(cs,end=' ')
+            #print("...", fivey[1],"-",curscore)
+            score_subsets.append([list(range(5)), fivey[1]])
             break
+
 
     if found_fivecarder == 0:
         # runs! first look for 4s - if there are any, can't be any 3s, yes?
@@ -387,30 +407,36 @@ def score_shew(hand,starter):
         if normsranks[:4] == [0,1,2,3]:
             found_fourcarders = 1
             curscore += 4
-            for i in range(0,4):
-                print(cardstring(sortcards[i]),end=' ')
-            print("... run of 4 -",curscore)
+            #for i in range(0,4):
+            #    print(cardstring(sortcards[i]),end=' ')
+            #print("... run of 4 -",curscore)
+            # so, sortinds[:4] should be the participating cards, yes?
+            score_subsets.append([sortinds[:4],SCORE_RUN4])
         elif normsranks[:4] == [0,0,1,2] or normsranks[:4] == [0,1,1,2] or normsranks[:4] == [0,1,2,2]:
             found_fourcarders = 1
             curscore += 8           # 2*3 + pr
-            for i in range(0,4):
-                print(cardstring(sortcards[i]),end=' ')
-            print("... double run -",curscore)
+            #for i in range(0,4):
+            #    print(cardstring(sortcards[i]),end=' ')
+            #print("... double run -",curscore)
+            score_subsets.append([sortinds[:4],SCORE_DBLRUN3])
         else:
             nranks2 = [x - min(normsranks[1:]) for x in normsranks[1:]]
             #print("normsranks =",normsranks,"nranks2 =",nranks2)
             if nranks2 == [0,1,2,3]:
                 found_fourcarders = 2
                 curscore += 4
-                for i in range(1, 5):
-                    print(cardstring(sortcards[i]), end=' ')
-                print("... run of 4 -", curscore)
+                #for i in range(1, 5):
+                #    print(cardstring(sortcards[i]), end=' ')
+                #print("... run of 4 -", curscore)
+                # so, sortinds[1:] should be the participating cards, yes?
+                score_subsets.append([sortinds[1:], SCORE_RUN4])
             elif nranks2 == [0, 0, 1, 2] or nranks2 == [0, 1, 1, 2] or nranks2 == [0, 1, 2, 2]:
                 found_fourcarders = 2
                 curscore += 8  # 2*3 + pr
-                for i in range(1, 5):
-                    print(cardstring(sortcards[i]), end=' ')
-                print("... double run -", curscore)
+                #for i in range(1, 5):
+                #    print(cardstring(sortcards[i]), end=' ')
+                #print("... double run -", curscore)
+                score_subsets.append([sortinds[1:], SCORE_DBLRUN3])
 
     # Count pairs if no higher-order hand precludes
     if found_fivecarder == 0 and found_fourcarders == 0:
@@ -422,36 +448,52 @@ def score_shew(hand,starter):
                     numpairs +=1
                     if rank(cards[i]) not in pairranks:
                         pairranks.append(rank(cards[i]))
-
-        # TODO this will go away with the score lumps
         curscore += 2 * numpairs
         # if there were pairs, emit participating cards
-        # TODO WE NEED TO BUILD SCORE LUMPS with card indices and then index into score table
-
+        # prpartcards will be a list of lists
+        # each inner list i is the card indices whose rank is pairranks[i]
+        prpartcards = []
         for ranky in pairranks:
+            partcards = []
             for i in range(0,5):
                 if rank(cards[i]) == ranky:
-                    print(cardstring(cards[i]),end=' ')
+                    partcards.append(i)
+                    #print(cardstring(cards[i]),end=' ')
+            prpartcards.append(partcards)
+
+        # then for every case except 2 and 4, there is only one pair rank so just
+        # use prpartcards[0] as the participating card list.
         if numpairs > 0:
             if numpairs == 1:
-                print("... pair",end=' ')
+                #print("... pair",end=' ')
+                score_subsets.append([prpartcards[0], SCORE_PAIR])
             elif numpairs == 2:
-                print("... two pair",end=' ')
+                #print("... two pair",end=' ')
+                # really just two pairs. Is score_twopair a thing?
+                # yeah, let's do this:
+                score_subsets.append([prpartcards[0]+prpartcards[1], SCORE_TWOPAIR])
             elif numpairs == 3:
-                print("... 3 of a kind",end=' ')
+                #print("... 3 of a kind",end=' ')
+                score_subsets.append([prpartcards[0], SCORE_PAIRROYAL])
             elif numpairs == 4:
                 # this is kind of gross but w/e
-                # TODO: just add two entries to the score list a 3 of a kind and a pair
-                # although need to figure out which cards participate in each, which was why I did
-                # this clumsy thin gin the first place
-                print("... 3 of a kind and pair",end=' ')
+                # just add two entries to the score list a 3 of a kind and a pair
+                #print("... 3 of a kind and pair",end=' ')
+                if(len(prpartcards[0])==2):
+                    score_subsets.append([prpartcards[0], SCORE_PAIR])
+                    score_subsets.append([prpartcards[1], SCORE_PAIRROYAL])
+                else:
+                    score_subsets.append([prpartcards[1], SCORE_PAIR])
+                    score_subsets.append([prpartcards[0], SCORE_PAIRROYAL])
             elif numpairs == 6:
-                print("... 4 of a kind",end=' ')
-            print("-",curscore)
+                #print("... 4 of a kind",end=' ')
+                score_subsets.append([prpartcards[0], SCORE_4KIND])
+            #print("-",curscore)
             #print("Found",numpairs,"pairs")  # debug do we need?
 
         # so if found_fourcarders = 1, the first 4 were a run, so the last card can be in other scores?
         # if it's 2, the last 4 were, so first card can be in other scores? Does it matter?
+        # TODO VERIFY THAT
         if found_fourcarders == 0:
             # nicked from the fifteens:
             for i in range(0, 3):
@@ -462,8 +504,9 @@ def score_shew(hand,starter):
                         nsrnks = [x-min(nsrnks) for x in nsrnks]
                         if nsrnks == [0,1,2]:
                             curscore += 3
-                            print(cardstring(cards[i]),cardstring(cards[j]),cardstring(cards[k]),"... run of 3 -",
-                                  curscore)
+                            #print(cardstring(cards[i]),cardstring(cards[j]),cardstring(cards[k]),"... run of 3 -",
+                            #      curscore)
+                            score_subsets.append([[i,j,k], SCORE_RUN3])
 
     # flushes =========================================================================================================
     # not quite clear on this - from the rules
@@ -476,29 +519,49 @@ def score_shew(hand,starter):
     if suit(hand[0]) == suit(hand[1]) and suit(hand[1]) == suit(hand[2]) and suit(hand[2]) == suit(hand[3]):
         if suit(hand[3]) == suit(starter):
             curscore += 5
-            for cs in [cardstring(x) for x in cards]:
-                print(cs,end=' ')
-            print("... 5 card flush -",curscore)
+            #for cs in [cardstring(x) for x in cards]:
+            #    print(cs,end=' ')
+            #print("... 5 card flush -",curscore)
+            score_subsets.append([list(range(5)),SCORE_FLUSH5])
         else:
             curscore += 4
-            for cs in [cardstring(x) for x in hand]:
-                print(cs,end=' ')
-            print("... 4 card flush -",curscore)
+            #for cs in [cardstring(x) for x in hand]:
+            #    print(cs,end=' ')
+            #print("... 4 card flush -",curscore)
+            score_subsets.append([list(range(4)),SCORE_FLUSH])
 
     # and finally, nobs ===============================================================================================
     for i in range(0,4):
        if rank(hand[i]) == 10 and suit(hand[i]) == suit(starter):
             curscore += 1
-            print(cardstring(hand[i]), cardstring(starter),"... nobs -", curscore)
+            #print(cardstring(hand[i]), cardstring(starter),"... nobs -", curscore)
+            score_subsets.append([[i],SCORE_NOBS])
             break
 
     # finally, at long last, return score - but if it's 0, say nineteen bc that's all clever
-    if curscore == 0:
-        for cs in [cardstring(x) for x in cards]:
-            print(cs,end=' ')
-        print("... NINETEEN!")
+    #if curscore == 0:
+    #    for cs in [cardstring(x) for x in cards]:
+    #        print(cs,end=' ')
+    #    print("... NINETEEN!")
 
-    return curscore
+    return (curscore,score_subsets)
+
+# render_score_subsets prints a list of score subsets produced by score_shew
+# from the same hand and starter. Purely cosmetic, and in graphical versions
+# will instead highlight the cards and do some song and dance with the values
+# or some such.
+def render_score_subsets(hand,starter,subsets):
+    # card indices in a score subset are 0..3 for those in hand, 4 for starter
+    cards = hand + [starter]
+
+    curscore = 0
+    for subset in subsets:
+        (partcards,scoreindex) = subset
+        # accumulate points
+        curscore += scoreStringsNPoints[scoreindex][1]
+        for i in partcards:
+            print(cardstring(cards[i]),end=' ')
+        print("...",scoreStringsNPoints[scoreindex][0],"-",curscore)
 
 
 # SCORING THE PLAY / COUNT ============================================================================================
@@ -1429,19 +1492,22 @@ if __name__ == "__main__":
         # crib.
 
         print("*** pone shew:")
-        ponescore = score_shew(pone.get_cards(),starter)
+        (ponescore,scoresubs) = score_shew(pone.get_cards(),starter)
+        render_score_subsets(pone.get_cards(),starter,scoresubs)
         print("Adding score for pone:",ponescore)
         if pone.add_score(ponescore) == True:
             # pone wins!
             break
         print("*** dealer shew:")
-        dealerscore = score_shew(dealer.get_cards(),starter)
+        (dealerscore,dealersubs) = score_shew(dealer.get_cards(),starter)
+        render_score_subsets(dealer.get_cards(),starter,dealersubs)
         print("Adding score for dealer:",dealerscore)
         if dealer.add_score(dealerscore) == True:
             # dealer wins
             break
         print("*** dealer crib shew:")
-        cribscore = score_shew(dealer.get_crib(),starter)
+        (cribscore,cribsubs) = score_shew(dealer.get_crib(),starter)
+        render_score_subsets(dealer.get_crib(),starter,cribsubs)
         print("Adding crib score for dealer:",cribscore)
         if dealer.add_score(cribscore) == True:
             # dealer wins

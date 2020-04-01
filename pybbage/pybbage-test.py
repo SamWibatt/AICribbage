@@ -55,7 +55,8 @@ class ShowTest000_Nothing(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Qh', '0c', '9s', '3d']]
         starter = pyb.stringcard('4d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,0)
 
 # fifteens - two card, have a couple
@@ -66,7 +67,8 @@ class ShowTest010_2CardFifteen(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Qh', '0c', '9s', '3d']]
         starter = pyb.stringcard('5d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,4)
 
 # 3 card 15
@@ -77,7 +79,8 @@ class ShowTest020_3CardFifteen(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['6h', '3c', '7s', '0d']]
         starter = pyb.stringcard('2d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,4)
 
 # 4 card 15
@@ -88,9 +91,9 @@ class ShowTest030_4CardFifteen(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Ah', '4c', '3s', '7d']]
         starter = pyb.stringcard('6d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,2)
-        pass
 
 # 5 card 15
 class ShowTest040_5CardFifteen(unittest.TestCase):
@@ -100,9 +103,9 @@ class ShowTest040_5CardFifteen(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Ah', '4c', '3s', '5d']]
         starter = pyb.stringcard('2d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,7)
-        pass
 
 # pair
 class ShowTest050_1Pair(unittest.TestCase):
@@ -112,7 +115,8 @@ class ShowTest050_1Pair(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Ah', '2c', '6s', '0d']]
         starter = pyb.stringcard('Ad')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,2)
 
 # 2 pair
@@ -123,7 +127,8 @@ class ShowTest060_2Pair(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Ah', '0c', '6s', '0d']]
         starter = pyb.stringcard('Ad')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,4)
 
 # 3 of a kind
@@ -134,7 +139,8 @@ class ShowTest070_3Pair(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Ah', 'Ac', '6s', '0d']]
         starter = pyb.stringcard('Ad')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,6)
 
 # 3 of a kind and pair
@@ -145,7 +151,8 @@ class ShowTest080_3PairAndPair(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Ah', 'Ac', '4s', '4d']]
         starter = pyb.stringcard('Ad')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,8)
 
 # 4 of a kind
@@ -156,7 +163,8 @@ class ShowTest090_4PairOfAKind(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['4c', 'Ac', '4s', '4h']]
         starter = pyb.stringcard('4d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,12)
 
 # run of 3
@@ -167,7 +175,8 @@ class ShowTest100_RunOf3(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['8c', '9c', '0s', 'Qh']]
         starter = pyb.stringcard('Kd')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,3)
 
 # run of 4, bottom (i.e., the odd card out is the highest ranked)
@@ -178,7 +187,8 @@ class ShowTest110_RunOf4Low(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['ac', '3c', '4s', 'Qh']]
         starter = pyb.stringcard('2d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,8)
 
 # run of 4, top (i.e., odd card out is lowest ranked)
@@ -189,7 +199,8 @@ class ShowTest120_RunOf4High(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['0c', 'jc', 'ks', 'Qh']]
         starter = pyb.stringcard('2d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,4)
 
 # run of 5
@@ -200,7 +211,8 @@ class ShowTest130_RunOf5(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['9c', 'kc', 'js', 'Qh']]
         starter = pyb.stringcard('0d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,5)
 
 # double run (3)
@@ -211,7 +223,8 @@ class ShowTest140_RunOf3Dbl(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['8c', '0c', '9s', 'Qh']]
         starter = pyb.stringcard('0d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,8)
 
 # double run (4)
@@ -222,7 +235,8 @@ class ShowTest150_RunOf4Dbl(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['8c', '0c', '9s', 'jh']]
         starter = pyb.stringcard('0d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,10)
 
 # double double run
@@ -233,7 +247,8 @@ class ShowTest160_RunOf3DblDbl(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['8c', '0c', '9s', '9h']]
         starter = pyb.stringcard('0d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,16)
 
 # triple run
@@ -244,7 +259,8 @@ class ShowTest170_RunOf3Triple(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['6h', '6c', '5s', '6d']]
         starter = pyb.stringcard('7c')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,15)
 
 # 4 card flush
@@ -255,7 +271,8 @@ class ShowTest180_4CardFlush(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['4c', '3c', 'jc', '7c']]
         starter = pyb.stringcard('9h')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,4)
 
 # 5 card flush
@@ -266,7 +283,8 @@ class ShowTest190_5CardFlush(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['4c', '3c', 'qc', '7c']]
         starter = pyb.stringcard('9c')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,5)
 
 # not 4 card flush bc the 4 incl starter
@@ -277,7 +295,8 @@ class ShowTest200_Not4CardFlush(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['4c', '3c', 'kc', '7h']]
         starter = pyb.stringcard('9c')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,0)
 
 # nobs
@@ -288,7 +307,8 @@ class ShowTest210_Nobs(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['Qh', 'Jd', '9s', '3d']]
         starter = pyb.stringcard('4d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,1)
 
 # 29
@@ -299,7 +319,8 @@ class ShowTest220_Z29(unittest.TestCase):
         hand = [pyb.stringcard(x) for x in ['5c', '5d', 'jh', '5s']]
         starter = pyb.stringcard('5h')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter))
-        score = pyb.score_shew(hand,starter)
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG
         self.assertEqual(score,29)
 
 # illegal cases - ?
