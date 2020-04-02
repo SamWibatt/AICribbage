@@ -25,6 +25,7 @@ python -m arcade.examples.sprite_move_keyboard
 
 import arcade
 import os
+import pyglet.gl as gl
 
 
 # original:
@@ -48,6 +49,12 @@ SCREEN_TITLE = "Fifteen Two and The Rest Is Poo"
 
 SPRITE_SCALING = 1.0 * SCALE_FACTOR
 
+# for screen arrangement, in pixels.
+CARD_SHOW_LEFT_MARGIN = (22 * SCALE_FACTOR)
+CARD_SHOW_INTERCARD_MARGIN = (3 * SCALE_FACTOR)
+CARD_WIDTH = (41 * SCALE_FACTOR)                # hm
+# need to figure out how to handle arcade's backwards y coordinates - yeah, I SAID IT
+CARD_SHOW_BOTTOM_MARGIN = (38 * SCALE_FACTOR)
 
 # for old sprite demo
 MOVEMENT_SPEED = 5
@@ -71,6 +78,13 @@ class Player(arcade.Sprite):
         elif self.top > SCREEN_HEIGHT - 1:
             self.top = SCREEN_HEIGHT - 1
 
+# for cards - stub for the moment
+# TODO: add stuff for highlight, whatever else a card needs to have
+class Card(arcade.Sprite):
+
+    # currently not much needs to be done
+    def update(self):
+        pass
 
 class MyGame(arcade.Window):
     """
@@ -128,6 +142,20 @@ class MyGame(arcade.Window):
         #self.player_sprite.center_y = 50
         self.player_list.append(self.player_sprite)
 
+        # then let's make some stationary card sprites for where I think they might be in the real game
+        # normal list of them to be able to access each and change things - do we need it?
+        self.card_list = arcade.SpriteList(is_static = True)
+        self.card_sprites = []
+        # so let's do 4 cards and a starter, say, and see what we get trying to use pixels
+        # just take a swing, say 22 pixels in
+        for j in range(4):
+            # TODO get all the card images made into sprites - but for mockups, kinghorts
+            newcard = Card("pybgrx_assets/KingHorts.png", SPRITE_SCALING)
+            newcard.left = CARD_SHOW_LEFT_MARGIN + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
+            newcard.bottom = CARD_SHOW_BOTTOM_MARGIN
+            self.card_sprites.append(newcard)
+            self.card_list.append(newcard)
+
     def on_draw(self):
         """
         Render the screen.
@@ -137,13 +165,20 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         # Draw the background texture
+        # TODO find out if there's a way to do this unsmoothed
         scale = SCREEN_WIDTH / self.background.width
         arcade.draw_lrwh_rectangle_textured(0, 0,
                                             SCREEN_WIDTH, SCREEN_HEIGHT,
                                             self.background)
 
-        # Draw all the sprites.
-        self.player_list.draw()
+        # Draw all the sprites. Let's try a filter of gl.GL_NEAREST to avoid smoothing.
+        # for which you need pyglet.gl imported as gl
+        # card_list
+        self.card_list.draw(filter = gl.GL_NEAREST)
+
+        # player_list
+        self.player_list.draw(filter = gl.GL_NEAREST)
+
 
     def on_update(self, delta_time):
         """ Movement and game logic """
