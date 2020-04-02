@@ -58,6 +58,7 @@ CARD_SHOW_BOTTOM_MARGIN = (38 * SCALE_FACTOR)
 
 # for putting the starter in the middle of the serpentine board
 # weird, should be 96 for bottom, not sure what's up bc the other stuff has
+# oh doy it's bc I measured it from the top in Gimp, and had measured bottom margin for show from the bottom.
 CARD_STARTER_BOTTOM = (144 * SCALE_FACTOR)
 CARD_STARTER_LEFT = (138 * SCALE_FACTOR)
 
