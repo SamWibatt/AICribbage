@@ -26,7 +26,6 @@ python -m arcade.examples.sprite_move_keyboard
 import arcade
 import os
 
-SPRITE_SCALING = 0.5
 
 # original:
 #SCREEN_WIDTH = 800
@@ -47,6 +46,9 @@ SCREEN_WIDTH = (BG_WIDTH * SCALE_FACTOR)
 SCREEN_HEIGHT = (BG_HEIGHT * SCALE_FACTOR)
 SCREEN_TITLE = "Fifteen Two and The Rest Is Poo"
 
+SPRITE_SCALING = 1.0 * SCALE_FACTOR
+
+
 # for old sprite demo
 MOVEMENT_SPEED = 5
 
@@ -54,8 +56,10 @@ MOVEMENT_SPEED = 5
 class Player(arcade.Sprite):
 
     def update(self):
-        self.center_x += self.change_x
-        self.center_y += self.change_y
+        self.left += self.change_x
+        self.top += self.change_y
+        #self.center_x += self.change_x
+        #self.center_y += self.change_y
 
         if self.left < 0:
             self.left = 0
@@ -115,10 +119,13 @@ class MyGame(arcade.Window):
         # Sprite lists
         self.player_list = arcade.SpriteList()
 
-        # Set up the player
-        self.player_sprite = Player(":resources:images/animated_characters/female_person/femalePerson_idle.png", SPRITE_SCALING)
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
+        # Set up the player - let's try a king of hearts
+        self.player_sprite = Player("pybgrx_assets/KingHorts.png", SPRITE_SCALING)
+        # let us reckon from left and top
+        self.player_sprite.left = 0
+        self.player_sprite.top = self.player_sprite.height
+        #self.player_sprite.center_x = 50
+        #self.player_sprite.center_y = 50
         self.player_list.append(self.player_sprite)
 
     def on_draw(self):
