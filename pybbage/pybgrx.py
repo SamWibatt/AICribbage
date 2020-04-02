@@ -56,6 +56,11 @@ CARD_WIDTH = (41 * SCALE_FACTOR)                # hm
 # need to figure out how to handle arcade's backwards y coordinates - yeah, I SAID IT
 CARD_SHOW_BOTTOM_MARGIN = (38 * SCALE_FACTOR)
 
+# for putting the starter in the middle of the serpentine board
+# weird, should be 96 for bottom, not sure what's up bc the other stuff has
+CARD_STARTER_BOTTOM = (144 * SCALE_FACTOR)
+CARD_STARTER_LEFT = (138 * SCALE_FACTOR)
+
 # for old sprite demo
 MOVEMENT_SPEED = 5
 
@@ -155,6 +160,13 @@ class MyGame(arcade.Window):
             newcard.bottom = CARD_SHOW_BOTTOM_MARGIN
             self.card_sprites.append(newcard)
             self.card_list.append(newcard)
+        # then the starter card
+        newcard = Card("pybgrx_assets/KingHorts.png", SPRITE_SCALING)
+        newcard.left = CARD_STARTER_LEFT
+        newcard.bottom = CARD_STARTER_BOTTOM
+        self.card_sprites.append(newcard)
+        self.card_list.append(newcard)
+
 
     def on_draw(self):
         """
