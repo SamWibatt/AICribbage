@@ -45,7 +45,7 @@ SCALE_FACTOR = 2
 
 SCREEN_WIDTH = (BG_WIDTH * SCALE_FACTOR)
 SCREEN_HEIGHT = (BG_HEIGHT * SCALE_FACTOR)
-SCREEN_TITLE = "Fifteen Two and The Rest Is Poo"
+SCREEN_TITLE = "Hello and welcome to PYBBAGE"
 
 SPRITE_SCALING = 1.0 * SCALE_FACTOR
 
@@ -85,6 +85,14 @@ class Player(arcade.Sprite):
 # for cards - stub for the moment
 # TODO: add stuff for highlight, whatever else a card needs to have
 class Card(arcade.Sprite):
+
+    # currently not much needs to be done
+    def update(self):
+        pass
+
+# for pegs - stub for the moment
+# TODO: add stuff for whatever else a peg needs to have
+class Peg(arcade.Sprite):
 
     # currently not much needs to be done
     def update(self):
@@ -154,15 +162,37 @@ class MyGame(arcade.Window):
         #self.player_sprite.center_y = 50
         self.player_list.append(self.player_sprite)
 
+        # then some peg sprites!
+        peg_textures = arcade.load_spritesheet("pybgrx_assets/Pegs.png",sprite_width=9,sprite_height=9,
+                                                columns=8,count=8)
+        self.peg_list = arcade.SpriteList()
+        self.peg_sprites = []       # for keeping track of each player's front and back peg
+        peg_colors = [1,7]          # hardcoded orange and pink
+        peg_positions = [[[182,141],[121, 141]],[[207,125],[45,125]]]
+        for plnum in range(0,2):          # each player's pegs = list of 2 sprites, peg_sprites = list of those lists
+            self.peg_sprites.append([])
+            # argh we need a dummy peg to load for this until I figure out how to get None filename constructed
+            # sprites to work, which might be never, bc this is a prototype
+            # two pegs per player
+            for j in range(0,2):
+                newpeg = Peg("pybgrx_assets/GreenPeg.png",scale=SPRITE_SCALING)
+                newpeg.append_texture(peg_textures[peg_colors[plnum]])  # swh
+                newpeg.set_texture(1)
+                newpeg.left = peg_positions[plnum][j][0] * SCALE_FACTOR
+                newpeg.bottom = peg_positions[plnum][j][1] * SCALE_FACTOR
+                self.peg_sprites[plnum].append(newpeg)
+                self.peg_list.append(newpeg)
+
         # then let's make some stationary card sprites for where I think they might be in the real game
         # normal list of them to be able to access each and change things - do we need it?
         self.card_list = arcade.SpriteList(is_static = True)
         self.card_sprites = []
         # so let's do 4 cards and a starter, say, and see what we get trying to use pixels
         # just take a swing, say 22 pixels in
+        # TEMP TEST for 29 hand
         cards = [4,43,30,23,17]  # = 5 of horts, 5s, 5c, Jd, 5d
         for j in range(4):
-            # this is a kludge, maybe load a card back sprite to set the image size, then use texture
+            # this is a kludge, load a card back sprite to set the image size, then use texture
             newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
             newcard.append_texture(card_textures[cards[j]])  # swh
             newcard.set_texture(1)
@@ -203,6 +233,9 @@ class MyGame(arcade.Window):
         # debug
         #for card in self.card_list.sprite_list:
         #    card.draw_hit_box(color = arcade.YELLOW)
+
+        # then pegs
+        self.peg_list.draw(filter = gl.GL_NEAREST)
 
         # player_list
         self.player_list.draw(filter = gl.GL_NEAREST)
