@@ -4,7 +4,12 @@
     <option name="GROUP_BY_SEVERITY" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2428a544-b4ca-425e-a062-d816a5c7fdf4" name="Default Changelist" comment="" />
+    <list default="true" id="2428a544-b4ca-425e-a062-d816a5c7fdf4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx_assets/CribbageBoardBackground.png" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx_assets/CribbageBoardBackground.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx_assets/KingHorts.png" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -148,9 +153,9 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="0" y="27" width="581" height="741" key="find.popup/35.27.1331.741@35.27.1331.741" timestamp="1584570258400" />
-    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1585628753627">
+    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1585882141477">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup/35.27.1331.741@35.27.1331.741" timestamp="1585628753627" />
+    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup/35.27.1331.741@35.27.1331.741" timestamp="1585882141477" />
   </component>
 </project>

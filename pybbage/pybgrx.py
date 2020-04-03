@@ -50,18 +50,15 @@ SCREEN_TITLE = "Fifteen Two and The Rest Is Poo"
 SPRITE_SCALING = 1.0 * SCALE_FACTOR
 
 # for screen arrangement, in pixels.
-CARD_SHOW_LEFT_MARGIN = (22 * SCALE_FACTOR)
+CARD_SHOW_LEFT_MARGIN = (21 * SCALE_FACTOR)
 CARD_SHOW_INTERCARD_MARGIN = (3 * SCALE_FACTOR)
 CARD_WIDTH = (41 * SCALE_FACTOR)                # hm
 # need to figure out how to handle arcade's backwards y coordinates - yeah, I SAID IT
-CARD_SHOW_BOTTOM_MARGIN = (38 * SCALE_FACTOR)
+CARD_SHOW_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 
-# for putting the starter in the middle of the serpentine board
-# weird, should be 96 for bottom, not sure what's up bc the other stuff has
-# oh doy it's bc I measured it from the top in Gimp, and had measured bottom margin for show from the bottom.
-# and arcade does that backward YEAH I SAID IT reckoning of Y
-CARD_STARTER_BOTTOM = (144 * SCALE_FACTOR)
-CARD_STARTER_LEFT = (138 * SCALE_FACTOR)
+# for putting the starter to the right of the board
+CARD_STARTER_BOTTOM = (153 * SCALE_FACTOR)
+CARD_STARTER_LEFT = (265 * SCALE_FACTOR)
 
 # for old sprite demo
 MOVEMENT_SPEED = 5
@@ -141,7 +138,15 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
 
         # Set up the player - let's try a king of hearts
-        self.player_sprite = Player("pybgrx_assets/KingHorts.png", SPRITE_SCALING)
+        # would this work for loading the whole set of them?
+        # https://arcade.academy/_modules/arcade/texture.html#load_spritesheet
+        # was self.player_sprite = Player("pybgrx_assets/CardBack.png", SPRITE_SCALING)
+        # arcade.load_spritesheet(file_name: str, sprite_width: int, sprite_height: int, columns: int, count: int)
+        # → List[source]
+        # it totally works!
+        card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=41,sprite_height=64,
+                                                columns=13,count=52)
+        self.player_sprite = Player("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
         # let us reckon from left and top
         self.player_sprite.left = 0
         self.player_sprite.top = self.player_sprite.height
@@ -155,15 +160,20 @@ class MyGame(arcade.Window):
         self.card_sprites = []
         # so let's do 4 cards and a starter, say, and see what we get trying to use pixels
         # just take a swing, say 22 pixels in
+        cards = [4,43,30,23,17]  # = 5 of horts, 5s, 5c, Jd, 5d
         for j in range(4):
-            # TODO get all the card images made into sprites - but for mockups, kinghorts
-            newcard = Card("pybgrx_assets/KingHorts.png", SPRITE_SCALING)
+            # this is a kludge, maybe load a card back sprite to set the image size, then use texture
+            newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
+            newcard.append_texture(card_textures[cards[j]])  # swh
+            newcard.set_texture(1)
             newcard.left = CARD_SHOW_LEFT_MARGIN + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
             newcard.bottom = CARD_SHOW_BOTTOM_MARGIN
             self.card_sprites.append(newcard)
             self.card_list.append(newcard)
         # then the starter card
-        newcard = Card("pybgrx_assets/KingHorts.png", SPRITE_SCALING)
+        newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
+        newcard.append_texture(card_textures[cards[4]])  # swh
+        newcard.set_texture(1)
         newcard.left = CARD_STARTER_LEFT
         newcard.bottom = CARD_STARTER_BOTTOM
         self.card_sprites.append(newcard)
@@ -184,11 +194,15 @@ class MyGame(arcade.Window):
         arcade.draw_lrwh_rectangle_textured(0, 0,
                                             SCREEN_WIDTH, SCREEN_HEIGHT,
                                             self.background)
+        #dunt work - ,filter = gl.GL_NEAREST)
 
         # Draw all the sprites. Let's try a filter of gl.GL_NEAREST to avoid smoothing.
         # for which you need pyglet.gl imported as gl
         # card_list
         self.card_list.draw(filter = gl.GL_NEAREST)
+        # debug
+        #for card in self.card_list.sprite_list:
+        #    card.draw_hit_box(color = arcade.YELLOW)
 
         # player_list
         self.player_list.draw(filter = gl.GL_NEAREST)
