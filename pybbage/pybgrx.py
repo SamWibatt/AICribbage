@@ -58,6 +58,9 @@ CARD_WIDTH = (41 * SCALE_FACTOR)                # hm
 # need to figure out how to handle arcade's backwards y coordinates - yeah, I SAID IT
 CARD_SHOW_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 
+# highlight offset from card left/bottom
+HIGHLIGHT_WIDTH = (3*SCALE_FACTOR)
+
 # for putting the starter to the right of the board
 CARD_STARTER_BOTTOM = (153 * SCALE_FACTOR)
 CARD_STARTER_LEFT = (265 * SCALE_FACTOR)
@@ -235,6 +238,14 @@ class Card(arcade.Sprite):
     def update(self):
         pass
 
+# for highlighs - stub for the moment
+# TODO: add stuff for enabled whatever else a highlight needs to have
+class Highlight(arcade.Sprite):
+
+    # currently not much needs to be done
+    def update(self):
+        pass
+
 # for pegs - stub for the moment
 # TODO: add stuff for whatever else a peg needs to have
 class Peg(arcade.Sprite):
@@ -301,7 +312,7 @@ class MyGame(arcade.Window):
         # then make a highlight
         card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=41,sprite_height=64,
                                                 columns=13,count=52)
-        self.player_sprite = Player("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
+        self.player_sprite = Player("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
         self.player_sprite.left = 18 * SCALE_FACTOR
         self.player_sprite.bottom = 26 * SCALE_FACTOR
         #self.player_sprite.center_x = 50
@@ -355,6 +366,27 @@ class MyGame(arcade.Window):
         self.card_sprites.append(newcard)
         self.card_list.append(newcard)
 
+        # highlights - non-moving, just can appear or disappear, find out how to do that
+        # may have to do it by moving them offscireen, so I'll say is_static is false. Not like this game is
+        # much of a performance hog
+        self.highlight_list = arcade.SpriteList(is_static = False)
+        self.highlight_sprites = []
+        # highlights for all 4 cards and starter (shew version
+        for j in range(4):
+            # For now there is only one kind of highlight, later can use others like I do with cards and pegs
+            newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
+            newhighlight.left = (CARD_SHOW_LEFT_MARGIN - HIGHLIGHT_WIDTH) + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
+            newhighlight.bottom = CARD_SHOW_BOTTOM_MARGIN - HIGHLIGHT_WIDTH
+            self.highlight_sprites.append(newhighlight)
+            self.highlight_list.append(newhighlight)
+        # then the starter highlight
+        newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
+        newhighlight.left = CARD_STARTER_LEFT - HIGHLIGHT_WIDTH
+        newhighlight.bottom = CARD_STARTER_BOTTOM - HIGHLIGHT_WIDTH
+        self.highlight_sprites.append(newhighlight)
+        self.highlight_list.append(newhighlight)
+
+
 
     def on_draw(self):
         """
@@ -383,17 +415,20 @@ class MyGame(arcade.Window):
         # then pegs
         self.peg_list.draw(filter = gl.GL_NEAREST)
 
+        # then highlights
+        self.highlight_list.draw(filter = gl.GL_NEAREST)
+
         # player_list
         self.player_list.draw(filter = gl.GL_NEAREST)
 
         # then for TODO TEMP hole finding print the player's bottom and left.
         # start_x and start_y make the start point for the text. We draw a dot to make it easy too see
         # the text in relation to its start x and y.
-        start_x = self.player_sprite.left + self.player_sprite.width
-        start_y = self.player_sprite.top
-        arcade.draw_point(start_x, start_y, arcade.color.BLUE, 5)
-        pstring = "{},{}".format(self.player_sprite.left // SCALE_FACTOR, self.player_sprite.bottom // SCALE_FACTOR)
-        arcade.draw_text(pstring, start_x, start_y, arcade.color.WHITE, 20)
+        # start_x = self.player_sprite.left + self.player_sprite.width
+        # start_y = self.player_sprite.top
+        # arcade.draw_point(start_x, start_y, arcade.color.BLUE, 5)
+        # pstring = "{},{}".format(self.player_sprite.left // SCALE_FACTOR, self.player_sprite.bottom // SCALE_FACTOR)
+        # arcade.draw_text(pstring, start_x, start_y, arcade.color.WHITE, 20)
 
     def on_update(self, delta_time):
         """ Movement and game logic """
