@@ -395,6 +395,9 @@ class MyGame(arcade.Window):
         self.card_sprites[2].set_highlighted(True)
         self.card_sprites[4].set_highlighted(True)
 
+        # build initial list of which cards are highlighted - actually init to all false
+        self.last_highlighted = [False] * len(self.card_sprites)
+
 
         # highlights - non-moving, just can appear or disappear, find out how to do that
         # rebuilds the highlight sprite list every frame using a list of flags for whether each card is highlighted
@@ -402,9 +405,9 @@ class MyGame(arcade.Window):
         # so we don't even really need self.highligh_list - but might if we do this a different way
         # now it gets rebuilt every frame in onDraw.
         # TODO have a flag for highlights_changed and only rebuild (and clear the flag) on frames where it's true
+        # actually now will just keep an array of previous highlighted cards and compare in the draw
         #self.highlight_list = arcade.SpriteList(is_static = True)
         self.highlight_sprites = []
-        self.highlight_changed = True
         # highlights for all 4 cards and starter (shew version
         for j in range(4):
             # For now there is only one kind of highlight, later can use others like I do with cards and pegs
@@ -451,12 +454,15 @@ class MyGame(arcade.Window):
 
         # then highlights - see if can build here from cards' highlights
         # this just seems really clumsy - mitigated by self.highlight_changed
-        if self.highlight_changed:
+        # which is now automated by checking if the highlights are different from when we looked last
+        now_highlighted = [x.is_highlighted() for x in self.card_sprites]
+
+        if self.last_highlighted != now_highlighted:
             self.highlight_list = arcade.SpriteList()
             for i in range(len(self.card_sprites)):
                 if self.card_sprites[i].is_highlighted():
                     self.highlight_list.append(self.highlight_sprites[i])
-            self.highlight_changed = False
+            self.last_highlighted = now_highlighted
 
         self.highlight_list.draw(filter = gl.GL_NEAREST)
 
