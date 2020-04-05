@@ -233,6 +233,20 @@ class Player(arcade.Sprite):
 # for cards - stub for the moment
 # TODO: add stuff for highlight, whatever else a card needs to have
 class Card(arcade.Sprite):
+    # init adds the highlighted parameter to the regular sprite parameters
+    def __init__(self,filename: str = None, scale: float = 1, image_x: float = 0, image_y: float = 0,
+                 image_width: float = 0, image_height: float = 0, center_x: float = 0, center_y: float = 0,
+                 repeat_count_x: int = 1, repeat_count_y: int = 1,
+                 highlighted = False):
+        self.highlighted = highlighted
+        super().__init__(filename,scale,image_x,image_y,image_width,image_height,center_x,center_y,
+                         repeat_count_x,repeat_count_y)
+
+    def set_highlighted(self,highlighted):
+        self.highlighted = highlighted
+
+    def is_highlighted(self):
+        return self.highlighted
 
     # currently not much needs to be done
     def update(self):
@@ -286,6 +300,16 @@ class MyGame(arcade.Window):
         self.player_sprite = None
         #self.score = 0
         #self.score_text = None
+
+        # clear other lists
+        self.card_list = None
+        self.card_sprites = None
+        self.peg_list = None
+        self.peg_sprites = None
+        self.highlight_list = None
+        self.highlight_sprites = None
+        self.highlight_active = None
+
 
         # Set the background color
         arcade.set_background_color(arcade.color.AMAZON)
@@ -366,11 +390,21 @@ class MyGame(arcade.Window):
         self.card_sprites.append(newcard)
         self.card_list.append(newcard)
 
+        # set some highlights - TODO debug rip out
+        self.card_sprites[1].set_highlighted(True)
+        self.card_sprites[2].set_highlighted(True)
+        self.card_sprites[4].set_highlighted(True)
+
+
         # highlights - non-moving, just can appear or disappear, find out how to do that
-        # may have to do it by moving them offscireen, so I'll say is_static is false. Not like this game is
-        # much of a performance hog
-        self.highlight_list = arcade.SpriteList(is_static = False)
+        # rebuilds the highlight sprite list every frame using a list of flags for whether each card is highlighted
+        # works, but seems clumsy; better way might be ... different textures? Alpha? I dunno. Stick w/this for now
+        # so we don't even really need self.highligh_list - but might if we do this a different way
+        # now it gets rebuilt every frame in onDraw.
+        # TODO have a flag for highlights_changed and only rebuild (and clear the flag) on frames where it's true
+        #self.highlight_list = arcade.SpriteList(is_static = True)
         self.highlight_sprites = []
+        self.highlight_changed = True
         # highlights for all 4 cards and starter (shew version
         for j in range(4):
             # For now there is only one kind of highlight, later can use others like I do with cards and pegs
@@ -378,13 +412,13 @@ class MyGame(arcade.Window):
             newhighlight.left = (CARD_SHOW_LEFT_MARGIN - HIGHLIGHT_WIDTH) + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
             newhighlight.bottom = CARD_SHOW_BOTTOM_MARGIN - HIGHLIGHT_WIDTH
             self.highlight_sprites.append(newhighlight)
-            self.highlight_list.append(newhighlight)
+            #self.highlight_list.append(newhighlight)
         # then the starter highlight
         newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
         newhighlight.left = CARD_STARTER_LEFT - HIGHLIGHT_WIDTH
         newhighlight.bottom = CARD_STARTER_BOTTOM - HIGHLIGHT_WIDTH
         self.highlight_sprites.append(newhighlight)
-        self.highlight_list.append(newhighlight)
+        #self.highlight_list.append(newhighlight)
 
 
 
@@ -415,7 +449,15 @@ class MyGame(arcade.Window):
         # then pegs
         self.peg_list.draw(filter = gl.GL_NEAREST)
 
-        # then highlights
+        # then highlights - see if can build here from cards' highlights
+        # this just seems really clumsy - mitigated by self.highlight_changed
+        if self.highlight_changed:
+            self.highlight_list = arcade.SpriteList()
+            for i in range(len(self.card_sprites)):
+                if self.card_sprites[i].is_highlighted():
+                    self.highlight_list.append(self.highlight_sprites[i])
+            self.highlight_changed = False
+
         self.highlight_list.draw(filter = gl.GL_NEAREST)
 
         # player_list
