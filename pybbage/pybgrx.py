@@ -43,7 +43,7 @@ BG_HEIGHT = 240
 # for shewing on pc, scale up by a factor of 3 in each dimension (later settable)
 # for a total of 960x720, which should fit on my ancient laptop's screen OK.
 # nah let's try 2, 640 x 480
-SCALE_FACTOR = 3
+SCALE_FACTOR = 2
 
 SCREEN_WIDTH = (BG_WIDTH * SCALE_FACTOR)
 SCREEN_HEIGHT = (BG_HEIGHT * SCALE_FACTOR)
@@ -206,7 +206,7 @@ hole_positions = [
 ]
 
 # for old sprite demo
-MOVEMENT_SPEED = 1
+MOVEMENT_SPEED = 3
 
 
 class Player(arcade.Sprite):
@@ -298,11 +298,12 @@ class MyGame(arcade.Window):
         # → List[source]
         # it totally works!
         # temp, make it a peg so we can reckon all the hole positions
+        # then make a highlight
         card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=41,sprite_height=64,
                                                 columns=13,count=52)
-        self.player_sprite = Player("pybgrx_assets/GreenPeg.png",scale=SPRITE_SCALING)
-        self.player_sprite.left = 22 * SCALE_FACTOR
-        self.player_sprite.top = 222 * SCALE_FACTOR
+        self.player_sprite = Player("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
+        self.player_sprite.left = 18 * SCALE_FACTOR
+        self.player_sprite.bottom = 26 * SCALE_FACTOR
         #self.player_sprite.center_x = 50
         #self.player_sprite.center_y = 50
         self.player_list.append(self.player_sprite)
