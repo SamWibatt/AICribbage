@@ -3,7 +3,7 @@ Learned models for cribbage playing: discard, next card in count.
 
 # Status
 
-very early. Currently constructing the python prototype game that will be the framework for learned players (3/20/20). Once the game is able to "play" I will begin investigating the AI models.
+As of (4/7/20), very early. Currently constructing the python prototype game that will be the framework for learned players, as well as a graphic interface for playing it. Once the game is able to "play" I will begin investigating the AI models.
 
 # ojbective
 
