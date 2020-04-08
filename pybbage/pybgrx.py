@@ -274,6 +274,7 @@ class Peg(arcade.Sprite):
 # subclass for different game phases like cut for deal, deal, discard, etc.
 # so figure out how to refactor the current single screen into
 class Mode:
+
     def __init__(self):
         # self.sprite_lists is a dictionary of name -> dict like this:
         # {
@@ -291,7 +292,57 @@ class Mode:
         #     "pegs" -> [ blue peg, green peg, ...]
         # }
         # this would likely be shared across most or all of the modes
+        self.set_textures = None
         pass
+
+    # accessors ------------------------------------------------------------------------------------------------------
+
+    # self.sprite_lists is a list of dicts like this:
+    # {
+    #     "name": name
+    #     "SpriteList" : arcade.SpriteList object for rendering,
+    #     "sprites": list of the individual sprites in that sprite list
+    # }
+    # so game logic can look in the "sprites" part to change position, texture, whatever else
+    # handling it as a list because we want to preserve order of sprite lists, yes?
+    def add_sprite_list(self, listname, sprite_list, individual_sprites):
+        if self.sprite_lists is None:
+            self.sprite_lists = []
+        self.sprite_lists.append( { "name": listname, "SpriteList": sprite_list, "sprites": individual_sprites } )
+
+    def get_sprite_list_by_name(self,name):
+        # assuming a small number of sprite lists, which there will probably be.
+        if self.sprite_lists is None:
+            return None
+        for sl in self.sprite_lists:
+            if sl["name"] == name:
+                return sl
+        return None
+
+    def get_sprite_list_by_index(self,index):
+        if index < 0 or self.sprite_lists is None or index >= len(self.sprite_lists):
+            return None
+        return self.sprite_lists[index]
+
+    # self.textures is a dict of name to of lists of textures, some of which (like bg texture) might only have
+    # one texture in them e.g.
+    # {
+    #     "background" -> [bg texture],
+    #     "cards" -> [ card 0, card 1, card 2, ...],
+    #     "pegs" -> [ blue peg, green peg, ...]
+    # }
+    # this would likely be shared across most or all of the modes
+    def add_textures(self, texsetname, texture_list):
+        if self.textures is None:
+            self.textures = []
+        self.textures.append( { texsetname: texture_list } )
+
+    def get_textures(self, texsetname):
+        if self.textures is None or texsetname not in self.textures:
+            return None
+        return self.textures[texsetname]
+
+    # overrideables --------------------------------------------------------------------------------------------------
 
     def setup(self):
         pass
@@ -323,29 +374,10 @@ class Mode:
         pass
 
 
+class ShewMode(Mode):
 
-
-
-class MyGame(arcade.Window):
-    """
-    Main application class.
-    """
-
-    def __init__(self, width, height, title):
-        """
-        Initializer
-        """
-
-        # Call the parent class initializer
-        super().__init__(width, height, title)
-
-        # Set the working directory (where we expect to find files) to the same
-        # directory this .py file is in. You can leave this out of your own
-        # code, but it is needed to easily run the examples using "python -m"
-        # as mentioned at the top of this program.
-        file_path = os.path.dirname(os.path.abspath(__file__))
-        os.chdir(file_path)
-
+    def __init__(self):
+        super().__init__()
         # from bg image demo
         # Background image will be stored in this variable
         self.background = None
@@ -368,21 +400,15 @@ class MyGame(arcade.Window):
         self.highlight_sprites = None
         self.highlight_active = None
 
-
-        # Set the background color
-        arcade.set_background_color(arcade.color.AMAZON)
-
     def setup(self):
-        """ Set up the game and initialize the variables. """
         # Load the background image. Do this in the setup so we don't keep reloading it all the time.
         # Image from:
         # http://wallpaper-gallery.net/single/free-background-images/free-background-images-22.html
         # self.background = arcade.load_texture(":resources:images/backgrounds/abstract_1.jpg")
-        self.background = arcade.load_texture("pybgrx_assets/CribbageBoardBackground.png")      # hopework
+        # note that we need a list of textures in the Mode object, for every texture set
+        self.add_textures("background", [arcade.load_texture("pybgrx_assets/CribbageBoardBackground.png")])     # hopework
 
         # Sprite lists
-        self.player_list = arcade.SpriteList()
-
         # Set up the player - let's try a king of hearts
         # would this work for loading the whole set of them?
         # https://arcade.academy/_modules/arcade/texture.html#load_spritesheet
@@ -392,14 +418,14 @@ class MyGame(arcade.Window):
         # it totally works!
         # temp, make it a peg so we can reckon all the hole positions
         # then make a highlight
-        card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=41,sprite_height=64,
-                                                columns=13,count=52)
-        self.player_sprite = Player("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
-        self.player_sprite.left = 18 * SCALE_FACTOR
-        self.player_sprite.bottom = 26 * SCALE_FACTOR
-        #self.player_sprite.center_x = 50
-        #self.player_sprite.center_y = 50
-        self.player_list.append(self.player_sprite)
+        player_list = arcade.SpriteList()
+        player_sprite = Player("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
+        player_sprite.left = 18 * SCALE_FACTOR
+        player_sprite.bottom = 26 * SCALE_FACTOR
+        player_list.append(self.player_sprite)
+        self.add_sprite_list("player",player_list,[player_sprite])
+
+        # HEREAFTER UNCHANGED **********************************************************************************
 
         # then some peg sprites!
         peg_textures = arcade.load_spritesheet("pybgrx_assets/Pegs.png",sprite_width=9,sprite_height=9,
@@ -424,6 +450,8 @@ class MyGame(arcade.Window):
 
         # then let's make some stationary card sprites for where I think they might be in the real game
         # normal list of them to be able to access each and change things - do we need it?
+        card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=41,sprite_height=64,
+                                                columns=13,count=52)
         self.card_list = arcade.SpriteList(is_static = True)
         self.card_sprites = []
         # so let's do 4 cards and a starter, say, and see what we get trying to use pixels
@@ -482,6 +510,43 @@ class MyGame(arcade.Window):
         #self.highlight_list.append(newhighlight)
 
 
+    def update_game_logic(self):
+        pass
+
+
+class MyGame(arcade.Window):
+    """
+    Main application class.
+    """
+
+    def __init__(self, width, height, title):
+        """
+        Initializer
+        """
+
+        # Call the parent class initializer
+        super().__init__(width, height, title)
+
+        # Set the working directory (where we expect to find files) to the same
+        # directory this .py file is in. You can leave this out of your own
+        # code, but it is needed to easily run the examples using "python -m"
+        # as mentioned at the top of this program.
+        file_path = os.path.dirname(os.path.abspath(__file__))
+        os.chdir(file_path)
+
+        # Set the background color
+        arcade.set_background_color(arcade.color.AMAZON)
+
+    def setup(self):
+        """ Set up the game and initialize the variables. """
+
+        # TODO here we will be setting up various mode objects
+
+        # STUFF TO BREAK OUT INTO A MODE OBJECT ----------------------------------------------------------------------
+        curmode = ShewMode()
+        # TODO later have multiple
+
+
 
     def on_draw(self):
         """
@@ -490,6 +555,8 @@ class MyGame(arcade.Window):
 
         # This command has to happen before we start drawing
         arcade.start_render()
+
+        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
 
         # Draw the background texture
         # TODO find out if there's a way to do this unsmoothed
@@ -535,17 +602,22 @@ class MyGame(arcade.Window):
         # arcade.draw_point(start_x, start_y, arcade.color.BLUE, 5)
         # pstring = "{},{}".format(self.player_sprite.left // SCALE_FACTOR, self.player_sprite.bottom // SCALE_FACTOR)
         # arcade.draw_text(pstring, start_x, start_y, arcade.color.WHITE, 20)
+        # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
 
     def on_update(self, delta_time):
         """ Movement and game logic """
 
+        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
+
         # Call update on all sprites (The sprites don't do much in this
         # example though.)
         self.player_list.update()
+        # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
 
+        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
         if key == arcade.key.UP:
             self.player_sprite.change_y = MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
@@ -554,14 +626,17 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = -MOVEMENT_SPEED
         elif key == arcade.key.RIGHT:
             self.player_sprite.change_x = MOVEMENT_SPEED
+        # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
+        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
 
         if key == arcade.key.UP or key == arcade.key.DOWN:
             self.player_sprite.change_y = 0
         elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
             self.player_sprite.change_x = 0
+        # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
 
 
 def main():
