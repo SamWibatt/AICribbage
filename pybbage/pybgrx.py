@@ -268,6 +268,64 @@ class Peg(arcade.Sprite):
     def update(self):
         pass
 
+
+# class for containing a "mode" - will see what all gets in there, but I think it's pretty much everything
+# that's currently in MyGame - background, sprites, user interface, etc.
+# subclass for different game phases like cut for deal, deal, discard, etc.
+# so figure out how to refactor the current single screen into
+class Mode:
+    def __init__(self):
+        # self.sprite_lists is a dictionary of name -> dict like this:
+        # {
+        #     "SpriteList" : arcade.SpriteList object for rendering,
+        #     "sprites": list of the individual sprites in that sprite list
+        # }
+        # so game logic can look in the "sprites" part to change position, texture, whatever else
+        self.sprite_lists = None
+
+        # self.textures is a dict of name to of lists of textures, some of which (like bg texture) might only have
+        # one texture in them e.g.
+        # {
+        #     "background" -> [bg texture],
+        #     "cards" -> [ card 0, card 1, card 2, ...],
+        #     "pegs" -> [ blue peg, green peg, ...]
+        # }
+        # this would likely be shared across most or all of the modes
+        pass
+
+    def setup(self):
+        pass
+
+    def on_draw(self):
+        # draw the bg texture, sprite lists, text, etc.
+        pass
+
+    def update_game_logic(self):
+        # broken out from on_update so modes can override this without having to duplicate the drawing stuff
+        # here, update whatever is relevant for the mode, like animating flying numbers or pegs or whatever
+        # aaaand probably calling pybbage logic? Have to think about that. Might happen outside the drawing
+        # seems unlikely you'd do heavy thinking in the draw update. TODO LOOK INTO
+        pass
+
+    def on_update(self):
+        # do game logic callback
+        self.update_game_logic()
+
+        # call update on all the sprite lists
+        pass
+
+    def on_key_press(self):
+        # how to handle? maybe a dict of key constant -> member function to handle it?
+        pass
+
+    def on_key_release(self):
+        # how to handle? maybe a dict of key constant -> member function to handle it?
+        pass
+
+
+
+
+
 class MyGame(arcade.Window):
     """
     Main application class.
