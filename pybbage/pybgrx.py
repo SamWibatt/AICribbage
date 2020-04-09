@@ -275,7 +275,7 @@ class Peg(arcade.Sprite):
 # so figure out how to refactor the current single screen into
 class Mode:
 
-    def __init__(self):
+    def __init__(self, sprite_lists = None, textures = None, parent = None):
         # self.sprite_lists is a list of dicts like this:
         # {
         #     "name" : name
@@ -283,7 +283,7 @@ class Mode:
         #     "sprites": list of the individual sprites in that sprite list
         # }
         # so game logic can look in the "sprites" part to change position, texture, whatever else
-        self.sprite_lists = None
+        self.sprite_lists = sprite_lists
 
         # self.textures is a dict of name to of lists of textures, some of which (like bg texture) might only have
         # one texture in them e.g.
@@ -293,8 +293,10 @@ class Mode:
         #     "pegs" -> [ blue peg, green peg, ...]
         # }
         # this would likely be shared across most or all of the modes
-        self.textures = None
-        pass
+        self.textures = textures
+
+        # and parent game, so this can do stuff like ask it to advance to a new mode
+        self.parent = parent
 
     # accessors ------------------------------------------------------------------------------------------------------
 
@@ -357,15 +359,34 @@ class Mode:
             return None
         return self.textures[texsetname]
 
+    def set_parent(self,parent):
+        self.parent = parent
+
+    def get_parent(self):
+        return self.parent
+
     # overrideables --------------------------------------------------------------------------------------------------
 
     def setup(self):
         pass
 
     def on_draw(self):
-        # draw the bg texture, sprite lists, text, etc.
-        # TODO: WRITE DEFAULT VERSION
-        pass
+        # Draw the background texture
+        # TODO find out if there's a way to do this unsmoothed
+        bgtexs = self.get_textures("background")
+        #print("bgtexs =",bgtexs)
+        if bgtexs is not None:
+            scale = SCREEN_WIDTH / bgtexs[0].width
+            if bgtexs is not None:
+                arcade.draw_lrwh_rectangle_textured(0, 0,
+                                                    SCREEN_WIDTH, SCREEN_HEIGHT,
+                                                    bgtexs[0]) # assuming only 1 bg texture
+        # draw sprites
+        for sl in self.sprite_lists:
+            if "SpriteList" in sl and sl["SpriteList"] is not None:
+                #print("Drawing sprite list",sl["name"])
+                sl["SpriteList"].draw(filter = gl.GL_NEAREST)
+
 
     def update_game_logic(self):
         # broken out from on_update so modes can override this without having to duplicate the drawing stuff
@@ -385,7 +406,7 @@ class Mode:
 
     def on_key_press(self, key, modifiers):
         # how to handle? maybe a dict of key constant -> member function to handle it?
-        # TODO WRITE DEFAULT VERSION if there is anything
+        # TODO WRITE DEFAULT VERSION if there is anything - like mode advance
         pass
 
     def on_key_release(self, key, modifiers):
@@ -396,29 +417,7 @@ class Mode:
 
 class ShewMode(Mode):
 
-    def __init__(self):
-        super().__init__()
-        # from bg image demo
-        # Background image will be stored in this variable
-        self.background = None
-
-        # Variables that will hold sprite lists
-        self.player_list = None
-        #self.coin_list = None
-
-        # Set up the player info
-        self.player_sprite = None
-        #self.score = 0
-        #self.score_text = None
-
-        # clear other lists
-        self.card_list = None
-        self.card_sprites = None
-        self.peg_list = None
-        self.peg_sprites = None
-        self.highlight_list = None
-        self.highlight_sprites = None
-        self.highlight_active = None
+    # default init should work
 
     def setup(self):
         # Load the background image. Do this in the setup so we don't keep reloading it all the time.
@@ -661,7 +660,7 @@ class MyGame(arcade.Window):
         # TODO here we will be setting up various mode objects
 
         # STUFF TO BREAK OUT INTO A MODE OBJECT ----------------------------------------------------------------------
-        self.curmode = ShewMode()
+        self.curmode = ShewMode(parent = self)
         self.curmode.setup()
         # TODO later have multiple
 
