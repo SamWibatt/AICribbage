@@ -349,6 +349,7 @@ class Mode:
 
     def on_draw(self):
         # draw the bg texture, sprite lists, text, etc.
+        # TODO: WRITE DEFAULT VERSION
         pass
 
     def update_game_logic(self):
@@ -363,14 +364,17 @@ class Mode:
         self.update_game_logic()
 
         # call update on all the sprite lists
+        # TODO WRITE DEFAULT VERSION
         pass
 
     def on_key_press(self):
         # how to handle? maybe a dict of key constant -> member function to handle it?
+        # TODO WRITE DEFAULT VERSION if there is anything
         pass
 
     def on_key_release(self):
         # how to handle? maybe a dict of key constant -> member function to handle it?
+        # TODO WRITE DEFAULT VERSION if there is anything
         pass
 
 
@@ -425,17 +429,17 @@ class ShewMode(Mode):
         player_list.append(self.player_sprite)
         self.add_sprite_list("player",player_list,[player_sprite])
 
-        # HEREAFTER UNCHANGED **********************************************************************************
-
         # then some peg sprites!
         peg_textures = arcade.load_spritesheet("pybgrx_assets/Pegs.png",sprite_width=9,sprite_height=9,
                                                 columns=8,count=8)
-        self.peg_list = arcade.SpriteList()
-        self.peg_sprites = []       # for keeping track of each player's front and back peg
+        self.add_textures("pegs",peg_textures)
+
+        peg_list = arcade.SpriteList()
+        peg_sprites = []       # for keeping track of each player's front and back peg
         peg_colors = [1,7]          # hardcoded orange and pink
         peg_positions = [[[182,141],[121, 141]],[[207,125],[45,125]]]
         for plnum in range(0,2):          # each player's pegs = list of 2 sprites, peg_sprites = list of those lists
-            self.peg_sprites.append([])
+            peg_sprites.append([])
             # argh we need a dummy peg to load for this until I figure out how to get None filename constructed
             # sprites to work, which might be never, bc this is a prototype
             # two pegs per player
@@ -445,15 +449,17 @@ class ShewMode(Mode):
                 newpeg.set_texture(1)
                 newpeg.left = peg_positions[plnum][j][0] * SCALE_FACTOR
                 newpeg.bottom = peg_positions[plnum][j][1] * SCALE_FACTOR
-                self.peg_sprites[plnum].append(newpeg)
-                self.peg_list.append(newpeg)
+                peg_sprites[plnum].append(newpeg)
+                peg_list.append(newpeg)
+        self.add_sprite_list("pegs",peg_list,peg_sprites)
 
         # then let's make some stationary card sprites for where I think they might be in the real game
         # normal list of them to be able to access each and change things - do we need it?
         card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=41,sprite_height=64,
                                                 columns=13,count=52)
-        self.card_list = arcade.SpriteList(is_static = True)
-        self.card_sprites = []
+        self.add_textures("cards",card_textures)
+        card_list = arcade.SpriteList(is_static = True)
+        card_sprites = []
         # so let's do 4 cards and a starter, say, and see what we get trying to use pixels
         # just take a swing, say 22 pixels in
         # TEMP TEST for 29 hand
@@ -465,24 +471,26 @@ class ShewMode(Mode):
             newcard.set_texture(1)
             newcard.left = CARD_SHOW_LEFT_MARGIN + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
             newcard.bottom = CARD_SHOW_BOTTOM_MARGIN
-            self.card_sprites.append(newcard)
-            self.card_list.append(newcard)
+            card_sprites.append(newcard)
+            card_list.append(newcard)
         # then the starter card
         newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
         newcard.append_texture(card_textures[cards[4]])  # swh
         newcard.set_texture(1)
         newcard.left = CARD_STARTER_LEFT
         newcard.bottom = CARD_STARTER_BOTTOM
-        self.card_sprites.append(newcard)
-        self.card_list.append(newcard)
+        card_sprites.append(newcard)
+        card_list.append(newcard)
 
         # set some highlights - TODO debug rip out
-        self.card_sprites[1].set_highlighted(True)
-        self.card_sprites[2].set_highlighted(True)
-        self.card_sprites[4].set_highlighted(True)
+        card_sprites[1].set_highlighted(True)
+        card_sprites[2].set_highlighted(True)
+        card_sprites[4].set_highlighted(True)
 
         # build initial list of which cards are highlighted - actually init to all false
         self.last_highlighted = [False] * len(self.card_sprites)
+
+        self.add_sprite_list("cards",card_list,card_sprites)
 
 
         # highlights - non-moving, just can appear or disappear, find out how to do that
@@ -492,79 +500,43 @@ class ShewMode(Mode):
         # now it gets rebuilt every frame in onDraw.
         # TODO have a flag for highlights_changed and only rebuild (and clear the flag) on frames where it's true
         # actually now will just keep an array of previous highlighted cards and compare in the draw
-        #self.highlight_list = arcade.SpriteList(is_static = True)
-        self.highlight_sprites = []
+        # and highlight_list will get re-created there
+        # but create it here and register
+        highlight_list = arcade.SpriteList()
+        highlight_sprites = []
         # highlights for all 4 cards and starter (shew version
         for j in range(4):
             # For now there is only one kind of highlight, later can use others like I do with cards and pegs
             newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
             newhighlight.left = (CARD_SHOW_LEFT_MARGIN - HIGHLIGHT_WIDTH) + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
             newhighlight.bottom = CARD_SHOW_BOTTOM_MARGIN - HIGHLIGHT_WIDTH
-            self.highlight_sprites.append(newhighlight)
-            #self.highlight_list.append(newhighlight)
+            highlight_sprites.append(newhighlight)
         # then the starter highlight
         newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
         newhighlight.left = CARD_STARTER_LEFT - HIGHLIGHT_WIDTH
         newhighlight.bottom = CARD_STARTER_BOTTOM - HIGHLIGHT_WIDTH
-        self.highlight_sprites.append(newhighlight)
-        #self.highlight_list.append(newhighlight)
-
+        highlight_sprites.append(newhighlight)
+        self.add_sprite_list("highlights",highlight_list,highlight_sprites)
+        self.now_highlighted = [False] * len(highlight_sprites)
 
     def update_game_logic(self):
         pass
 
-
-class MyGame(arcade.Window):
-    """
-    Main application class.
-    """
-
-    def __init__(self, width, height, title):
-        """
-        Initializer
-        """
-
-        # Call the parent class initializer
-        super().__init__(width, height, title)
-
-        # Set the working directory (where we expect to find files) to the same
-        # directory this .py file is in. You can leave this out of your own
-        # code, but it is needed to easily run the examples using "python -m"
-        # as mentioned at the top of this program.
-        file_path = os.path.dirname(os.path.abspath(__file__))
-        os.chdir(file_path)
-
-        # Set the background color
-        arcade.set_background_color(arcade.color.AMAZON)
-
-    def setup(self):
-        """ Set up the game and initialize the variables. """
-
-        # TODO here we will be setting up various mode objects
-
-        # STUFF TO BREAK OUT INTO A MODE OBJECT ----------------------------------------------------------------------
-        curmode = ShewMode()
-        # TODO later have multiple
-
-
-
     def on_draw(self):
-        """
-        Render the screen.
-        """
 
-        # This command has to happen before we start drawing
-        arcade.start_render()
-
-        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
 
         # Draw the background texture
         # TODO find out if there's a way to do this unsmoothed
         scale = SCREEN_WIDTH / self.background.width
-        arcade.draw_lrwh_rectangle_textured(0, 0,
-                                            SCREEN_WIDTH, SCREEN_HEIGHT,
-                                            self.background)
+        bgtexs = self.get_textures("background")
+        if bgtexs is not None:
+            arcade.draw_lrwh_rectangle_textured(0, 0,
+                                                SCREEN_WIDTH, SCREEN_HEIGHT,
+                                                self.get_textures("background")[0]) # assuming only 1 bg texture
         #dunt work - ,filter = gl.GL_NEAREST)
+
+
+        # HEREAFTER UNCHANGED *****************************************************************************************
 
         # Draw all the sprites. Let's try a filter of gl.GL_NEAREST to avoid smoothing.
         # for which you need pyglet.gl imported as gl
@@ -602,6 +574,58 @@ class MyGame(arcade.Window):
         # arcade.draw_point(start_x, start_y, arcade.color.BLUE, 5)
         # pstring = "{},{}".format(self.player_sprite.left // SCALE_FACTOR, self.player_sprite.bottom // SCALE_FACTOR)
         # arcade.draw_text(pstring, start_x, start_y, arcade.color.WHITE, 20)
+
+
+
+class MyGame(arcade.Window):
+    """
+    Main application class.
+    """
+
+    def __init__(self, width, height, title):
+        """
+        Initializer
+        """
+
+        # Call the parent class initializer
+        super().__init__(width, height, title)
+
+        # Set the working directory (where we expect to find files) to the same
+        # directory this .py file is in. You can leave this out of your own
+        # code, but it is needed to easily run the examples using "python -m"
+        # as mentioned at the top of this program.
+        file_path = os.path.dirname(os.path.abspath(__file__))
+        os.chdir(file_path)
+
+        # Set the background color
+        arcade.set_background_color(arcade.color.AMAZON)
+
+        # no current mode
+        self.curmode = None
+
+    def setup(self):
+        """ Set up the game and initialize the variables. """
+
+        # TODO here we will be setting up various mode objects
+
+        # STUFF TO BREAK OUT INTO A MODE OBJECT ----------------------------------------------------------------------
+        self.curmode = ShewMode()
+        # TODO later have multiple
+
+
+
+    def on_draw(self):
+        """
+        Render the screen.
+        """
+
+        # This command has to happen before we start drawing
+        arcade.start_render()
+
+        if self.curmode is not None:
+            self.curmode.on_draw()
+
+        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
         # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
 
     def on_update(self, delta_time):
