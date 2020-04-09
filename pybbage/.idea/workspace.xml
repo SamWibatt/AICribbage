@@ -28,6 +28,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
@@ -36,7 +37,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -136,11 +137,11 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state width="1310" height="557" key="GridCell.Tab.0.right/35.27.1331.741@35.27.1331.741" timestamp="1586112514276" />
-    <state x="185" y="27" width="1022" height="737" key="SettingsEditor" timestamp="1586383282539">
+    <state x="185" y="27" width="1022" height="737" key="SettingsEditor" timestamp="1586013506063">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="173" y="0" key="SettingsEditor/0.0.1536.834/3840.0.1920.1080@0.0.1536.834" timestamp="1585771474062" />
-    <state x="185" y="27" width="1022" height="737" key="SettingsEditor/35.27.1331.741@35.27.1331.741" timestamp="1586383282539" />
+    <state x="185" y="27" width="1022" height="737" key="SettingsEditor/35.27.1331.741@35.27.1331.741" timestamp="1586013506063" />
     <state x="370" y="223" key="com.intellij.ide.util.TipDialog" timestamp="1585770916579">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
@@ -150,9 +151,9 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="0" y="27" width="581" height="741" key="find.popup/35.27.1331.741@35.27.1331.741" timestamp="1584570258400" />
-    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1586392401136">
+    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1585882141477">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup/35.27.1331.741@35.27.1331.741" timestamp="1586392401136" />
+    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup/35.27.1331.741@35.27.1331.741" timestamp="1585882141477" />
   </component>
 </project>

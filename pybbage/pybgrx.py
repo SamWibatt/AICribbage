@@ -276,8 +276,9 @@ class Peg(arcade.Sprite):
 class Mode:
 
     def __init__(self):
-        # self.sprite_lists is a dictionary of name -> dict like this:
+        # self.sprite_lists is a list of dicts like this:
         # {
+        #     "name" : name
         #     "SpriteList" : arcade.SpriteList object for rendering,
         #     "sprites": list of the individual sprites in that sprite list
         # }
@@ -292,7 +293,7 @@ class Mode:
         #     "pegs" -> [ blue peg, green peg, ...]
         # }
         # this would likely be shared across most or all of the modes
-        self.set_textures = None
+        self.textures = None
         pass
 
     # accessors ------------------------------------------------------------------------------------------------------
@@ -308,7 +309,9 @@ class Mode:
     def add_sprite_list(self, listname, sprite_list, individual_sprites):
         if self.sprite_lists is None:
             self.sprite_lists = []
+        #print("adding sprite list",listname)
         self.sprite_lists.append( { "name": listname, "SpriteList": sprite_list, "sprites": individual_sprites } )
+
 
     def get_sprite_list_by_name(self,name):
         # assuming a small number of sprite lists, which there will probably be.
@@ -324,6 +327,16 @@ class Mode:
             return None
         return self.sprite_lists[index]
 
+    # this lets you overwrite a sprite list while preserving its order
+    def replace_sprite_list_by_name(self, listname, sprite_list, individual_sprites):
+        if self.sprite_lists is None:
+            return
+        slist = self.get_sprite_list_by_name(listname)
+        if slist is None:
+            return
+        slist["SpriteList"] = sprite_list
+        slist["sprites"] = individual_sprites
+
     # self.textures is a dict of name to of lists of textures, some of which (like bg texture) might only have
     # one texture in them e.g.
     # {
@@ -333,12 +346,14 @@ class Mode:
     # }
     # this would likely be shared across most or all of the modes
     def add_textures(self, texsetname, texture_list):
+        #print("Adding texture set",texsetname)
         if self.textures is None:
-            self.textures = []
-        self.textures.append( { texsetname: texture_list } )
+            self.textures = {}
+        self.textures[texsetname] = texture_list
 
     def get_textures(self, texsetname):
         if self.textures is None or texsetname not in self.textures:
+            #print("textures",texsetname,"is None")
             return None
         return self.textures[texsetname]
 
@@ -364,15 +379,16 @@ class Mode:
         self.update_game_logic()
 
         # call update on all the sprite lists
-        # TODO WRITE DEFAULT VERSION
-        pass
+        if self.sprite_lists is not None:
+            for sl in self.sprite_lists:
+                sl["SpriteList"].update()
 
-    def on_key_press(self):
+    def on_key_press(self, key, modifiers):
         # how to handle? maybe a dict of key constant -> member function to handle it?
         # TODO WRITE DEFAULT VERSION if there is anything
         pass
 
-    def on_key_release(self):
+    def on_key_release(self, key, modifiers):
         # how to handle? maybe a dict of key constant -> member function to handle it?
         # TODO WRITE DEFAULT VERSION if there is anything
         pass
@@ -413,21 +429,8 @@ class ShewMode(Mode):
         self.add_textures("background", [arcade.load_texture("pybgrx_assets/CribbageBoardBackground.png")])     # hopework
 
         # Sprite lists
-        # Set up the player - let's try a king of hearts
-        # would this work for loading the whole set of them?
-        # https://arcade.academy/_modules/arcade/texture.html#load_spritesheet
-        # was self.player_sprite = Player("pybgrx_assets/CardBack.png", SPRITE_SCALING)
-        # arcade.load_spritesheet(file_name: str, sprite_width: int, sprite_height: int, columns: int, count: int)
-        # → List[source]
-        # it totally works!
-        # temp, make it a peg so we can reckon all the hole positions
-        # then make a highlight
-        player_list = arcade.SpriteList()
-        player_sprite = Player("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
-        player_sprite.left = 18 * SCALE_FACTOR
-        player_sprite.bottom = 26 * SCALE_FACTOR
-        player_list.append(self.player_sprite)
-        self.add_sprite_list("player",player_list,[player_sprite])
+        # THEY WILL BE DRAWN IN THE ORDER THEY'RE ADDED, SO LAST ONE IS FRONT
+
 
         # then some peg sprites!
         peg_textures = arcade.load_spritesheet("pybgrx_assets/Pegs.png",sprite_width=9,sprite_height=9,
@@ -488,7 +491,7 @@ class ShewMode(Mode):
         card_sprites[4].set_highlighted(True)
 
         # build initial list of which cards are highlighted - actually init to all false
-        self.last_highlighted = [False] * len(self.card_sprites)
+        self.last_highlighted = [False] * len(card_sprites)
 
         self.add_sprite_list("cards",card_list,card_sprites)
 
@@ -511,60 +514,77 @@ class ShewMode(Mode):
             newhighlight.left = (CARD_SHOW_LEFT_MARGIN - HIGHLIGHT_WIDTH) + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
             newhighlight.bottom = CARD_SHOW_BOTTOM_MARGIN - HIGHLIGHT_WIDTH
             highlight_sprites.append(newhighlight)
+            #highlight_list.append(newhighlight)
         # then the starter highlight
         newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
         newhighlight.left = CARD_STARTER_LEFT - HIGHLIGHT_WIDTH
         newhighlight.bottom = CARD_STARTER_BOTTOM - HIGHLIGHT_WIDTH
         highlight_sprites.append(newhighlight)
+        #highlight_list.append(newhighlight)
         self.add_sprite_list("highlights",highlight_list,highlight_sprites)
         self.now_highlighted = [False] * len(highlight_sprites)
+
+        # Set up the player - let's try a king of hearts
+        # would this work for loading the whole set of them?
+        # https://arcade.academy/_modules/arcade/texture.html#load_spritesheet
+        # was self.player_sprite = Player("pybgrx_assets/CardBack.png", SPRITE_SCALING)
+        # arcade.load_spritesheet(file_name: str, sprite_width: int, sprite_height: int, columns: int, count: int)
+        # → List[source]
+        # it totally works!
+        # temp, make it a peg so we can reckon all the hole positions
+        # then make a highlight
+        player_list = arcade.SpriteList()
+        player_sprite = Player("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
+        player_sprite.left = 18 * SCALE_FACTOR
+        player_sprite.bottom = 26 * SCALE_FACTOR
+        player_list.append(player_sprite)
+        self.add_sprite_list("player",player_list,[player_sprite])
+
 
     def update_game_logic(self):
         pass
 
     def on_draw(self):
-
-
+        # print("on_draw")
+        # this doesn't seem to be working
         # Draw the background texture
         # TODO find out if there's a way to do this unsmoothed
-        scale = SCREEN_WIDTH / self.background.width
         bgtexs = self.get_textures("background")
+        #print("bgtexs =",bgtexs)
         if bgtexs is not None:
-            arcade.draw_lrwh_rectangle_textured(0, 0,
-                                                SCREEN_WIDTH, SCREEN_HEIGHT,
-                                                self.get_textures("background")[0]) # assuming only 1 bg texture
+            scale = SCREEN_WIDTH / bgtexs[0].width #self.background.width
+            #print("scale =",scale)
+            if bgtexs is not None:
+                arcade.draw_lrwh_rectangle_textured(0, 0,
+                                                    SCREEN_WIDTH, SCREEN_HEIGHT,
+                                                    bgtexs[0]) # assuming only 1 bg texture
         #dunt work - ,filter = gl.GL_NEAREST)
-
-
-        # HEREAFTER UNCHANGED *****************************************************************************************
-
-        # Draw all the sprites. Let's try a filter of gl.GL_NEAREST to avoid smoothing.
-        # for which you need pyglet.gl imported as gl
-        # card_list
-        self.card_list.draw(filter = gl.GL_NEAREST)
-        # debug
-        #for card in self.card_list.sprite_list:
-        #    card.draw_hit_box(color = arcade.YELLOW)
-
-        # then pegs
-        self.peg_list.draw(filter = gl.GL_NEAREST)
-
-        # then highlights - see if can build here from cards' highlights
-        # this just seems really clumsy - mitigated by self.highlight_changed
+        #
+        #
+        # build highlight list
         # which is now automated by checking if the highlights are different from when we looked last
-        now_highlighted = [x.is_highlighted() for x in self.card_sprites]
+        card_sprites = self.get_sprite_list_by_name("cards")
+        highlight_sprites = self.get_sprite_list_by_name("highlights")
+        #rint("card sprites =",card_sprites)
+        #print("highlight sprites =",highlight_sprites)
+        if (card_sprites is not None) and (highlight_sprites is not None):
+            now_highlighted = [x.is_highlighted() for x in card_sprites["sprites"]]
+            if self.last_highlighted != now_highlighted:
+                #print("now_highlighted", now_highlighted, "last_highlighted", self.last_highlighted)
+                highlight_list = arcade.SpriteList()
+                for i in range(len(card_sprites["sprites"])):
+                    if now_highlighted[i] == True:
+                        #print("Adding highlight sprite",i,"which is",highlight_sprites["sprites"][i])
+                        highlight_list.append(highlight_sprites["sprites"][i])
+                self.last_highlighted = now_highlighted
+                self.replace_sprite_list_by_name("highlights",highlight_list,highlight_sprites["sprites"])
 
-        if self.last_highlighted != now_highlighted:
-            self.highlight_list = arcade.SpriteList()
-            for i in range(len(self.card_sprites)):
-                if self.card_sprites[i].is_highlighted():
-                    self.highlight_list.append(self.highlight_sprites[i])
-            self.last_highlighted = now_highlighted
+        for sl in self.sprite_lists:
+            if "SpriteList" in sl and sl["SpriteList"] is not None:
+                #print("Drawing sprite list",sl["name"])
+                sl["SpriteList"].draw(filter = gl.GL_NEAREST)
 
-        self.highlight_list.draw(filter = gl.GL_NEAREST)
 
-        # player_list
-        self.player_list.draw(filter = gl.GL_NEAREST)
 
         # then for TODO TEMP hole finding print the player's bottom and left.
         # start_x and start_y make the start point for the text. We draw a dot to make it easy too see
@@ -574,6 +594,38 @@ class ShewMode(Mode):
         # arcade.draw_point(start_x, start_y, arcade.color.BLUE, 5)
         # pstring = "{},{}".format(self.player_sprite.left // SCALE_FACTOR, self.player_sprite.bottom // SCALE_FACTOR)
         # arcade.draw_text(pstring, start_x, start_y, arcade.color.WHITE, 20)
+
+    def on_key_press(self, key, modifiers):
+        player_sprite_list = self.get_sprite_list_by_name("player")
+
+        if player_sprite_list is None:
+            return
+
+        player_sprite = player_sprite_list["sprites"][0]
+        #print("Player_sprite is",player_sprite)
+
+        if key == arcade.key.UP:
+            player_sprite.change_y = MOVEMENT_SPEED
+        elif key == arcade.key.DOWN:
+            player_sprite.change_y = -MOVEMENT_SPEED
+        elif key == arcade.key.LEFT:
+            player_sprite.change_x = -MOVEMENT_SPEED
+        elif key == arcade.key.RIGHT:
+            player_sprite.change_x = MOVEMENT_SPEED
+
+    def on_key_release(self, key, modifiers):
+        player_sprite_list = self.get_sprite_list_by_name("player")
+
+        if player_sprite_list is None:
+            return
+
+        player_sprite = player_sprite_list["sprites"][0]
+
+        if key == arcade.key.UP or key == arcade.key.DOWN:
+            player_sprite.change_y = 0
+        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
+            player_sprite.change_x = 0
+
 
 
 
@@ -610,6 +662,7 @@ class MyGame(arcade.Window):
 
         # STUFF TO BREAK OUT INTO A MODE OBJECT ----------------------------------------------------------------------
         self.curmode = ShewMode()
+        self.curmode.setup()
         # TODO later have multiple
 
 
@@ -625,42 +678,22 @@ class MyGame(arcade.Window):
         if self.curmode is not None:
             self.curmode.on_draw()
 
-        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
-        # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
-
     def on_update(self, delta_time):
         """ Movement and game logic """
-
-        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
-
-        # Call update on all sprites (The sprites don't do much in this
-        # example though.)
-        self.player_list.update()
-        # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
+        if self.curmode is not None:
+            self.curmode.on_update()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
 
-        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
-        if key == arcade.key.UP:
-            self.player_sprite.change_y = MOVEMENT_SPEED
-        elif key == arcade.key.DOWN:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
-        elif key == arcade.key.LEFT:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
-        elif key == arcade.key.RIGHT:
-            self.player_sprite.change_x = MOVEMENT_SPEED
-        # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
+        if self.curmode is not None:
+            self.curmode.on_key_press(key,modifiers)
+
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
-        # STUFF TO BREAK OUT INTO MODE OBJECT -------------------------------------------------------------------------
-
-        if key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player_sprite.change_x = 0
-        # end STUFF TO BREAK OUT INTO MODE OBJECT ---------------------------------------------------------------------
+        if self.curmode is not None:
+            self.curmode.on_key_release(key,modifiers)
 
 
 def main():
