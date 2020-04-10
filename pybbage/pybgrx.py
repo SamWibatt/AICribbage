@@ -382,10 +382,11 @@ class Mode:
                                                     SCREEN_WIDTH, SCREEN_HEIGHT,
                                                     bgtexs[0]) # assuming only 1 bg texture
         # draw sprites
-        for sl in self.sprite_lists:
-            if "SpriteList" in sl and sl["SpriteList"] is not None:
-                #print("Drawing sprite list",sl["name"])
-                sl["SpriteList"].draw(filter = gl.GL_NEAREST)
+        if self.sprite_lists is not None:
+            for sl in self.sprite_lists:
+                if "SpriteList" in sl and sl["SpriteList"] is not None:
+                    #print("Drawing sprite list",sl["name"])
+                    sl["SpriteList"].draw(filter = gl.GL_NEAREST)
 
 
     def update_game_logic(self):
@@ -414,6 +415,13 @@ class Mode:
         # TODO WRITE DEFAULT VERSION if there is anything
         pass
 
+class TitleMode(Mode):
+    def setup(self):
+        self.add_textures("background", [arcade.load_texture("pybgrx_assets/PybbageTitleScreen.png")])
+
+    def on_key_release(self, key, modifiers):
+        if key == arcade.key.SPACE:
+            self.parent.set_nextmode_index(1)
 
 class ShewMode(Mode):
 
@@ -626,6 +634,13 @@ class ShewMode(Mode):
             player_sprite.change_x = 0
 
 
+# *********************************************************************************************************************
+# *********************************************************************************************************************
+# *********************************************************************************************************************
+# MAIN CLASS
+# *********************************************************************************************************************
+# *********************************************************************************************************************
+# *********************************************************************************************************************
 
 
 class MyGame(arcade.Window):
@@ -651,7 +666,9 @@ class MyGame(arcade.Window):
         # Set the background color
         arcade.set_background_color(arcade.color.AMAZON)
 
-        # no current mode
+        # no current mode or next
+        self.curmode_index = 0
+        self.nextmode_index = -1
         self.curmode = None
 
     def setup(self):
@@ -660,11 +677,21 @@ class MyGame(arcade.Window):
         # TODO here we will be setting up various mode objects
 
         # STUFF TO BREAK OUT INTO A MODE OBJECT ----------------------------------------------------------------------
-        self.curmode = ShewMode(parent = self)
-        self.curmode.setup()
+        self.modes = []
+        titlemode = TitleMode(parent = self)
+        titlemode.setup()
+        self.modes.append(titlemode)     # mode 0: title
+        shewmode = ShewMode(parent = self)
+        shewmode.setup()
+        self.modes.append(shewmode)      # mode 1: (though later another) shew
+        self.curmode_index = 0
+        self.curmode = self.modes[self.curmode_index]   # start at mode 0
         # TODO later have multiple
 
 
+    def set_nextmode_index(self,nextmode_index):
+        # for letting this object know the current mode is ready to switch to another
+        self.nextmode_index = nextmode_index
 
     def on_draw(self):
         """
@@ -679,6 +706,17 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time):
         """ Movement and game logic """
+
+        # check for a new mode
+        if self.nextmode_index != -1:
+            if self.nextmode_index >= 0 and self.nextmode_index < len(self.modes):
+                self.curmode_index = self.nextmode_index
+                self.curmode = self.modes[self.curmode_index]
+                # TODO: is there anything else we need to do? like an on_resume?
+            else:
+                print("Illegal nextmode index:",self.nextmode_index,"setting to -1")
+            self.nextmode_index = -1            # silent fail if illegal next index
+
         if self.curmode is not None:
             self.curmode.on_update()
 
