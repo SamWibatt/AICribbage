@@ -656,6 +656,9 @@ class MyGame(arcade.Window):
         # Call the parent class initializer
         super().__init__(width, height, title)
 
+        # so here's our game state!
+        self.gamestate = pyb.Pybbage()
+
         # Set the working directory (where we expect to find files) to the same
         # directory this .py file is in. You can leave this out of your own
         # code, but it is needed to easily run the examples using "python -m"

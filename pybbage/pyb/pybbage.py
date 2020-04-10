@@ -1242,7 +1242,26 @@ class Pybbage:
             if len(pone.get_cards()) == 0 and len(dealer.get_cards()) == 0:
                 play_is_done = True
 
-# HEREAFTER UNCHANGED *************************************************************************************************
+    def new_game(self,randseed):
+        # Create players
+        print("Creating players...")
+        players = [HumanPlayer(self,name="Human"), Player(self,name="Computer")]
+        dealer = None
+        pone = None
+        for player in players:
+            player.print()
+        print("-----------------------------------------------------")
+
+        # Initial shuffle
+        print("*** Initial shuffle...")
+        self.srandom(randseed)
+        deck = self.shuffle()
+        cardnum = 0;  # first card to be dealt, when dealing in order
+        # print("deck is",deck)
+        print("---")
+        # TODO this is gross and maybe these should be members
+        return (players, dealer, pone, deck, cardnum)
+
 
     def do_game(self):
         # quick random_at_most test paralleling the one in random.c
@@ -1360,22 +1379,12 @@ class Pybbage:
             sys.exit(0)
 
         # OK NOW FOR THE REAL THING ======================================================================================
-        # Create players
-        print("Creating players...")
-        players = [HumanPlayer(self,name="Human"), Player(self,name="Computer")]
-        dealer = None
-        pone = None
-        for player in players:
-            player.print()
-        print("-----------------------------------------------------")
 
-        # Initial shuffle
-        print("*** Initial shuffle...")
-        self.srandom(1043865)
-        deck = self.shuffle()
-        cardnum = 0;  # first card to be dealt, when dealing in order
-        # print("deck is",deck)
-        print("---")
+        # initialize players
+        randseed = 1043865
+        # TODO this is gross and I should do more refactor to make stuff be data members
+        (players, dealer, pone, deck, cardnum) = self.new_game(randseed)
+
 
         # TODO: ACC rules say cut for deal of the first game, thereafter the loser of the previous game is dealer.
         # TODO: am I planning to do multiple game sessions? I guess so
