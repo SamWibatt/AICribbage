@@ -415,6 +415,16 @@ class Mode:
         # TODO WRITE DEFAULT VERSION if there is anything
         pass
 
+    def on_leave(self):
+        # called when switching to another mode
+        pass
+
+    def on_resume(self):
+        # called when switching back to this mode
+        pass
+
+# title screen ====================================================================================================
+
 class TitleMode(Mode):
     def setup(self):
         self.add_textures("background", [arcade.load_texture("pybgrx_assets/PybbageTitleScreen.png")])
@@ -422,6 +432,8 @@ class TitleMode(Mode):
     def on_key_release(self, key, modifiers):
         if key == arcade.key.SPACE:
             self.parent.set_nextmode_index(1)
+
+# shew mode ==========================================================================================================
 
 class ShewMode(Mode):
 
@@ -621,6 +633,12 @@ class ShewMode(Mode):
             player_sprite.change_x = MOVEMENT_SPEED
 
     def on_key_release(self, key, modifiers):
+
+        # switch back to title screen, TODO TEMP
+        if key == arcade.key.SPACE:
+            self.parent.set_nextmode_index(0)
+
+
         player_sprite_list = self.get_sprite_list_by_name("player")
 
         if player_sprite_list is None:
@@ -710,18 +728,32 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
         """ Movement and game logic """
 
+        # MAYBE MOVE THIS INTO A SEPARATE FUNCTION THAT RUNS ON A SCHEDULE OF LIKE 1/20 of a second ===================
+        # although the website docs suggest this is a good place to do it - note that delta_time there
+        #
+        # on_update(delta_time: float)[source]
+        #     Move everything. Perform collision checks. Do all the game logic here.
+        #     Parameters
+        #         delta_time (float) – Time interval since the last time the function was called.
+
         # check for a new mode
         if self.nextmode_index != -1:
             if self.nextmode_index >= 0 and self.nextmode_index < len(self.modes):
+                # stand down current mode
+                self.curmode.on_leave()
+
                 self.curmode_index = self.nextmode_index
                 self.curmode = self.modes[self.curmode_index]
-                # TODO: is there anything else we need to do? like an on_resume?
+
+                # do whatever's needed on restarting this mode
+                self.curmode.on_resume()
             else:
                 print("Illegal nextmode index:",self.nextmode_index,"setting to -1")
             self.nextmode_index = -1            # silent fail if illegal next index
 
         if self.curmode is not None:
             self.curmode.on_update()
+        # MAYBE MOVE THIS INTO A SEPARATE FUNCTION THAT RUNS ON A SCHEDULE OF LIKE 1/20 of a second ===================
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
