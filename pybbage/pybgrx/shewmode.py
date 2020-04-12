@@ -120,6 +120,28 @@ class ShewMode(Mode):
         self.add_sprite_list("highlights",highlight_list,highlight_sprites)
         self.now_highlighted = [False] * len(highlight_sprites)
 
+        # Here, one sprite for showing the score name
+        SCORENAME_HEIGHT = 44
+        SCORENAME_WIDTH = 320
+        scorename_textures = arcade.load_spritesheet("pybgrx_assets/ScoreNames-xparent.png",sprite_width=SCORENAME_WIDTH,
+                                                     sprite_height=SCORENAME_HEIGHT,columns=1,count=20)
+        self.add_textures("scorenames",scorename_textures)
+        scorename_list = arcade.SpriteList(is_static = True)
+        # this is a kludge, load a card back sprite to set the image size, then use texture
+        # note that TransparentScoreName can't be entirely transparent or the load fails. This one just has one pixel
+        # of the background color in each corner
+        newscorename = ScoreName("pybgrx_assets/TransparentScoreName.png",scale=SPRITE_SCALING)
+        for j in range(20):
+            #print("scorename_textures",j,"is",scorename_textures[j])
+            newscorename.append_texture(scorename_textures[j])  # swh
+        newscorename.set_texture(20)        # test
+        newscorename.left = 0
+        newscorename.bottom = (SCREEN_HEIGHT // 2) - ((SCORENAME_HEIGHT//2) * SCALE_FACTOR)
+        scorename_list.append(newscorename)
+        self.add_sprite_list("scorenames",scorename_list,[newscorename])
+
+        #print("newscorename.texture is",newscorename.texture)
+
         # Set up the player - let's try a king of hearts
         # would this work for loading the whole set of them?
         # https://arcade.academy/_modules/arcade/texture.html#load_spritesheet
