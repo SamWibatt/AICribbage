@@ -1,0 +1,30 @@
+Numbers:
+- new image 320x40, filled black
+- Ubuntu Mono Bold
+- 36 pix
+- white
+- antialiasing
+- hinting: medium
+- justify left
+- first line indent 0
+- line spacing 3.0 (doesn't matter)
+- letter spacing 3.0
+- box: static
+
+- Select entire area with text box, type
+  (space)0123456789
+- delete little dot in center of zero
+
+- select by color, threshold 240.0, by HSV value
+- click in some white
+- Select | grow by 2 pixels
+- Select | feather by 2 pixels - NO DON'T ardy can't do semixparent
+- Flatten Image
+- copy, paste as new layer in place
+- delete all layers but the new one
+- select the numbers plus a pixel after the 9 so total width is 210,
+  height 26
+- float and nudge into corner
+- set canvas size to 210 x 26, so each number should be 21x26
+
+
