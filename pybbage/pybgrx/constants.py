@@ -15,15 +15,34 @@ SCREEN_TITLE = "Hello and welcome to PYBBAGE"
 
 SPRITE_SCALING = 1.0 * SCALE_FACTOR
 
+
+
+
+# sprite h/w for score names and numbers (i.e., play and show incremental scores, not total scores.)
+# given in literal pixel dimensions for cutting out of a sprite sheet
+SCORENAME_HEIGHT = 44
+SCORENAME_WIDTH = 320
+SCORENUMBER_HEIGHT = 26
+SCORENUMBER_WIDTH = 21
+
+# for putting the incremental score to the right of the cards
+SCORENUMBER_LEFT = (209 * SCALE_FACTOR)
+SCORENUMBER_BOTTOM = (49 * SCALE_FACTOR)
+SCORENUMBER_SCREEN_WIDTH = (SCORENUMBER_WIDTH * SCALE_FACTOR)
+
+# similar for cards
+CARD_HEIGHT = 64
+CARD_WIDTH = 41
+
 # for screen arrangement, in pixels.
 CARD_SHOW_LEFT_MARGIN = (21 * SCALE_FACTOR)
 CARD_SHOW_INTERCARD_MARGIN = (3 * SCALE_FACTOR)
-CARD_WIDTH = (41 * SCALE_FACTOR)                # hm
+CARD_SCREEN_WIDTH = (CARD_WIDTH * SCALE_FACTOR)                # hm
 # need to figure out how to handle arcade's backwards y coordinates - yeah, I SAID IT
 CARD_SHOW_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 
 # highlight offset from card left/bottom
-HIGHLIGHT_WIDTH = (3*SCALE_FACTOR)
+HIGHLIGHT_SCREEN_WIDTH = (3*SCALE_FACTOR)
 
 # for putting the starter to the right of the board
 CARD_STARTER_BOTTOM = (153 * SCALE_FACTOR)

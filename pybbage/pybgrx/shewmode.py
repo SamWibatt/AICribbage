@@ -54,8 +54,8 @@ class ShewMode(Mode):
 
         # then let's make some stationary card sprites for where I think they might be in the real game
         # normal list of them to be able to access each and change things - do we need it?
-        card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=41,sprite_height=64,
-                                                columns=13,count=52)
+        card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=CARD_WIDTH,
+                                                sprite_height=CARD_HEIGHT,columns=13,count=52)
         self.add_textures("cards",card_textures)
         card_list = arcade.SpriteList(is_static = True)
         card_sprites = []
@@ -68,7 +68,7 @@ class ShewMode(Mode):
             newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
             newcard.append_texture(card_textures[cards[j]])  # swh
             newcard.set_texture(1)
-            newcard.left = CARD_SHOW_LEFT_MARGIN + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
+            newcard.left = CARD_SHOW_LEFT_MARGIN + (j * (CARD_SCREEN_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
             newcard.bottom = CARD_SHOW_BOTTOM_MARGIN
             card_sprites.append(newcard)
             card_list.append(newcard)
@@ -107,23 +107,23 @@ class ShewMode(Mode):
         for j in range(4):
             # For now there is only one kind of highlight, later can use others like I do with cards and pegs
             newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
-            newhighlight.left = (CARD_SHOW_LEFT_MARGIN - HIGHLIGHT_WIDTH) + (j * (CARD_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
-            newhighlight.bottom = CARD_SHOW_BOTTOM_MARGIN - HIGHLIGHT_WIDTH
+            newhighlight.left = (CARD_SHOW_LEFT_MARGIN - HIGHLIGHT_SCREEN_WIDTH) + \
+                                (j * (CARD_SCREEN_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
+            newhighlight.bottom = CARD_SHOW_BOTTOM_MARGIN - HIGHLIGHT_SCREEN_WIDTH
             highlight_sprites.append(newhighlight)
             #highlight_list.append(newhighlight)
         # then the starter highlight
         newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
-        newhighlight.left = CARD_STARTER_LEFT - HIGHLIGHT_WIDTH
-        newhighlight.bottom = CARD_STARTER_BOTTOM - HIGHLIGHT_WIDTH
+        newhighlight.left = CARD_STARTER_LEFT - HIGHLIGHT_SCREEN_WIDTH
+        newhighlight.bottom = CARD_STARTER_BOTTOM - HIGHLIGHT_SCREEN_WIDTH
         highlight_sprites.append(newhighlight)
         #highlight_list.append(newhighlight)
         self.add_sprite_list("highlights",highlight_list,highlight_sprites)
         self.now_highlighted = [False] * len(highlight_sprites)
 
         # Here, one sprite for showing the score name
-        SCORENAME_HEIGHT = 44
-        SCORENAME_WIDTH = 320
-        scorename_textures = arcade.load_spritesheet("pybgrx_assets/ScoreNames-xparent.png",sprite_width=SCORENAME_WIDTH,
+        scorename_textures = arcade.load_spritesheet("pybgrx_assets/ScoreNames-xparent.png",
+                                                     sprite_width=SCORENAME_WIDTH,
                                                      sprite_height=SCORENAME_HEIGHT,columns=1,count=20)
         self.add_textures("scorenames",scorename_textures)
         scorename_list = arcade.SpriteList(is_static = True)
@@ -143,6 +143,32 @@ class ShewMode(Mode):
         self.nextscoretexindex = 0
 
         #print("newscorename.texture is",newscorename.texture)
+
+        # tens and ones digit for per-hand score i.e. fifteen two fifteen four
+        scorenumber_textures = arcade.load_spritesheet("pybgrx_assets/ScoreNumbers-xparent.png",
+                                                       sprite_width=SCORENUMBER_WIDTH,
+                                                       sprite_height=SCORENUMBER_HEIGHT,columns=10,count=10)
+        self.add_textures("scorenumbers",scorenumber_textures)
+        # I plan for these to fly up and "kick" a peg into motion, so they're not static.
+        scorenumber_list = arcade.SpriteList(is_static=False)
+        scorenumber_sprites = []
+        # so create 2 digits, each with 11 possible textures (blank, then 0..9)
+        # so setting to a digit means adjusting by 1 but games are not all grace
+        for i in range(2):
+            newscorenumber = ScoreNumber("pybgrx_assets/TransparentScoreNumber.png",scale=SPRITE_SCALING)
+            for j in range(10):
+                newscorenumber.append_texture(scorenumber_textures[j])
+            newscorenumber.left = SCORENUMBER_LEFT + (i * SCORENUMBER_SCREEN_WIDTH)
+            newscorenumber.bottom = SCORENUMBER_BOTTOM
+            scorename_list.append(newscorenumber)
+            scorenumber_sprites.append(newscorenumber)
+        self.add_sprite_list("scorenumbers",scorenumber_list,scorenumber_sprites)
+        # TEMP to shew a number, later the ScoreNumber class will govern?
+        scnums = self.get_sprite_list_by_name("scorenumbers")
+        scnums["sprites"][0].set_texture(2+1)           # set tens digit to 2
+        scnums["sprites"][1].set_texture(9+1)           # set tens digit to 9
+
+
 
         # Set up the player - let's try a king of hearts
         # would this work for loading the whole set of them?

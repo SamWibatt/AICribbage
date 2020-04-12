@@ -80,6 +80,14 @@ class ScoreName(arcade.Sprite):
     def update(self):
         pass
 
+# for score numbers
+class ScoreNumber(arcade.Sprite):
+
+    # currently not much needs to be done
+    def update(self):
+        pass
+
+
 
 # class for containing a "mode" - will see what all gets in there, but I think it's pretty much everything
 # that's currently in MyGame - background, sprites, user interface, etc.
