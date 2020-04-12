@@ -201,16 +201,16 @@ class Mode:
                     sl["SpriteList"].draw(filter = gl.GL_NEAREST)
 
 
-    def update_game_logic(self):
+    def update_game_logic(self,delta_time):
         # broken out from on_update so modes can override this without having to duplicate the drawing stuff
         # here, update whatever is relevant for the mode, like animating flying numbers or pegs or whatever
         # aaaand probably calling pybbage logic? Have to think about that. Might happen outside the drawing
         # seems unlikely you'd do heavy thinking in the draw update. TODO LOOK INTO
         pass
 
-    def on_update(self):
+    def on_update(self,delta_time):
         # do game logic callback
-        self.update_game_logic()
+        self.update_game_logic(delta_time)
 
         # call update on all the sprite lists
         if self.sprite_lists is not None:
@@ -225,6 +225,10 @@ class Mode:
     def on_key_release(self, key, modifiers):
         # how to handle? maybe a dict of key constant -> member function to handle it?
         # TODO WRITE DEFAULT VERSION if there is anything
+        pass
+
+    def on_tick(self,delta_time):
+        #print("on_tick dt =",delta_time)
         pass
 
     def on_leave(self):

@@ -134,11 +134,13 @@ class ShewMode(Mode):
         for j in range(20):
             #print("scorename_textures",j,"is",scorename_textures[j])
             newscorename.append_texture(scorename_textures[j])  # swh
-        newscorename.set_texture(20)        # test
+        #newscorename.set_texture(20)        # test
         newscorename.left = 0
         newscorename.bottom = (SCREEN_HEIGHT // 2) - ((SCORENAME_HEIGHT//2) * SCALE_FACTOR)
         scorename_list.append(newscorename)
         self.add_sprite_list("scorenames",scorename_list,[newscorename])
+        # TEMP TEST RIP OUT
+        self.nextscoretexindex = 0
 
         #print("newscorename.texture is",newscorename.texture)
 
@@ -159,7 +161,8 @@ class ShewMode(Mode):
         self.add_sprite_list("player",player_list,[player_sprite])
 
 
-    def update_game_logic(self):
+    def update_game_logic(self,delta_time):
+        #print("shew ugl dt =",delta_time)
         pass
 
     def on_draw(self):
@@ -202,8 +205,6 @@ class ShewMode(Mode):
                 #print("Drawing sprite list",sl["name"])
                 sl["SpriteList"].draw(filter = gl.GL_NEAREST)
 
-
-
         # then for TODO TEMP hole finding print the player's bottom and left.
         # start_x and start_y make the start point for the text. We draw a dot to make it easy too see
         # the text in relation to its start x and y.
@@ -212,6 +213,29 @@ class ShewMode(Mode):
         # arcade.draw_point(start_x, start_y, arcade.color.BLUE, 5)
         # pstring = "{},{}".format(self.player_sprite.left // SCALE_FACTOR, self.player_sprite.bottom // SCALE_FACTOR)
         # arcade.draw_text(pstring, start_x, start_y, arcade.color.WHITE, 20)
+
+    # on_tick emulates the system-wide timer interrupt I plan to set up in the ESP32/ardy version
+    # which will make it less portable but is needed for debouncing and such
+    def on_tick(self,delta_time):
+        #print("shew tick dt =",delta_time)
+        # test: step through score names
+        scorelist = self.get_sprite_list_by_name("scorenames")
+        if scorelist is not None:
+            self.nextscoretexindex = (self.nextscoretexindex + 1) % 21
+            # print("nexttexindex =",self.nextscoretexindex)
+            scorelist["sprites"][0].set_texture(self.nextscoretexindex)
+
+    def on_leave(self):
+        # TEMP? clear score name showing
+        scorelist = self.get_sprite_list_by_name("scorenames")
+        if scorelist is not None:
+            scorelist["sprites"][0].set_texture(0)
+        # TODO probably highlights and stuff
+
+
+    def on_resume(self):
+        # TEMP TODO RIP OUT
+        self.nextscoretexindex = 0
 
     def on_key_press(self, key, modifiers):
         player_sprite_list = self.get_sprite_list_by_name("player")

@@ -94,6 +94,10 @@ class MyGame(arcade.Window):
         self.curmode_index = 0
         self.curmode = self.modes[self.curmode_index]   # start at mode 0
 
+        # set up the "tick" timer which in real thing will be a 1/50s or so interrupt
+        # TODO Temp it's 1/2 sec to test
+        arcade.schedule(self.on_tick, 1 / 2)
+
 
     def set_nextmode_index(self,nextmode_index):
         # for letting this object know the current mode is ready to switch to another
@@ -137,8 +141,13 @@ class MyGame(arcade.Window):
             self.nextmode_index = -1            # silent fail if illegal next index
 
         if self.curmode is not None:
-            self.curmode.on_update()
+            self.curmode.on_update(delta_time)
         # MAYBE MOVE THIS INTO A SEPARATE FUNCTION THAT RUNS ON A SCHEDULE OF LIKE 1/20 of a second ===================
+        # ektully that'll be 1/50, I think, and that's on_tick
+
+    def on_tick(self,delta_time):
+        if self.curmode is not None:
+            self.curmode.on_tick(delta_time)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
