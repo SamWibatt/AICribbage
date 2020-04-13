@@ -87,6 +87,76 @@ class ScoreNumber(arcade.Sprite):
     def update(self):
         pass
 
+# EVENT LIST ==========================================================================================================
+
+# maintains a list of lists of (time in millis, callback)
+# lists because then we can modify them if we wanna
+# do we want to keep the list sorted? it seems appropriate
+# also pass in a name so we can find by name
+
+class EventList:
+    def __init__(self):
+        self.next_event_index = -1
+        self.events = []
+        self.accumulated_millis = 0
+        self.active = False
+
+    def add_event(self,name,time_millis,callback):
+        #self.events.append((time_millis,callback))
+        if self.events == []:
+            self.events = [[name,time_millis,callback]]
+        elif time_millis < self.events[0][1]:
+            self.events.insert(0,[name,time_millis,callback])
+        elif time_millis > self.events[-1][1]:
+            self.events.append([name,time_millis,callback])
+        else:
+            # look through the list until find a timestamp > than the one put on
+            # so if there are some =, this one will be inserted after them
+            for j in range(len(self.events)):
+                if self.events[j][1] > time_millis:
+                    break
+                # assuming j is within the list, bc the cases above handle other cases
+                self.events.insert(j,[name,time_millis,callback])
+
+    def reset(self):
+        # TODO figure out how to stand down whatever has been going on - or is that caller's responsibility?
+        # e.g. skipping a shew score animation, how to shut off the sprites?
+        self.next_event_index = 0
+        self.accumulated_millis = 0
+        self.active = False
+
+    def run(self):
+        # start things rolling
+        self.active = True
+
+    def pause(self):
+        self.active = False
+
+    # delta_time in seconds
+    def update(self,delta_time):
+        if self.active == False:
+            return
+
+        # convert to millis and accumulate
+        delta_millis = int(delta_time / 0.001)
+        self.accumulated_millis += delta_millis
+
+        # execute events until the next event's timestamp is > accumulated millis
+        while self.accumulated_millis >= self.events[self.next_event_index][1] and \
+            self.next_event_index < len(self.events):
+            # do the event callback
+            self.events[self.next_event_index][2]()     # do we need args?
+            self.next_event_index += 1
+
+        # halt if we've reached the end of the list
+        if self.next_event_index < 0 or self.next_event_index >= len(self.events):
+            self.active = False
+
+
+
+
+
+# MODE CLASS ==========================================================================================================
 
 
 # class for containing a "mode" - will see what all gets in there, but I think it's pretty much everything
