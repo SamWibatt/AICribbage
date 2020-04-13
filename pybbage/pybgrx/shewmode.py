@@ -275,8 +275,49 @@ class ShewMode(Mode):
         starter = pyb.stringcard('5d')
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter)) # DEBUG TODO RIP OUT
         (score,subsets) = pyb.score_shew(hand,starter)
-        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG TODO RIP OUT
+        pyb.render_score_subsets(hand, starter, subsets)  # renders to console # DEBUG TODO RIP OUT
 
+        # experiment: build an event list! From my 02 page in wiki! The "scriptoid" is an EventList.
+        #     * basically need a "submit subset list" thing that builds a scriptoid for the on_tick to follow.
+        #     * set incremental score display to 0
+        #     * for each entry in the subset list:
+        #         * say a total of a second display, can tighten or fiddle timings as needed
+        #         * show highlights and score name immediately
+        #         * wait 1/2 second
+        #         * add subset scorelet to incremental score (later animated with a little number sprite and sparkles)
+        #         * render new incremental score
+        #         * wait 1/4 second
+        #         * remove score name display
+        #         * wait 1/4 second
+        #         * if the skip button is pressed during all that
+        #             * render final incremental score and go to next step
+        # second event list:
+        #     * after the incremental score is all added up, OR skip,
+        #         * move inc score to the player's back peg. Pretty fast, like 1/5 second?
+        #         * back peg flies to its new spot
+        score_evlist = EventList()
+        # TODO figure out how to register a skip callback
+        # loop based on pyb.render_score_subsets
+        cur_acc_millis = 0          # start off at time 0
+        # at timestamp 0:
+        # - need a callback that sets incremental score to 0, clears inc. score display
+        #score_evlist.add_event("init",0,???,args,kwargs)
+        # - callback to set running incremental score to 0 and display it
+        total_inc_score = 0
+        for subset in subsets:
+            # partcards is list of 0..4, where 0..3 are cards in hand, 4 is starter
+            # should align for our highlights and such
+            (partcards,scoreindex) = subset
+            # add up the total incremental score before starting the animation, in case it gets skipped
+            total_inc_score += self.parent.get_gamestate().scoreStringsNPoints[scoreindex][1]
+            # at cur_acc_millis:
+            # - callback to set cards' highlights according to partcards
+            # - callback to set score name's texture according to scoreindex
+            # add 500 to cur_acc millis for 1/2 second delay
+            # - callback add subset score to running total and display new running score
+
+        # TODO separate event list for the score flying up and kicking the peg
+        peg_move_evlist = EventList()
 
     def on_key_press(self, key, modifiers):
         player_sprite_list = self.get_sprite_list_by_name("player")

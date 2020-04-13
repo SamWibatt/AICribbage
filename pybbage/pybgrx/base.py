@@ -6,8 +6,12 @@
 # To experiment and develop a graphical cribbage game that can be ported to small systems like Arduino / 320x240 LCD
 # And possibly to fancy glossy version like Gold Fish 3 but for cribbage
 
+# A lot of this will work with other games, might make a game skeleton out of it for prototyping other Arduino
+# stuff
+
 # constants - think re: where these should go
 # gross, but avoids having to type pybgrx.constants in front of everything
+
 from pybgrx.constants import *
 
 import arcade
@@ -17,7 +21,7 @@ import pyglet.gl as gl
 from pyb import pybbage as pyb
 
 
-
+# TODO move sprite classes to a game-specific file
 # SPRITE CLASSES ======================================================================================================
 
 class Player(arcade.Sprite):
@@ -86,13 +90,15 @@ class ScoreNumber(arcade.Sprite):
     # currently not much needs to be done
     def update(self):
         pass
+# end # TODO move sprite classes to a game-specific file
 
 # EVENT LIST ==========================================================================================================
 
-# maintains a list of lists of (time in millis, callback)
+# maintains a list of lists of [time in millis, callback, parameters]
 # lists because then we can modify them if we wanna
 # do we want to keep the list sorted? it seems appropriate
 # also pass in a name so we can find by name
+# parameters are what? *args and **kwargs, try
 
 class EventList:
     def __init__(self):
@@ -101,14 +107,19 @@ class EventList:
         self.accumulated_millis = 0
         self.active = False
 
-    def add_event(self,name,time_millis,callback):
-        #self.events.append((time_millis,callback))
+    # how to hand in the args and kwargs? see tests/callbacktest.py
+    def add_event(self, name, time_millis, callback, *args, **kwargs):
+        # tried just making it a list all in one go like [name, time_millis, callback, *args, **kwargs]
+        # but pycharm's syntax checker didn't like that
+        # then again, from tests/callbacktest.py, the * and ** are wrong
+        event_record = [name, time_millis, callback, args, kwargs]
+
         if self.events == []:
-            self.events = [[name,time_millis,callback]]
+            self.events = [event_record]
         elif time_millis < self.events[0][1]:
-            self.events.insert(0,[name,time_millis,callback])
+            self.events.insert(0,event_record)
         elif time_millis > self.events[-1][1]:
-            self.events.append([name,time_millis,callback])
+            self.events.append(event_record)
         else:
             # look through the list until find a timestamp > than the one put on
             # so if there are some =, this one will be inserted after them
@@ -116,7 +127,7 @@ class EventList:
                 if self.events[j][1] > time_millis:
                     break
                 # assuming j is within the list, bc the cases above handle other cases
-                self.events.insert(j,[name,time_millis,callback])
+                self.events.insert(j,event_record)
 
     def reset(self):
         # TODO figure out how to stand down whatever has been going on - or is that caller's responsibility?
@@ -142,10 +153,19 @@ class EventList:
         self.accumulated_millis += delta_millis
 
         # execute events until the next event's timestamp is > accumulated millis
-        while self.accumulated_millis >= self.events[self.next_event_index][1] and \
-            self.next_event_index < len(self.events):
-            # do the event callback
-            self.events[self.next_event_index][2]()     # do we need args?
+        while self.next_event_index < len(self.events) and \
+            self.accumulated_millis >= self.events[self.next_event_index][1]:
+            # do the event callback - event is [name, time_millis, callback, args, kwargs]
+            ev = self.events[self.next_event_index]     # to keep the next line tidy
+            # from callbacktest, where it's [callback, args, kwargs]
+            #         cbargs = self.callbacks[index][1]
+            #         print("cbargs are",cbargs)
+            #         cbkwargs = self.callbacks[index][2]
+            #         print("cbkwargs are",cbkwargs)
+            #         self.callbacks[index][0](*cbargs,**cbkwargs)
+            args = ev[3]
+            kwargs = ev[4]
+            ev[2](*args,**kwargs)
             self.next_event_index += 1
 
         # halt if we've reached the end of the list
