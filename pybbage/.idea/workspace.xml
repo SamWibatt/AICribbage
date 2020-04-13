@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="2428a544-b4ca-425e-a062-d816a5c7fdf4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pybgrx/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pybgrx/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pybgrx/shewmode.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/shewmode.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -152,9 +151,9 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="0" y="27" width="581" height="741" key="find.popup/35.27.1331.741@35.27.1331.741" timestamp="1584570258400" />
-    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1585882141477">
+    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1586745573417">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup/35.27.1331.741@35.27.1331.741" timestamp="1585882141477" />
+    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup/35.27.1331.741@35.27.1331.741" timestamp="1586745573417" />
   </component>
 </project>

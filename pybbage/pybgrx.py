@@ -62,8 +62,6 @@ class MyGame(arcade.Window):
         # Call the parent class initializer
         super().__init__(width, height, title)
 
-        # so here's our game state!
-        self.gamestate = pyb.Pybbage()
 
         # Set the working directory (where we expect to find files) to the same
         # directory this .py file is in. You can leave this out of your own
@@ -80,10 +78,15 @@ class MyGame(arcade.Window):
         self.nextmode_index = -1
         self.curmode = None
 
+        # no gamestate yet
+        self.gamestate = None
+
     def setup(self):
         """ Set up the game and initialize the variables. """
 
-        # STUFF TO BREAK OUT INTO A MODE OBJECT ----------------------------------------------------------------------
+        # so here's our game state!
+        self.gamestate = pyb.Pybbage()
+
         self.modes = []
         titlemode = TitleMode(parent = self)
         titlemode.setup()
@@ -102,6 +105,9 @@ class MyGame(arcade.Window):
     def set_nextmode_index(self,nextmode_index):
         # for letting this object know the current mode is ready to switch to another
         self.nextmode_index = nextmode_index
+
+    def get_gamestate(self):
+        return self.gamestate
 
     def on_draw(self):
         """

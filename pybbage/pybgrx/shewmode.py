@@ -263,6 +263,21 @@ class ShewMode(Mode):
         # TEMP TODO RIP OUT
         self.nextscoretexindex = 0
 
+        # OK so let's try a hand! - worky!
+        # TODO Later I reckon this will get loaded up with the players' actual hands, or just
+        # fish them out of the gamestate, then load them up for
+        pyb = self.parent.get_gamestate()
+        # for 29
+        # hand = [pyb.stringcard(x) for x in ['5c', '5d', 'jh', '5s']]
+        # starter = pyb.stringcard('5h')
+        # for awesome double double run
+        hand = [pyb.stringcard(x) for x in ['4c', '5c', '6s', '6h']]
+        starter = pyb.stringcard('5d')
+        print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter)) # DEBUG TODO RIP OUT
+        (score,subsets) = pyb.score_shew(hand,starter)
+        pyb.render_score_subsets(hand, starter, subsets)        # DEBUG TODO RIP OUT
+
+
     def on_key_press(self, key, modifiers):
         player_sprite_list = self.get_sprite_list_by_name("player")
 
