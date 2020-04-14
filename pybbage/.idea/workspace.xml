@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="2428a544-b4ca-425e-a062-d816a5c7fdf4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pybgrx/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/constants.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pybgrx/shewmode.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/shewmode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx_assets/CardDeck.png" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx_assets/CardDeck.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +35,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../arduino/ConvertPngToTFT.py" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -116,11 +116,11 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="435" y="253" width="520" height="296" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/35.27.1331.741@35.27.1331.741" timestamp="1583705163824" />
-    <state x="483" y="163" width="424" height="491" key="FileChooserDialogImpl" timestamp="1586013483363">
+    <state x="483" y="163" width="424" height="491" key="FileChooserDialogImpl" timestamp="1586835571392">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="517" y="153" key="FileChooserDialogImpl/0.0.1536.834/3840.0.1920.1080@0.0.1536.834" timestamp="1585770945951" />
-    <state x="483" y="163" width="424" height="491" key="FileChooserDialogImpl/35.27.1331.741@35.27.1331.741" timestamp="1586013483363" />
+    <state x="483" y="163" width="424" height="491" key="FileChooserDialogImpl/35.27.1331.741@35.27.1331.741" timestamp="1586835571392" />
     <state width="1310" height="557" key="GridCell.Tab.0.bottom" timestamp="1586568536667">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
@@ -151,9 +151,9 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="0" y="27" width="581" height="741" key="find.popup/35.27.1331.741@35.27.1331.741" timestamp="1584570258400" />
-    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1586828238447">
+    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1586835592285">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
-    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup/35.27.1331.741@35.27.1331.741" timestamp="1586828238447" />
+    <state x="363" y="89" width="672" height="678" key="search.everywhere.popup/35.27.1331.741@35.27.1331.741" timestamp="1586835592285" />
   </component>
 </project>

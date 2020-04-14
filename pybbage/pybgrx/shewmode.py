@@ -55,7 +55,7 @@ class ShewMode(Mode):
         # then let's make some stationary card sprites for where I think they might be in the real game
         # normal list of them to be able to access each and change things - do we need it?
         card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=CARD_WIDTH,
-                                                sprite_height=CARD_HEIGHT,columns=13,count=52)
+                                                sprite_height=CARD_HEIGHT,columns=4,count=52)
         self.add_textures("cards",card_textures)
         card_list = arcade.SpriteList(is_static = True)
         card_sprites = []
@@ -292,7 +292,7 @@ class ShewMode(Mode):
         # TEMP need to set cards to the cards in the hand
         card_sprites = self.get_sprite_list_by_name("cards")["sprites"]
         for j in range(5):
-            card_sprites[j].set_texture(cards[j])
+            card_sprites[j].set_texture(cards[j]+1)
 
         # experiment: build an event list! From my 02 page in wiki! The "scriptoid" is an EventList.
         #     * basically need a "submit subset list" thing that builds a scriptoid for the on_tick to follow.
