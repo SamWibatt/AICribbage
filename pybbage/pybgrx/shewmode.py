@@ -62,29 +62,31 @@ class ShewMode(Mode):
         # so let's do 4 cards and a starter, say, and see what we get trying to use pixels
         # just take a swing, say 22 pixels in
         # TEMP TEST for 29 hand
-        cards = [4,43,30,23,17]  # = 5 of horts, 5s, 5c, Jd, 5d
+        #cards = [4,43,30,23,17]  # = 5 of horts, 5s, 5c, Jd, 5d
         for j in range(4):
             # this is a kludge, load a card back sprite to set the image size, then use texture
             newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
-            newcard.append_texture(card_textures[cards[j]])  # swh
-            newcard.set_texture(1)
+            for t in range(52):
+                newcard.append_texture(card_textures[t])  # swh
+            #newcard.set_texture(1)
             newcard.left = CARD_SHOW_LEFT_MARGIN + (j * (CARD_SCREEN_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
             newcard.bottom = CARD_SHOW_BOTTOM_MARGIN
             card_sprites.append(newcard)
             card_list.append(newcard)
         # then the starter card
         newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
-        newcard.append_texture(card_textures[cards[4]])  # swh
-        newcard.set_texture(1)
+        for t in range(52):
+            newcard.append_texture(card_textures[t])  # swh
+        #newcard.set_texture(1)
         newcard.left = CARD_STARTER_LEFT
         newcard.bottom = CARD_STARTER_BOTTOM
         card_sprites.append(newcard)
         card_list.append(newcard)
 
         # set some highlights - TODO debug rip out
-        card_sprites[1].set_highlighted(True)
-        card_sprites[2].set_highlighted(True)
-        card_sprites[4].set_highlighted(True)
+        #card_sprites[1].set_highlighted(True)
+        #card_sprites[2].set_highlighted(True)
+        #card_sprites[4].set_highlighted(True)
 
         # build initial list of which cards are highlighted - actually init to all false
         self.last_highlighted = [False] * len(card_sprites)
@@ -181,8 +183,8 @@ class ShewMode(Mode):
         # then make a highlight
         player_list = arcade.SpriteList()
         player_sprite = Player("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
-        player_sprite.left = 18 * SCALE_FACTOR
-        player_sprite.bottom = 26 * SCALE_FACTOR
+        player_sprite.left = CARD_DECK_LEFT
+        player_sprite.bottom = CARD_DECK_BOTTOM
         player_list.append(player_sprite)
         self.add_sprite_list("player",player_list,[player_sprite])
 
@@ -281,9 +283,16 @@ class ShewMode(Mode):
         # for awesome double double run
         hand = [pyb.stringcard(x) for x in ['4c', '5c', '6s', '6h']]
         starter = pyb.stringcard('5d')
+        cards = hand + [starter]
+        print("cards",cards)
         print("hand",[pyb.cardstring(x) for x in hand],"starter",pyb.cardstring(starter)) # DEBUG TODO RIP OUT
         (score,subsets) = pyb.score_shew(hand,starter)
         pyb.render_score_subsets(hand, starter, subsets)  # renders to console # DEBUG TODO RIP OUT
+
+        # TEMP need to set cards to the cards in the hand
+        card_sprites = self.get_sprite_list_by_name("cards")["sprites"]
+        for j in range(5):
+            card_sprites[j].set_texture(cards[j])
 
         # experiment: build an event list! From my 02 page in wiki! The "scriptoid" is an EventList.
         #     * basically need a "submit subset list" thing that builds a scriptoid for the on_tick to follow.

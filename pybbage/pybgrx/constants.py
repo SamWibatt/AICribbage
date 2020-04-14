@@ -48,6 +48,9 @@ HIGHLIGHT_SCREEN_WIDTH = (3*SCALE_FACTOR)
 CARD_STARTER_BOTTOM = (153 * SCALE_FACTOR)
 CARD_STARTER_LEFT = (265 * SCALE_FACTOR)
 
+CARD_DECK_BOTTOM = (29 * SCALE_FACTOR)
+CARD_DECK_LEFT = (265 * SCALE_FACTOR)
+
 # left, bottom coords for all the holes in the cribbage board
 # TODO add starter and finish holes
 # list of 2 - outer lists are per player, player 0 gets the row that is at the top at start and end,
