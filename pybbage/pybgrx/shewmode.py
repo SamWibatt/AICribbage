@@ -335,17 +335,19 @@ class ShewMode(Mode):
             self.score_evlist.add_event("highlight"+str(j), cur_acc_millis, self.set_card_highlights_evcallback, partcards)
             # - callback to set score name's texture according to scoreindex - add 1 to skip blank at texture 0
             self.score_evlist.add_event("set_scorename"+str(j), cur_acc_millis, self.set_scorename_evcallback, scoreindex+1)
-            # add 500 to cur_acc millis for 1/2 second delay
-            cur_acc_millis += 500
+            # add 500 to cur_acc millis for 1/2 second delay - let's slow this down
+            cur_acc_millis += 750
             # - callback add subset score to running total and display new running score
             self.score_evlist.add_event("reset_score"+str(j), cur_acc_millis, self.set_incremental_score_evcallback,
                                    total_inc_score)
             # add 250 to cur_acc_millis for 1/4 second delay
-            cur_acc_millis += 250
+            cur_acc_millis += 350
             # - callback to set score name display to blank/off
             self.score_evlist.add_event("clr_scorename"+str(j),cur_acc_millis, self.set_scorename_evcallback,0)
             # add 250 to cur_acc_millis for 1/4 second delay
-            cur_acc_millis += 250
+            cur_acc_millis += 350
+        # clear all highlights
+        self.score_evlist.add_event("highlight"+str(j), cur_acc_millis, self.set_card_highlights_evcallback, [])
 
         # TODO separate event list for the score flying up and kicking the peg
         self.peg_move_evlist = EventList()
