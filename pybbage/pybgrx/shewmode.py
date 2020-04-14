@@ -164,9 +164,9 @@ class ShewMode(Mode):
             scorenumber_sprites.append(newscorenumber)
         self.add_sprite_list("scorenumbers",scorenumber_list,scorenumber_sprites)
         # TEMP to shew a number, later the ScoreNumber class will govern?
-        scnums = self.get_sprite_list_by_name("scorenumbers")
-        scnums["sprites"][0].set_texture(2+1)           # set tens digit to 2
-        scnums["sprites"][1].set_texture(9+1)           # set tens digit to 9
+        #scnums = self.get_sprite_list_by_name("scorenumbers")
+        #scnums["sprites"][0].set_texture(2+1)           # set tens digit to 2
+        #scnums["sprites"][1].set_texture(9+1)           # set tens digit to 9
 
 
 
@@ -185,6 +185,10 @@ class ShewMode(Mode):
         player_sprite.bottom = 26 * SCALE_FACTOR
         player_list.append(player_sprite)
         self.add_sprite_list("player",player_list,[player_sprite])
+
+        # event lists!
+        self.score_evlist = EventList()
+        self.peg_move_evlist = EventList()
 
 
     def update_game_logic(self,delta_time):
@@ -245,11 +249,15 @@ class ShewMode(Mode):
     def on_tick(self,delta_time):
         #print("shew tick dt =",delta_time)
         # test: step through score names
-        scorelist = self.get_sprite_list_by_name("scorenames")
-        if scorelist is not None:
-            self.nextscoretexindex = (self.nextscoretexindex + 1) % 21
-            # print("nexttexindex =",self.nextscoretexindex)
-            scorelist["sprites"][0].set_texture(self.nextscoretexindex)
+        # scorelist = self.get_sprite_list_by_name("scorenames")
+        # if scorelist is not None:
+        #     self.nextscoretexindex = (self.nextscoretexindex + 1) % 21
+        #     # print("nexttexindex =",self.nextscoretexindex)
+        #     scorelist["sprites"][0].set_texture(self.nextscoretexindex)
+        # advance event lists...?
+        # TODO: Might want to have a list of event lists like we do with textures and sprites in the base class
+        self.score_evlist.update(delta_time)
+        self.peg_move_evlist.update(delta_time)
 
     def on_leave(self):
         # TEMP? clear score name showing
@@ -295,16 +303,19 @@ class ShewMode(Mode):
         #     * after the incremental score is all added up, OR skip,
         #         * move inc score to the player's back peg. Pretty fast, like 1/5 second?
         #         * back peg flies to its new spot
-        score_evlist = EventList()
+        self.score_evlist = EventList()
         # TODO figure out how to register a skip callback
         # loop based on pyb.render_score_subsets
         cur_acc_millis = 0          # start off at time 0
         # at timestamp 0:
-        # - need a callback that sets incremental score to 0, clears inc. score display
-        #score_evlist.add_event("init",0,???,args,kwargs)
-        # - callback to set running incremental score to 0 and display it
+        # - callback that sets incremental score to 0, and prints inc. score display
+        self.score_evlist.add_event("reset_score",cur_acc_millis,self.set_incremental_score_evcallback,0)
+        # maybe wait a tick like 1/4s
+        cur_acc_millis += 250
         total_inc_score = 0
+        j = 0
         for subset in subsets:
+            j += 1
             # partcards is list of 0..4, where 0..3 are cards in hand, 4 is starter
             # should align for our highlights and such
             (partcards,scoreindex) = subset
@@ -312,12 +323,49 @@ class ShewMode(Mode):
             total_inc_score += self.parent.get_gamestate().scoreStringsNPoints[scoreindex][1]
             # at cur_acc_millis:
             # - callback to set cards' highlights according to partcards
-            # - callback to set score name's texture according to scoreindex
+            self.score_evlist.add_event("highlight"+str(j), cur_acc_millis, self.set_card_highlights_evcallback, partcards)
+            # - callback to set score name's texture according to scoreindex - add 1 to skip blank at texture 0
+            self.score_evlist.add_event("set_scorename"+str(j), cur_acc_millis, self.set_scorename_evcallback, scoreindex+1)
             # add 500 to cur_acc millis for 1/2 second delay
+            cur_acc_millis += 500
             # - callback add subset score to running total and display new running score
+            self.score_evlist.add_event("reset_score"+str(j), cur_acc_millis, self.set_incremental_score_evcallback,
+                                   total_inc_score)
+            # add 250 to cur_acc_millis for 1/4 second delay
+            cur_acc_millis += 250
+            # - callback to set score name display to blank/off
+            self.score_evlist.add_event("clr_scorename"+str(j),cur_acc_millis, self.set_scorename_evcallback,0)
+            # add 250 to cur_acc_millis for 1/4 second delay
+            cur_acc_millis += 250
 
         # TODO separate event list for the score flying up and kicking the peg
-        peg_move_evlist = EventList()
+        self.peg_move_evlist = EventList()
+
+        # then set it rolling!
+        self.score_evlist.run()
+
+    # callbacks for event list
+    def set_incremental_score_evcallback(self,newscore):
+        # set score sprites to whatever newscore says
+        scnums = self.get_sprite_list_by_name("scorenumbers")
+        # set tens digit: if it's 0, draw the blank sprite
+        tens = newscore // 10
+        if (tens) == 0:
+            scnums["sprites"][0].set_texture(0)         # set tens digit to blank
+        else:
+            scnums["sprites"][0].set_texture(tens+1)    # set tens digit to number
+        scnums["sprites"][1].set_texture((newscore % 10)+1)           # set ones digit to number
+
+    def set_scorename_evcallback(self,scoreindex_plus_one):
+        # set score name to appropriate score name index
+        # we will pass in scoreindex + 1 to skip over the blank - if we want blank, pass in 0
+        scname = self.get_sprite_list_by_name("scorenames")
+        scname["sprites"][0].set_texture(scoreindex_plus_one)
+
+    def set_card_highlights_evcallback(self,partcards):
+        cards = self.get_sprite_list_by_name("cards")["sprites"]
+        for j in range(5):
+            cards[j].set_highlighted(j in partcards)
 
     def on_key_press(self, key, modifiers):
         player_sprite_list = self.get_sprite_list_by_name("player")

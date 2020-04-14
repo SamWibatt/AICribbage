@@ -109,25 +109,28 @@ class EventList:
 
     # how to hand in the args and kwargs? see tests/callbacktest.py
     def add_event(self, name, time_millis, callback, *args, **kwargs):
+        #print("Add_event name:",name,"time:",time_millis,"cb",callback,"args:",args,"kw:",kwargs)
         # tried just making it a list all in one go like [name, time_millis, callback, *args, **kwargs]
         # but pycharm's syntax checker didn't like that
         # then again, from tests/callbacktest.py, the * and ** are wrong
         event_record = [name, time_millis, callback, args, kwargs]
 
-        if self.events == []:
-            self.events = [event_record]
-        elif time_millis < self.events[0][1]:
-            self.events.insert(0,event_record)
-        elif time_millis > self.events[-1][1]:
-            self.events.append(event_record)
-        else:
-            # look through the list until find a timestamp > than the one put on
-            # so if there are some =, this one will be inserted after them
-            for j in range(len(self.events)):
-                if self.events[j][1] > time_millis:
-                    break
-                # assuming j is within the list, bc the cases above handle other cases
-                self.events.insert(j,event_record)
+        self.events.append(event_record)
+        # TODO: trying to be fancy and inserting the elements in order is failing? Yup
+        # if self.events == []:
+        #     self.events = [event_record]
+        # elif time_millis < self.events[0][1]:
+        #     self.events.insert(0,event_record)
+        # elif time_millis > self.events[-1][1]:
+        #     self.events.append(event_record)
+        # else:
+        #     # look through the list until find a timestamp > than the one put on
+        #     # so if there are some =, this one will be inserted after them
+        #     for j in range(len(self.events)):
+        #         if self.events[j][1] > time_millis:
+        #             break
+        #         # assuming j is within the list, bc the cases above handle other cases
+        #         self.events.insert(j,event_record)
 
     def reset(self):
         # TODO figure out how to stand down whatever has been going on - or is that caller's responsibility?
@@ -138,6 +141,7 @@ class EventList:
 
     def run(self):
         # start things rolling
+        self.next_event_index = 0
         self.active = True
 
     def pause(self):
@@ -151,10 +155,13 @@ class EventList:
         # convert to millis and accumulate
         delta_millis = int(delta_time / 0.001)
         self.accumulated_millis += delta_millis
+        #print("delta_millis",delta_millis,"acc_millis",self.accumulated_millis)
 
         # execute events until the next event's timestamp is > accumulated millis
         while self.next_event_index < len(self.events) and \
             self.accumulated_millis >= self.events[self.next_event_index][1]:
+            #print("about to do event",self.next_event_index,"out of",len(self.events),"at",
+            #      self.events[self.next_event_index][1])
             # do the event callback - event is [name, time_millis, callback, args, kwargs]
             ev = self.events[self.next_event_index]     # to keep the next line tidy
             # from callbacktest, where it's [callback, args, kwargs]
