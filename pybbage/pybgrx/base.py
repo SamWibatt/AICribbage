@@ -160,8 +160,8 @@ class EventList:
         # execute events until the next event's timestamp is > accumulated millis
         while self.next_event_index < len(self.events) and \
             self.accumulated_millis >= self.events[self.next_event_index][1]:
-            #print("about to do event",self.next_event_index,"out of",len(self.events),"at",
-            #      self.events[self.next_event_index][1])
+            #print("about to do event",self.next_event_index,"out of",len(self.events),"timestamp",
+            #      self.events[self.next_event_index][1],"at",self.accumulated_millis)
             # do the event callback - event is [name, time_millis, callback, args, kwargs]
             ev = self.events[self.next_event_index]     # to keep the next line tidy
             # from callbacktest, where it's [callback, args, kwargs]

@@ -44,11 +44,15 @@ CARD_SHOW_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 # highlight offset from card left/bottom
 HIGHLIGHT_SCREEN_WIDTH = (3*SCALE_FACTOR)
 
-# for putting the starter to the right of the board
-CARD_STARTER_BOTTOM = (153 * SCALE_FACTOR)
+# for putting the starter to the right of the hand
+#CARD_STARTER_BOTTOM = (153 * SCALE_FACTOR)
+#CARD_STARTER_LEFT = (265 * SCALE_FACTOR)
+CARD_STARTER_BOTTOM = (29 * SCALE_FACTOR)
 CARD_STARTER_LEFT = (265 * SCALE_FACTOR)
 
-CARD_DECK_BOTTOM = (29 * SCALE_FACTOR)
+#CARD_DECK_BOTTOM = (29 * SCALE_FACTOR)
+#CARD_DECK_LEFT = (265 * SCALE_FACTOR)
+CARD_DECK_BOTTOM = (153 * SCALE_FACTOR)
 CARD_DECK_LEFT = (265 * SCALE_FACTOR)
 
 # left, bottom coords for all the holes in the cribbage board

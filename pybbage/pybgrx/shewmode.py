@@ -319,8 +319,8 @@ class ShewMode(Mode):
         # at timestamp 0:
         # - callback that sets incremental score to 0, and prints inc. score display
         self.score_evlist.add_event("reset_score",cur_acc_millis,self.set_incremental_score_evcallback,0)
-        # maybe wait a tick like 1/4s
-        cur_acc_millis += 250
+        # maybe wait a tick like 1/4s or more to let viewer orient
+        cur_acc_millis += 1000
         total_inc_score = 0
         j = 0
         for subset in subsets:
@@ -332,22 +332,32 @@ class ShewMode(Mode):
             total_inc_score += self.parent.get_gamestate().scoreStringsNPoints[scoreindex][1]
             # at cur_acc_millis:
             # - callback to set cards' highlights according to partcards
-            self.score_evlist.add_event("highlight"+str(j), cur_acc_millis, self.set_card_highlights_evcallback, partcards)
+            # - really should step through them all rapidly, like 1/10s apart, drawing the eye to each card
+            highlights_so_far = []
+            for i in range(len(partcards)):
+                highlights_so_far.append(partcards[i])
+                self.score_evlist.add_event("highlight"+str(j)+"."+str(i), cur_acc_millis,
+                                            self.set_card_highlights_evcallback,highlights_so_far)
+                cur_acc_millis += 100
             # - callback to set score name's texture according to scoreindex - add 1 to skip blank at texture 0
             self.score_evlist.add_event("set_scorename"+str(j), cur_acc_millis, self.set_scorename_evcallback, scoreindex+1)
             # add 500 to cur_acc millis for 1/2 second delay - let's slow this down
-            cur_acc_millis += 750
+            cur_acc_millis += 700
             # - callback add subset score to running total and display new running score
             self.score_evlist.add_event("reset_score"+str(j), cur_acc_millis, self.set_incremental_score_evcallback,
                                    total_inc_score)
             # add 250 to cur_acc_millis for 1/4 second delay
-            cur_acc_millis += 350
+            cur_acc_millis += 250
             # - callback to set score name display to blank/off
             self.score_evlist.add_event("clr_scorename"+str(j),cur_acc_millis, self.set_scorename_evcallback,0)
             # add 250 to cur_acc_millis for 1/4 second delay
             cur_acc_millis += 350
-        # clear all highlights
-        self.score_evlist.add_event("highlight"+str(j), cur_acc_millis, self.set_card_highlights_evcallback, [])
+            # clear all highlights
+            self.score_evlist.add_event("highlight"+str(j), cur_acc_millis, self.set_card_highlights_evcallback, [])
+            cur_acc_millis += 150
+
+        #print("score_evlist ====================================================================================")
+        #print(self.score_evlist.events)
 
         # TODO separate event list for the score flying up and kicking the peg
         self.peg_move_evlist = EventList()
