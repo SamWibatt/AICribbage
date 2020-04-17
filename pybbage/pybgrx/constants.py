@@ -57,14 +57,14 @@ CARD_DECK_LEFT = (265 * SCALE_FACTOR)
 
 # play mode
 # for screen arrangement, in pixels.
-# hand cards to choose from -
-CARD_PLAY_HAND_LEFT_MARGIN = (6 * SCALE_FACTOR)
-CARD_PLAY_HAND_SPACING = (41 * SCALE_FACTOR)
-# cards in the piled up cards on the right
-CARD_PLAY_LEFT_MARGIN = (175 * SCALE_FACTOR)
+# hand cards to choose from - currently building on the right
+CARD_PLAY_HAND_LEFT_MARGIN = (127 * SCALE_FACTOR)
+CARD_PLAY_INTERCARD_MARGIN = (3 * SCALE_FACTOR)
+# cards in the piled up cards on the left
+CARD_PLAY_LEFT_MARGIN = (21 * SCALE_FACTOR)
 CARD_PLAY_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 # distance from the left edge of one card to the next, they overlap
-CARD_PLAY_NEXTCARD_DIST = (14 * SCALE_FACTOR)
+CARD_PLAY_NEXTCARD_DIST = (21 * SCALE_FACTOR)
 
 # left, bottom coords for all the holes in the cribbage board
 # TODO add starter and finish holes

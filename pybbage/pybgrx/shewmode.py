@@ -105,7 +105,7 @@ class ShewMode(Mode):
         # but create it here and register
         highlight_list = arcade.SpriteList()
         highlight_sprites = []
-        # highlights for all 4 cards and starter (shew version
+        # highlights for all 4 cards and starter (shew version)
         for j in range(4):
             # For now there is only one kind of highlight, later can use others like I do with cards and pegs
             newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)

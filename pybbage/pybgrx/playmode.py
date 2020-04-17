@@ -34,22 +34,8 @@ class PlayMode(Mode):
         card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=CARD_WIDTH,
                                                 sprite_height=CARD_HEIGHT,columns=4,count=52)
         self.add_textures("cards",card_textures)
-        hand_card_list = arcade.SpriteList(is_static = True)
-        hand_card_sprites = []
-        # we have 4 cards in the hand
-        for j in range(4):
-            # this is a kludge, load a card back sprite to set the image size, then use texture
-            newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
-            for t in range(52):
-                newcard.append_texture(card_textures[t])  # swh
-            newcard.left = CARD_PLAY_HAND_LEFT_MARGIN + (j * CARD_PLAY_HAND_SPACING)
-            newcard.bottom = CARD_PLAY_BOTTOM_MARGIN
-            newcard.set_texture(1+ (38 + (4*j)))   # temp
-            hand_card_sprites.append(newcard)
-            hand_card_list.append(newcard)
-        self.add_sprite_list("handcards",hand_card_list,hand_card_sprites)
 
-        # then 8 cards in the play - later will only draw the ones that have been played, for now do a bunch
+        # 8 cards in the play - later will only draw the ones that have been played, for now do a bunch
         # of card backs
         play_card_list = arcade.SpriteList(is_static = True)
         play_card_sprites = []
@@ -64,6 +50,21 @@ class PlayMode(Mode):
             play_card_sprites.append(newcard)
             play_card_list.append(newcard)
         self.add_sprite_list("playcards",play_card_list,play_card_sprites)
+
+        # we have 4 cards in the hand
+        hand_card_list = arcade.SpriteList(is_static = True)
+        hand_card_sprites = []
+        for j in range(4):
+            # this is a kludge, load a card back sprite to set the image size, then use texture
+            newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
+            for t in range(52):
+                newcard.append_texture(card_textures[t])  # swh
+            newcard.left = CARD_PLAY_HAND_LEFT_MARGIN + (j * (CARD_SCREEN_WIDTH + CARD_PLAY_INTERCARD_MARGIN))
+            newcard.bottom = CARD_PLAY_BOTTOM_MARGIN
+            newcard.set_texture(1+ (38 + (4*j)))   # temp
+            hand_card_sprites.append(newcard)
+            hand_card_list.append(newcard)
+        self.add_sprite_list("handcards",hand_card_list,hand_card_sprites)
 
         # then the deck up in the corner
         deck_list = arcade.SpriteList(is_static=True)
