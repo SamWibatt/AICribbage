@@ -64,7 +64,7 @@ CARD_PLAY_HAND_SPACING = (41 * SCALE_FACTOR)
 CARD_PLAY_LEFT_MARGIN = (175 * SCALE_FACTOR)
 CARD_PLAY_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 # distance from the left edge of one card to the next, they overlap
-CARD_PLAY_NEXTCARD_DIST = (21 * SCALE_FACTOR)
+CARD_PLAY_NEXTCARD_DIST = (14 * SCALE_FACTOR)
 
 # left, bottom coords for all the holes in the cribbage board
 # TODO add starter and finish holes

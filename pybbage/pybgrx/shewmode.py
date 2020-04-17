@@ -408,9 +408,9 @@ class ShewMode(Mode):
 
     def on_key_release(self, key, modifiers):
 
-        # switch back to title screen, TODO TEMP
+        # switch to play screen, TODO TEMP
         if key == arcade.key.SPACE:
-            self.parent.set_nextmode_index(0)
+            self.parent.set_nextmode_index(2)
 
 
         player_sprite_list = self.get_sprite_list_by_name("player")

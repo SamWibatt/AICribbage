@@ -36,6 +36,7 @@ from pybgrx.constants import *
 from pybgrx.base import *
 from pybgrx.shewmode import ShewMode
 from pybgrx.titlemode import TitleMode
+from pybgrx.playmode import PlayMode
 
 
 
@@ -94,6 +95,10 @@ class MyGame(arcade.Window):
         shewmode = ShewMode(parent = self)
         shewmode.setup()
         self.modes.append(shewmode)      # mode 1: (though later another) shew
+        playmode = PlayMode(parent=self)
+        playmode.setup()
+        self.modes.append(playmode)
+
         self.curmode_index = 0
         self.curmode = self.modes[self.curmode_index]   # start at mode 0
 
