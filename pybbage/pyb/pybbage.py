@@ -166,25 +166,28 @@ class Player:
     # card that gets played, if any, is appended to used_cards so hand can be restored for show.
     # THIS VERSION SHOULD STAY AS THE DEFAULT, OR AT LEAST BE AVAILABLE THROUGH A PlayFirstLegalPlayer
     # SUBCLASS, BC THAT WILL MAKE FOR EASY UNIT TESTING!!!!!!!
+    # refactoring to return score index e.g. instead of 5 points for a run of 5, return self.SCORE_RUN5
+    # as curscore. Which means play_card has to do that.
+    # + actually it's a list or None - None if it was illegal like going over 31, [] if legal but no score,
+    # list of score indices if legal and gets scores.
     def play(self,curcards):
         # choose a card for the play, if there is one that works
         # let's just go with the first one
         # def play_card(curcards, newcard):
-        # return (newcards, curtotal, curscore)
+        # return (newcards, curtotal, scorelist)
         for i in range(0,len(self.cards)):
             card = self.cards[i]
-            (newcards,curtotal,curscore) = self.parent.play_card(curcards,card)
-            if curscore != -1:
+            (newcards,curtotal,scorelist) = self.parent.play_card(curcards,card)
+            if scorelist is not None:
                 # play this one!
                 print("playing",self.parent.cardstring(card),"on",[self.parent.cardstring(x) for x in curcards])
                 self.cards = self.cards[:i] + self.cards[i + 1:]  # remove card from hand
                 self.used_cards.append(card)        # memorize it so can be restored
-                #self.score += curscore;
-                return (newcards,curtotal,curscore)
+                return (newcards,curtotal,scorelist)
                 pass
-        # if we get here, it's a go, I guess
+        # if we get here, it's a go, I guess. -1 works for score index as well as actual score.
         print("Go!")
-        return (curcards,sum([self.parent.val(x) for x in curcards]),-1)
+        return (curcards,sum([self.parent.val(x) for x in curcards]),None)
 
     # =================================================================================================================
 
@@ -198,7 +201,7 @@ class Player:
         else:
             print("Crib: (not dealer)")
 
-    def print(self):
+    def print_all(self):
         print("Name:",self.name,"Dealer:",self.is_dealer(),"score:",self.score)
         self.print_hand()
         if self.is_dealer():
@@ -250,12 +253,12 @@ class HumanPlayer(Player):
         legalcards = []
         for i in range(0,len(self.cards)):
             card = self.cards[i]
-            (newcards,curtotal,curscore) = self.parent.play_card(curcards,card)
-            if curscore != -1:
+            (newcards,curtotal,scorelist) = self.parent.play_card(curcards,card)
+            if scorelist is not None:
                 legalcards.append(card)
         if legalcards == []:
             print("No legal card to play! you say go")
-            return (curcards,sum([self.parent.val(x) for x in curcards]),-1)
+            return (curcards,sum([self.parent.val(x) for x in curcards]),None)
 
         # limit choices to legal cards
         print("Legal Cards:")
@@ -266,8 +269,8 @@ class HumanPlayer(Player):
         card = legalcards[cardind]  # split out the card
         self.cards = self.cards[:cardind] + self.cards[cardind + 1:]  # remove card from hand
         self.used_cards.append(card)  # memorize it so can be restored
-        (newcards, curtotal, curscore) = self.parent.play_card(curcards, card)
-        return (newcards,curtotal,curscore)
+        (newcards, curtotal, scorelist) = self.parent.play_card(curcards, card)
+        return (newcards,curtotal,scorelist)
 
 # Player for Unit Testing that plays the first card in their hand that is legal.
 class PlayFirstLegalCardPlayer(Player):
@@ -278,21 +281,21 @@ class PlayFirstLegalCardPlayer(Player):
         # choose a card for the play, if there is one that works
         # let's just go with the first one
         # def play_card(curcards, newcard):
-        # return (newcards, curtotal, curscore)
+        # return (newcards, curtotal, scorelist)
         for i in range(0,len(self.cards)):
             card = self.cards[i]
-            (newcards,curtotal,curscore) = self.parent.play_card(curcards,card)
-            if curscore != -1:
+            (newcards,curtotal,scorelist) = self.parent.play_card(curcards,card)
+            if scorelist is not None:
                 # play this one!
                 print("playing",self.parent.cardstring(card),"on",[self.parent.cardstring(x) for x in curcards])
                 self.cards = self.cards[:i] + self.cards[i + 1:]  # remove card from hand
                 self.used_cards.append(card)        # memorize it so can be restored
-                self.score += curscore;
-                return (newcards,curtotal,curscore)
+                # TODO: wait, should this be here? self.score += curscore;
+                return (newcards,curtotal,scorelist)
                 pass
         # if we get here, it's a go, I guess
         print("Go!")
-        return (curcards,sum([self.parent.val(x) for x in curcards]),-1)
+        return (curcards,sum([self.parent.val(x) for x in curcards]),None)
 
 
 # random number generator a la arduino -----------------------------------------------------------
@@ -866,9 +869,15 @@ class Pybbage:
     # and card to be played
     # return: (cards now played = cards so far + played, running total, score for playing the given card or -1 for error)
     # not a serious error, I expect this to be a "lookahead" function for deciding what card to play for the computer
+    # NOW refactoring to return score index e.g. instead of 5 points for a run of 5, return self.SCORE_RUN5
+    # as curscore. Which means play_card has to do that.
+    # Although, you can get more than one scoring thing! like playing a 5 on top of a 4 and 6 gets you a run of 3
+    # AND a 15, so need a list.
+    # return None for illegal play e.g. going over 31, [] for allowable play but non-scoring, list of score indices
+    # if scored.
     def play_card(self,curcards, newcard):
         newcards = curcards if curcards is not None else []
-        curscore = 0
+        scorelist = None
 
         newcards = newcards + [newcard]
         curtotal = sum([self.val(x) for x in newcards])
@@ -876,19 +885,21 @@ class Pybbage:
         # figure out if newcard CAN be played on newcards, yes?
         # - can't go over 31 - is that the only limitation? I suppose so
         if curtotal > 31:
-            return(curcards,curtotal-self.val(newcard),-1)         # error
+            return(curcards,curtotal-self.val(newcard),None)         # error (non fatal, just can't play that card)
 
         #print("-- running total",curtotal)
 
         # otherwise we should be ok.
+        scorelist = []
+
         # if total is now 15, 2 points!
         if curtotal == 15:
-            curscore += 2
-            print("... fifteen -",curscore)
+            scorelist.append(self.SCORE_FIFTEEN)
+            #print("... fifteen -",curscore)
         # if total is now 31, 2 points
         elif curtotal == 31:
-            curscore += 2
-            print("... thirty-one -", curscore)
+            scorelist.append(self.SCORE_THIRTYONE)
+            #print("... thirty-one -", curscore)
 
         # what else? Pair, if same rank as the last card - and can be 3, 4 of a kind?
         # and runs
@@ -913,14 +924,14 @@ class Pybbage:
                     numrankmatch += 1
         # so, numrankmatch + 1 is the number of matching cards, not including the played card.
         if numrankmatch == 1:
-            curscore += 2
-            print("... pair -",curscore)
+            scorelist.append(self.SCORE_PAIR)
+            #print("... pair -",curscore)
         elif numrankmatch == 2:
-            curscore += 6
-            print("... three of a kind -",curscore)
+            scorelist.append(self.SCORE_PAIRROYAL)
+            #print("... three of a kind -",curscore)
         elif numrankmatch == 3:
-            curscore += 12
-            print("... four of a kind -",curscore)
+            scorelist.append(self.SCORE_4KIND)
+            #print("... four of a kind -",curscore)
 
         # FIGURE OUT RUNS
         # this works:
@@ -958,12 +969,19 @@ class Pybbage:
             if ns == list(range(0,-i)):
                 longestrun = -i
 
-        if longestrun != 0:
-            curscore += longestrun
-            print(" ... run of",longestrun,"-",curscore)
+        # ew, this is gross
+        if longestrun == 3:
+            scorelist.append(self.SCORE_RUN3)
+        elif longestrun == 4:
+            scorelist.append(self.SCORE_RUN4)
+        if longestrun == 5:
+            scorelist.append(self.SCORE_RUN5)
+        elif longestrun == 6:
+            scorelist.append(self.SCORE_RUN6)
+        elif longestrun == 7:
+            scorelist.append(self.SCORE_RUN7)
 
-
-        return(newcards,curtotal,curscore)
+        return(newcards,curtotal,scorelist)
 
 
     # input ===============================================================================================================
@@ -1169,9 +1187,9 @@ class Pybbage:
                     dealer_played_last = False          # let's try setting this in every case?
                     if player_called_go != 1:
                         print(pone.get_name(),"the pone play:")
-                        (curcards, curtotal, newscore) = pone.play(curcards)
+                        (curcards, curtotal, scorelist) = pone.play(curcards)
                         print("curcards now", [self.cardstring(x) for x in curcards], "curtotal", curtotal)
-                        if newscore == -1:
+                        if scorelist is None:
                             # so: this means "go." if player_called_go is -1, mark that pone has said "go"
                             if player_called_go == -1:
                                 print("Pone calls go!")
@@ -1187,7 +1205,7 @@ class Pybbage:
                                 # or is it that pone has to have played to get here?
                                 if curtotal != 31:
                                     print(pone.get_name()," the pone pegs 1 for last")
-                                    if pone.add_score(1) == True:
+                                    if pone.add_score(self.scoreStringsNPoints[self.SCORE_GO][1]) == True:
                                         # pone wins!
                                         return True
                                 else:
@@ -1198,9 +1216,11 @@ class Pybbage:
                             # actually played a card, so dealer played last is False
                             # ok this doesn't stop infinite loops
                             # dealer_played_last = False
-                            if newscore != 0:
-                                print("Adding score for pone:", newscore)
-                                if pone.add_score(newscore) == True:
+                            if scorelist is not None:
+                                totalnewscore = sum([self.scoreStringsNPoints[x][1] for x in scorelist])
+                                print("Adding scores for pone:", [self.scoreStringsNPoints[x][0] for x in scorelist],
+                                      "=",totalnewscore)
+                                if pone.add_score(totalnewscore) == True:
                                     # pone wins
                                     return True
                 else:       # dealer_played_last == False, so dealer plays
@@ -1208,9 +1228,9 @@ class Pybbage:
                     dealer_played_last = True          # let's try setting this in every case?
                     if player_called_go != 0:
                         print(dealer.get_name(),"the dealer play:")
-                        (curcards, curtotal, newscore) = dealer.play(curcards)
+                        (curcards, curtotal, scorelist) = dealer.play(curcards)
                         print("curcards now", [self.cardstring(x) for x in curcards], "curtotal", curtotal)
-                        if newscore == -1:
+                        if scorelist is None:
                             if player_called_go == -1:
                                 print("Dealer calls go!")
                                 player_called_go = 0  # dealer said go
@@ -1221,7 +1241,7 @@ class Pybbage:
                                 # SEE ABOVE re: how pone handles one-for-last n stuff
                                 if curtotal != 31:
                                     print(dealer.get_name()," the dealer pegs 1 for last")
-                                    if dealer.add_score(1) == True:
+                                    if dealer.add_score(self.scoreStringsNPoints[self.SCORE_GO][1]) == True:
                                         # dealer wins!
                                         return True
                                 else:
@@ -1232,9 +1252,11 @@ class Pybbage:
                             # actually played a card, so dealer played last is True
                             # doesn't stop infinite loops
                             #dealer_played_last = True
-                            if newscore != 0:
-                                print("Adding score for dealer:", newscore)
-                                if dealer.add_score(newscore) == True:
+                            if scorelist is not None:
+                                totalnewscore = sum([self.scoreStringsNPoints[x][1] for x in scorelist])
+                                print("Adding scores for dealer:", [self.scoreStringsNPoints[x][0] for x in scorelist],
+                                      "=",totalnewscore)
+                                if dealer.add_score(totalnewscore) == True:
                                     # dealer wins
                                     return True
 
@@ -1249,7 +1271,7 @@ class Pybbage:
         dealer = None
         pone = None
         for player in players:
-            player.print()
+            player.print_all()
         print("-----------------------------------------------------")
 
         # Initial shuffle
@@ -1343,7 +1365,7 @@ class Pybbage:
 
             print("*** now players are like this")
             for player in players:
-                player.print()
+                player.print_all()
 
             #     Discard
             #         See below re: thoughts on how to do this
@@ -1366,7 +1388,7 @@ class Pybbage:
 
             print("*** now players are like this")
             for player in players:
-                player.print()
+                player.print_all()
 
             #     Play
             #         I believe this is done as of 3/21, other than "go"
