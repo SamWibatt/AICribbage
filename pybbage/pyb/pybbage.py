@@ -87,10 +87,32 @@ class Player:
     def set_score(self,points):
         self.score = points
 
-    # add_score is a pegging - if the score goes past 120, force it to 121 (game hole) and return True.
+
+    def advance_peg_by_score_callback(self,score):
+        # OVERRIDE to do graphics of peg advancement, given a total score (for shew)
+        print("Advance peg by score callback",score)
+        pass
+
+    def advance_peg_by_index_callback(self,score_index):
+        # OVERRIDE to do graphics of peg advancement, given a score index (for play)
+        print("Advance peg by index callback",self.parent.scoreStringsNPoints[score_index][0],"for",
+              self.parent.scoreStringsNPoints[score_index][1])
+        pass
+
+    # add_score_by_* is a pegging - if the score goes past 120, force it to 121 (game hole) and return True.
     # otherwise return False.
-    def add_score(self,points):
-        self.score += points
+    # add by index, so can show name (in play) or by total score (in shew)
+    def add_score_by_index(self,score_index):
+        self.score += self.parent.scoreStringsNPoints[score_index][1]
+        self.advance_peg_by_index_callback(score_index)
+        if self.score > 120:
+            self.score = 121
+            return True
+        return False
+
+    def add_score_by_score(self,score):
+        self.score += score
+        self.advance_peg_by_score_callback(score)
         if self.score > 120:
             self.score = 121
             return True
@@ -100,7 +122,7 @@ class Player:
         return self.score
 
     def set_dealer(self,isdealer):
-        self.dealer = isdealer;
+        self.dealer = isdealer
 
     def is_dealer(self):
         return self.dealer
@@ -1205,7 +1227,7 @@ class Pybbage:
                                 # or is it that pone has to have played to get here?
                                 if curtotal != 31:
                                     print(pone.get_name()," the pone pegs 1 for last")
-                                    if pone.add_score(self.scoreStringsNPoints[self.SCORE_GO][1]) == True:
+                                    if pone.add_score_by_index(self.SCORE_GO) == True:
                                         # pone wins!
                                         return True
                                 else:
@@ -1217,12 +1239,12 @@ class Pybbage:
                             # ok this doesn't stop infinite loops
                             # dealer_played_last = False
                             if scorelist is not None:
-                                totalnewscore = sum([self.scoreStringsNPoints[x][1] for x in scorelist])
-                                print("Adding scores for pone:", [self.scoreStringsNPoints[x][0] for x in scorelist],
-                                      "=",totalnewscore)
-                                if pone.add_score(totalnewscore) == True:
-                                    # pone wins
-                                    return True
+                                # actually we want to peg for every individual score - or do we? Yes,
+                                # want to do advance callback for each...???
+                                for score_ind in scorelist:
+                                    if pone.add_score_by_index(score_ind) == True:
+                                        # pone wins
+                                        return True
                 else:       # dealer_played_last == False, so dealer plays
                     print("Pone played last so dealer goes")
                     dealer_played_last = True          # let's try setting this in every case?
@@ -1241,7 +1263,7 @@ class Pybbage:
                                 # SEE ABOVE re: how pone handles one-for-last n stuff
                                 if curtotal != 31:
                                     print(dealer.get_name()," the dealer pegs 1 for last")
-                                    if dealer.add_score(self.scoreStringsNPoints[self.SCORE_GO][1]) == True:
+                                    if dealer.add_score_by_index(self.SCORE_GO) == True:
                                         # dealer wins!
                                         return True
                                 else:
@@ -1253,12 +1275,10 @@ class Pybbage:
                             # doesn't stop infinite loops
                             #dealer_played_last = True
                             if scorelist is not None:
-                                totalnewscore = sum([self.scoreStringsNPoints[x][1] for x in scorelist])
-                                print("Adding scores for dealer:", [self.scoreStringsNPoints[x][0] for x in scorelist],
-                                      "=",totalnewscore)
-                                if dealer.add_score(totalnewscore) == True:
-                                    # dealer wins
-                                    return True
+                                for score_ind in scorelist:
+                                    if dealer.add_score_by_index(score_ind) == True:
+                                        # dealer wins
+                                        return True
 
             # ok, hand is done, if nobody has any cards left, play is done
             if len(pone.get_cards()) == 0 and len(dealer.get_cards()) == 0:
@@ -1290,6 +1310,111 @@ class Pybbage:
         randseed = 1043865
         # TODO this is gross and I should do more refactor to make stuff be data members
         (players, dealer, pone, deck, cardnum) = self.new_game(randseed)
+
+        # TODO TEMP FIGURE OUT HOW TO DO THIS IN UNIT TESTS
+        do_play_tests = False
+        if do_play_tests:
+            print("TEMP PLAY TESTS ===================================================================")
+
+            # let's enact this, with players that play the first legal card in their hand.
+            # Alice (pone) plays a 4, for a total of 4, and says 'Four.'
+            # Bob plays a 7, for a total of 11, and says 'Eleven'.
+            # Alice plays another 4, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+            # Bob plays a Jack, for a total of 25, and says 'Twenty-five'.
+            # Alice cannot go, as any of her remaining cards would take the total over 31. She says 'go'.
+            # Bob plays a 5, for a total of 30, and says 'Thirty, and one for the go' [and pegs 1 point]
+
+            # The count now goes back to zero, and the play continues. Since Bob played the last card, Alice goes first now.
+
+            # Alice plays a 7, for a total of 7, and says 'Seven'.
+            # Bob plays an 8, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+            # Alice plays a 9, for a total of 24, and says 'Twenty-four for three'. [and pegs 3 points for her run of 7-8-9]
+            # Bob cannot go, as he has run out of cards. He therefore says 'Go', and Alice pegs a point for the go. She also
+            # has run out of cards and so the game proceeds to the next phase.
+            # players don't need a crib for this, I reckon
+            # + I do know how to spell "scenario" but I've seen it wrong online so much that the right spelling looks weird
+            print(
+                "SENERIO 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+            # Alice the Pone
+            pone = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['4c', '4d', '7h', '9d']],
+                                            dealer=False, score=0, name="Alice")
+            # Bob the Dealer
+            dealer = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['7c', 'Jd', '5h', '8c']],
+                                              dealer=True, score=0, name="Bob")
+            self.do_play(dealer, pone)
+            # YAY that seems to have worked
+
+            print(
+                "SENERIO 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+            # then try a variant where Bob's got a 2 and a 4, so he can play 2 cards after Alice says go, and gets 31
+            # Alice the Pone
+            pone = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['4c', '4d', 'Jh', 'Qd']],
+                                            dealer=False, score=0, name="Alice")
+            # Bob the Dealer
+            dealer = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['7c', 'Jd', '2h', '4h']],
+                                              dealer=True, score=0, name="Bob")
+            self.do_play(dealer, pone)
+            # WORKY!!!!!!!!!!!!!!!!
+
+            print(
+                "SENERIO 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+            # then try a variant where Bob's got a 2 and a A, so he can play 2 cards after Alice says go, and gets 1 for last
+            # Alice the Pone
+            pone = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['4c', '4d', 'Jh', 'Qd']],
+                                            dealer=False, score=0, name="Alice")
+            # Bob the Dealer
+            dealer = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['7c', 'Jd', '2h', 'Ah']],
+                                              dealer=True, score=0, name="Bob")
+            self.do_play(dealer, pone)
+            # WORKY!!!!!!!!!!!!!!!!
+
+            print(
+                "SENERIO 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+            # Bob (pone) plays a 4, for a total of 4, and says 'Four.'
+            # Alice plays another 4, for a total of 8, and says 'Eight for two.' [and pegs 2 points for the pair]
+            # Bob plays a third 4, for a total of 12, and says 'Twelve for six.' [and pegs 6 points for the pair
+            # royal ]
+            # Alice plays a 3, for a total of 15, and says 'Fifteen for two.' [and pegs 2 points]
+            # Bob plays a 2 for a total of 17 and says 'Seventeen for three.' [and pegs 3 points for the run 4-3-2]
+            # Alice plays a 5, for a total of 22, and says 'Twenty-two for four.' [and pegs 4 points for the run
+            # 5-4-3-2]]
+            # Bob cannot go without going over 31, and so says 'Go'.
+            # Alice plays a 9, for a total of 31, and says 'Thirty-one for two.' [and pegs 2 points. 'One for the
+            # go' is only scored when the scoring player does not make 31. ]
+            #
+            # The count is now reset, and Bob plays first, as Alice played last.
+            #
+            # Bob plays a Queen, for a total of 10, and says 'Ten.'
+            # Alice cannot go, as she has run out of cards, and so says 'Go'. [ Bob pegs 1 point for the go. ]
+
+            # Bob the Pone
+            pone = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['4h', '4d', '2c', 'Qh']],
+                                            dealer=False, score=0, name="Bob")
+            # Alice the Dealer
+            dealer = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['4c', '3d', '5c', '9d']],
+                                              dealer=True, score=0, name="Alice")
+            self.do_play(dealer, pone)
+            # WORKY!!!!!!!!!!!!!!!!!!
+
+            print(
+                "SENERIO 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+            # then try a variant of the first senerio so Alice plays last in 1st count, ensure dealer plays first
+            # Alice the Pone
+            pone = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['4c', '4d', '5h', 'Qd']],
+                                            dealer=False, score=0, name="Alice")
+            # Bob the Dealer
+            dealer = PlayFirstLegalCardPlayer(self,cards=[self.stringcard(x) for x in ['7c', 'Jd', 'Qh', 'Jh']],
+                                              dealer=True, score=0, name="Bob")
+            self.do_play(dealer, pone)
+            # WORKY!!!!!!!!!!!!
+
+            # TODO: come up with other cases and how to make this work as unit tests with visibility into what happens
+            # inside the play; perhaps play function should return an ordering of how the cards were played, one list
+            # of cards per count, also noting who played them, and final scores?
+
+            print("TEMP END ===========================================================================")
+            sys.exit(0)
+
 
 
         # TODO: ACC rules say cut for deal of the first game, thereafter the loser of the previous game is dealer.
@@ -1382,7 +1507,7 @@ class Pybbage:
             # 2 points to dealer if it's a jack - cut at 34 to get this w/default
             if self.rank(starter) == self.rank(self.stringcard('JH')):
                 print("*** Heels! 2 points to dealer!")
-                if dealer.add_score(2) == True:
+                if dealer.add_score_by_index(self.SCORE_HEELS) == True:
                     # dealer wins
                     break
 
@@ -1416,21 +1541,22 @@ class Pybbage:
             (ponescore, scoresubs) = self.score_shew(pone.get_cards(), starter)
             self.render_score_subsets(pone.get_cards(), starter, scoresubs)
             print("Adding score for pone:", ponescore)
-            if pone.add_score(ponescore) == True:
+
+            if pone.add_score_by_score(ponescore) == True:
                 # pone wins!
                 break
             print("*** dealer shew:")
             (dealerscore, dealersubs) = self.score_shew(dealer.get_cards(), starter)
             self.render_score_subsets(dealer.get_cards(), starter, dealersubs)
             print("Adding score for dealer:", dealerscore)
-            if dealer.add_score(dealerscore) == True:
+            if dealer.add_score_by_score(dealerscore) == True:
                 # dealer wins
                 break
             print("*** dealer crib shew:")
             (cribscore, cribsubs) = self.score_shew(dealer.get_crib(), starter)
             self.render_score_subsets(dealer.get_crib(), starter, cribsubs)
             print("Adding crib score for dealer:", cribscore)
-            if dealer.add_score(cribscore) == True:
+            if dealer.add_score_by_score(cribscore) == True:
                 # dealer wins
                 break
 
