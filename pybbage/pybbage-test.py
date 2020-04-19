@@ -767,6 +767,58 @@ class PlayTest210_runof7intervening(unittest.TestCase):
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
 
+class PlayTest220_fifteen_and_3kind(unittest.TestCase):
+    def test_playtest_15and3kind(self):
+        print("Play fifteen and 3 of a kind -------------------------------------------------------------------------")
+        pyb = pybbage.Pybbage()
+        curcs = ['5c','5s']
+        curcards = [pyb.stringcard(x) for x in curcs]           # cards already played
+        newcard = pyb.stringcard('5h')
+        print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
+        (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
+        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
+              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+        self.assertEqual(resultcards,curcards + [newcard])
+        self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
+        self.assertEqual(scorelist,[pyb.SCORE_FIFTEEN,pyb.SCORE_PAIRROYAL])
+
+class PlayTest230_31_and_4kind(unittest.TestCase):
+    def test_playtest_31and4kind(self):
+        print("Play 31 and 4 of a kind ------------------------------------------------------------------------------")
+        pyb = pybbage.Pybbage()
+        curcs = ['3c','7s','7c','7h']
+        curcards = [pyb.stringcard(x) for x in curcs]           # cards already played
+        newcard = pyb.stringcard('7d')
+        print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
+        (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
+        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
+              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+        self.assertEqual(resultcards,curcards + [newcard])
+        self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
+        self.assertEqual(scorelist,[pyb.SCORE_THIRTYONE,pyb.SCORE_4KIND])
+
+class PlayTest240_fifteen_run5(unittest.TestCase):
+    def test_playtest_15run5(self):
+        print("Play fifteen and run of 5 ----------------------------------------------------------------------------")
+        pyb = pybbage.Pybbage()
+        curcs = ['2c','as','5c','3h']
+        curcards = [pyb.stringcard(x) for x in curcs]           # cards already played
+        newcard = pyb.stringcard('4h')
+        print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
+        (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
+        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
+              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+        self.assertEqual(resultcards,curcards + [newcard])
+        self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
+        self.assertEqual(scorelist,[pyb.SCORE_FIFTEEN,pyb.SCORE_RUN5])
+
+# TODO: OK, do some more of those
+
+
+
 class PlayTest900_overflow(unittest.TestCase):
     def test_playtest_overflow(self):
         print("Play overflow ----------------------------------------------------------------------------------------")
