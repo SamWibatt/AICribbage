@@ -93,18 +93,24 @@ class Player:
         print("Advance peg by score callback",score)
         pass
 
-    def advance_peg_by_index_callback(self,score_index):
+    # this is used by play, and every scoring combination of cards in play is a contiguous set including the
+    # newly played card. so if num_cards is 1, the top card is highlighted, on up to e.g. run of 4, highlight
+    # 4 cards, top and 3 preceding.
+    def advance_peg_by_index_callback(self,score_index,num_cards):
         # OVERRIDE to do graphics of peg advancement, given a score index (for play)
         print("Advance peg by index callback",self.parent.scoreStringsNPoints[score_index][0],"for",
-              self.parent.scoreStringsNPoints[score_index][1])
+              self.parent.scoreStringsNPoints[score_index][1],"including this many cards:",num_cards)
         pass
 
     # add_score_by_* is a pegging - if the score goes past 120, force it to 121 (game hole) and return True.
     # otherwise return False.
     # add by index, so can show name (in play) or by total score (in shew)
-    def add_score_by_index(self,score_index):
+    # this is used by play, and every scoring combination of cards in play is a contiguous set including the
+    # newly played card. so if num_cards is 1, the top card is highlighted, on up to e.g. run of 4, highlight
+    # 4 cards, top and 3 preceding.
+    def add_score_by_index(self,score_index,num_cards):
         self.score += self.parent.scoreStringsNPoints[score_index][1]
-        self.advance_peg_by_index_callback(score_index)
+        self.advance_peg_by_index_callback(score_index,num_cards)
         if self.score > 120:
             self.score = 121
             return True
@@ -192,6 +198,10 @@ class Player:
     # as curscore. Which means play_card has to do that.
     # + actually it's a list or None - None if it was illegal like going over 31, [] if legal but no score,
     # list of score indices if legal and gets scores.
+    # and now it's a list of (score index, # cards) so we can highlight! See above in player.add_score_by_index
+    # this is used by play, and every scoring combination of cards in play is a contiguous set including the
+    # newly played card. so if num_cards is 1, the top card is highlighted, on up to e.g. run of 4, highlight
+    # 4 cards, top and 3 preceding.
     def play(self,curcards):
         # choose a card for the play, if there is one that works
         # let's just go with the first one
@@ -897,6 +907,10 @@ class Pybbage:
     # AND a 15, so need a list.
     # return None for illegal play e.g. going over 31, [] for allowable play but non-scoring, list of score indices
     # if scored.
+    # and now it's a list of (score index, # cards) so we can highlight! See above in player.add_score_by_index
+    # this is used by play, and every scoring combination of cards in play is a contiguous set including the
+    # newly played card. so if num_cards is 1, the top card is highlighted, on up to e.g. run of 4, highlight
+    # 4 cards, top and 3 preceding.
     def play_card(self,curcards, newcard):
         newcards = curcards if curcards is not None else []
         scorelist = None
@@ -916,11 +930,11 @@ class Pybbage:
 
         # if total is now 15, 2 points!
         if curtotal == 15:
-            scorelist.append(self.SCORE_FIFTEEN)
+            scorelist.append((self.SCORE_FIFTEEN,len(newcards)))
             #print("... fifteen -",curscore)
         # if total is now 31, 2 points
         elif curtotal == 31:
-            scorelist.append(self.SCORE_THIRTYONE)
+            scorelist.append((self.SCORE_THIRTYONE,len(newcards)))
             #print("... thirty-one -", curscore)
 
         # what else? Pair, if same rank as the last card - and can be 3, 4 of a kind?
@@ -946,13 +960,13 @@ class Pybbage:
                     numrankmatch += 1
         # so, numrankmatch + 1 is the number of matching cards, not including the played card.
         if numrankmatch == 1:
-            scorelist.append(self.SCORE_PAIR)
+            scorelist.append((self.SCORE_PAIR,2))
             #print("... pair -",curscore)
         elif numrankmatch == 2:
-            scorelist.append(self.SCORE_PAIRROYAL)
+            scorelist.append((self.SCORE_PAIRROYAL,3))
             #print("... three of a kind -",curscore)
         elif numrankmatch == 3:
-            scorelist.append(self.SCORE_4KIND)
+            scorelist.append((self.SCORE_4KIND,4))
             #print("... four of a kind -",curscore)
 
         # FIGURE OUT RUNS
@@ -993,15 +1007,15 @@ class Pybbage:
 
         # ew, this is gross
         if longestrun == 3:
-            scorelist.append(self.SCORE_RUN3)
+            scorelist.append((self.SCORE_RUN3,3))
         elif longestrun == 4:
-            scorelist.append(self.SCORE_RUN4)
+            scorelist.append((self.SCORE_RUN4,4))
         if longestrun == 5:
-            scorelist.append(self.SCORE_RUN5)
+            scorelist.append((self.SCORE_RUN5,5))
         elif longestrun == 6:
-            scorelist.append(self.SCORE_RUN6)
+            scorelist.append((self.SCORE_RUN6,6))
         elif longestrun == 7:
-            scorelist.append(self.SCORE_RUN7)
+            scorelist.append((self.SCORE_RUN7,7))
 
         return(newcards,curtotal,scorelist)
 
@@ -1227,7 +1241,7 @@ class Pybbage:
                                 # or is it that pone has to have played to get here?
                                 if curtotal != 31:
                                     print(pone.get_name()," the pone pegs 1 for last")
-                                    if pone.add_score_by_index(self.SCORE_GO) == True:
+                                    if pone.add_score_by_index(self.SCORE_GO,0) == True:
                                         # pone wins!
                                         return True
                                 else:
@@ -1241,8 +1255,8 @@ class Pybbage:
                             if scorelist is not None:
                                 # actually we want to peg for every individual score - or do we? Yes,
                                 # want to do advance callback for each...???
-                                for score_ind in scorelist:
-                                    if pone.add_score_by_index(score_ind) == True:
+                                for (score_ind,num_cards) in scorelist:
+                                    if pone.add_score_by_index(score_ind,num_cards) == True:
                                         # pone wins
                                         return True
                 else:       # dealer_played_last == False, so dealer plays
@@ -1263,7 +1277,7 @@ class Pybbage:
                                 # SEE ABOVE re: how pone handles one-for-last n stuff
                                 if curtotal != 31:
                                     print(dealer.get_name()," the dealer pegs 1 for last")
-                                    if dealer.add_score_by_index(self.SCORE_GO) == True:
+                                    if dealer.add_score_by_index(self.SCORE_GO,0) == True:
                                         # dealer wins!
                                         return True
                                 else:
@@ -1275,8 +1289,8 @@ class Pybbage:
                             # doesn't stop infinite loops
                             #dealer_played_last = True
                             if scorelist is not None:
-                                for score_ind in scorelist:
-                                    if dealer.add_score_by_index(score_ind) == True:
+                                for (score_ind,num_cards) in scorelist:
+                                    if dealer.add_score_by_index(score_ind,num_cards) == True:
                                         # dealer wins
                                         return True
 
@@ -1507,7 +1521,7 @@ class Pybbage:
             # 2 points to dealer if it's a jack - cut at 34 to get this w/default
             if self.rank(starter) == self.rank(self.stringcard('JH')):
                 print("*** Heels! 2 points to dealer!")
-                if dealer.add_score_by_index(self.SCORE_HEELS) == True:
+                if dealer.add_score_by_index(self.SCORE_HEELS,1) == True:
                     # dealer wins
                     break
 

@@ -375,9 +375,9 @@ class PlayTest000_firstcard(unittest.TestCase):
         newcard = pyb.stringcard('7h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,[newcard])
         self.assertEqual(curtotal,pyb.val(newcard))
         self.assertEqual(scorelist,[])
@@ -391,12 +391,12 @@ class PlayTest003_fifteen(unittest.TestCase):
         newcard = pyb.stringcard('jh')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_FIFTEEN])
+        self.assertEqual(scorelist,[(pyb.SCORE_FIFTEEN,2)])
         self.assertEqual(totalscore,2)
 
 class PlayTest007_thirtyone(unittest.TestCase):
@@ -408,12 +408,12 @@ class PlayTest007_thirtyone(unittest.TestCase):
         newcard = pyb.stringcard('qh')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_THIRTYONE])
+        self.assertEqual(scorelist,[(pyb.SCORE_THIRTYONE,len(resultcards))])
         self.assertEqual(totalscore,2)
 
 class PlayTest010_pair(unittest.TestCase):
@@ -425,12 +425,12 @@ class PlayTest010_pair(unittest.TestCase):
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
         print("HEY PAIR SCORELIST IS",scorelist)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_PAIR])
+        self.assertEqual(scorelist,[(pyb.SCORE_PAIR,2)])
         self.assertEqual(totalscore,2)
 
 class PlayTest020_notpair(unittest.TestCase):
@@ -442,9 +442,9 @@ class PlayTest020_notpair(unittest.TestCase):
         newcard = pyb.stringcard('2h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
@@ -459,12 +459,12 @@ class PlayTest030_3ofakind(unittest.TestCase):
         newcard = pyb.stringcard('4h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_PAIRROYAL])
+        self.assertEqual(scorelist,[(pyb.SCORE_PAIRROYAL,3)])
         self.assertEqual(totalscore,6)
 
 class PlayTest040_not3ofakind(unittest.TestCase):
@@ -476,12 +476,12 @@ class PlayTest040_not3ofakind(unittest.TestCase):
         newcard = pyb.stringcard('4h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_PAIR])
+        self.assertEqual(scorelist,[(pyb.SCORE_PAIR,2)])
         self.assertEqual(totalscore,2)
 
 class PlayTest050_4ofakind(unittest.TestCase):
@@ -493,12 +493,12 @@ class PlayTest050_4ofakind(unittest.TestCase):
         newcard = pyb.stringcard('6h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_4KIND])
+        self.assertEqual(scorelist,[(pyb.SCORE_4KIND,4)])
         self.assertEqual(totalscore,12)
 
 class PlayTest060_not4ofakind(unittest.TestCase):
@@ -510,12 +510,12 @@ class PlayTest060_not4ofakind(unittest.TestCase):
         newcard = pyb.stringcard('2h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_PAIR])
+        self.assertEqual(scorelist,[(pyb.SCORE_PAIR,2)])
         self.assertEqual(totalscore,2)
 
 # runs
@@ -528,12 +528,12 @@ class PlayTest070_runof3(unittest.TestCase):
         newcard = pyb.stringcard('3h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN3])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN3,3)])
         self.assertEqual(totalscore,3)
 
 class PlayTest080_runof3ooo(unittest.TestCase):
@@ -545,12 +545,12 @@ class PlayTest080_runof3ooo(unittest.TestCase):
         newcard = pyb.stringcard('7h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN3])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN3,3)])
         self.assertEqual(totalscore,3)
 
 class PlayTest090_runof3intervening(unittest.TestCase):
@@ -562,9 +562,9 @@ class PlayTest090_runof3intervening(unittest.TestCase):
         newcard = pyb.stringcard('7h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
@@ -596,12 +596,12 @@ class PlayTest100_runof4(unittest.TestCase):
         newcard = pyb.stringcard('4h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN4])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN4,4)])
         self.assertEqual(totalscore,4)
 
 class PlayTest110_runof4ooo(unittest.TestCase):
@@ -613,12 +613,12 @@ class PlayTest110_runof4ooo(unittest.TestCase):
         newcard = pyb.stringcard('7h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN4])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN4,4)])
         self.assertEqual(totalscore,4)
 
 class PlayTest120_runof4intervening(unittest.TestCase):
@@ -630,9 +630,9 @@ class PlayTest120_runof4intervening(unittest.TestCase):
         newcard = pyb.stringcard('4h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
@@ -647,12 +647,12 @@ class PlayTest130_runof5(unittest.TestCase):
         newcard = pyb.stringcard('6d')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN5])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN5,5)])
         self.assertEqual(totalscore,5)
 
 class PlayTest140_runof5ooo(unittest.TestCase):
@@ -664,12 +664,12 @@ class PlayTest140_runof5ooo(unittest.TestCase):
         newcard = pyb.stringcard('7h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN5])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN5,5)])
         self.assertEqual(totalscore,5)
 
 class PlayTest150_runof5intervening(unittest.TestCase):
@@ -681,9 +681,9 @@ class PlayTest150_runof5intervening(unittest.TestCase):
         newcard = pyb.stringcard('5h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
@@ -698,12 +698,12 @@ class PlayTest160_runof6(unittest.TestCase):
         newcard = pyb.stringcard('7c')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN6])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN6,6)])
         self.assertEqual(totalscore,6)
 
 class PlayTest170_runof6ooo(unittest.TestCase):
@@ -715,12 +715,12 @@ class PlayTest170_runof6ooo(unittest.TestCase):
         newcard = pyb.stringcard('7h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN6])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN6,6)])
         self.assertEqual(totalscore,6)
 
 class PlayTest180_runof6intervening(unittest.TestCase):
@@ -732,9 +732,9 @@ class PlayTest180_runof6intervening(unittest.TestCase):
         newcard = pyb.stringcard('6h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
@@ -749,12 +749,12 @@ class PlayTest190_runof7(unittest.TestCase):
         newcard = pyb.stringcard('7d')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN7])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN7,7)])
         self.assertEqual(totalscore,7)
 
 class PlayTest200_runof7ooo(unittest.TestCase):
@@ -766,12 +766,12 @@ class PlayTest200_runof7ooo(unittest.TestCase):
         newcard = pyb.stringcard('ah')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_RUN7])
+        self.assertEqual(scorelist,[(pyb.SCORE_RUN7,7)])
         self.assertEqual(totalscore,7)
 
 class PlayTest210_runof7intervening(unittest.TestCase):
@@ -783,9 +783,9 @@ class PlayTest210_runof7intervening(unittest.TestCase):
         newcard = pyb.stringcard('7h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
@@ -801,12 +801,12 @@ class PlayTest220_fifteen_and_3kind(unittest.TestCase):
         newcard = pyb.stringcard('5h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_FIFTEEN,pyb.SCORE_PAIRROYAL])
+        self.assertEqual(scorelist,[(pyb.SCORE_FIFTEEN,3),(pyb.SCORE_PAIRROYAL,3)])
         self.assertEqual(totalscore,8)
 
 class PlayTest230_31_and_4kind(unittest.TestCase):
@@ -818,12 +818,12 @@ class PlayTest230_31_and_4kind(unittest.TestCase):
         newcard = pyb.stringcard('7d')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_THIRTYONE,pyb.SCORE_4KIND])
+        self.assertEqual(scorelist,[(pyb.SCORE_THIRTYONE,len(resultcards)),(pyb.SCORE_4KIND,4)])
         self.assertEqual(totalscore,14)
 
 class PlayTest240_fifteen_run5(unittest.TestCase):
@@ -835,12 +835,12 @@ class PlayTest240_fifteen_run5(unittest.TestCase):
         newcard = pyb.stringcard('4h')
         print("playing", pyb.cardstring(newcard), "on", [pyb.cardstring(x) for x in curcards])
         (resultcards, curtotal, scorelist) = pyb.play_card(curcards, newcard)
-        totalscore = sum([pyb.scoreStringsNPoints[x][1] for x in scorelist])
+        totalscore = sum([pyb.scoreStringsNPoints[x[0]][1] for x in scorelist])
         print('cards',[pyb.cardstring(x) for x in resultcards],'total',curtotal,'score',
-              [pyb.scoreStringsNPoints[x][0] for x in scorelist],"for",totalscore)
+              [pyb.scoreStringsNPoints[x[0]][0] for x in scorelist],"for",totalscore)
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
-        self.assertEqual(scorelist,[pyb.SCORE_FIFTEEN,pyb.SCORE_RUN5])
+        self.assertEqual(scorelist,[(pyb.SCORE_FIFTEEN,len(resultcards)),(pyb.SCORE_RUN5,5)])
         self.assertEqual(totalscore,7)
 
 # TODO: OK, do some more of those
