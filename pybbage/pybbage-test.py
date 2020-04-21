@@ -381,6 +381,7 @@ class PlayTest000_firstcard(unittest.TestCase):
         self.assertEqual(resultcards,[newcard])
         self.assertEqual(curtotal,pyb.val(newcard))
         self.assertEqual(scorelist,[])
+        self.assertEqual(totalscore,0)
 
 class PlayTest003_fifteen(unittest.TestCase):
     def test_playtest_fifteen(self):
@@ -396,6 +397,7 @@ class PlayTest003_fifteen(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_FIFTEEN])
+        self.assertEqual(totalscore,2)
 
 class PlayTest007_thirtyone(unittest.TestCase):
     def test_playtest_thirtyone(self):
@@ -412,6 +414,7 @@ class PlayTest007_thirtyone(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_THIRTYONE])
+        self.assertEqual(totalscore,2)
 
 class PlayTest010_pair(unittest.TestCase):
     def test_playtest_pair(self):
@@ -428,6 +431,7 @@ class PlayTest010_pair(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_PAIR])
+        self.assertEqual(totalscore,2)
 
 class PlayTest020_notpair(unittest.TestCase):
     def test_playtest_notpair(self):
@@ -444,6 +448,7 @@ class PlayTest020_notpair(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
+        self.assertEqual(totalscore,0)
 
 class PlayTest030_3ofakind(unittest.TestCase):
     def test_playtest_3ofakind(self):
@@ -460,6 +465,7 @@ class PlayTest030_3ofakind(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_PAIRROYAL])
+        self.assertEqual(totalscore,6)
 
 class PlayTest040_not3ofakind(unittest.TestCase):
     def test_playtest_not3ofakind(self):
@@ -476,6 +482,7 @@ class PlayTest040_not3ofakind(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_PAIR])
+        self.assertEqual(totalscore,2)
 
 class PlayTest050_4ofakind(unittest.TestCase):
     def test_playtest_4ofakind(self):
@@ -492,6 +499,7 @@ class PlayTest050_4ofakind(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_4KIND])
+        self.assertEqual(totalscore,12)
 
 class PlayTest060_not4ofakind(unittest.TestCase):
     def test_playtest_not4ofakind(self):
@@ -508,6 +516,7 @@ class PlayTest060_not4ofakind(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_PAIR])
+        self.assertEqual(totalscore,2)
 
 # runs
 class PlayTest070_runof3(unittest.TestCase):
@@ -525,6 +534,7 @@ class PlayTest070_runof3(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN3])
+        self.assertEqual(totalscore,3)
 
 class PlayTest080_runof3ooo(unittest.TestCase):
     def test_playtest_runof3ooo(self):
@@ -541,6 +551,7 @@ class PlayTest080_runof3ooo(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN3])
+        self.assertEqual(totalscore,3)
 
 class PlayTest090_runof3intervening(unittest.TestCase):
     def test_playtest_runof3int(self):
@@ -557,6 +568,7 @@ class PlayTest090_runof3intervening(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
+        self.assertEqual(totalscore,0)
 
 # TODO HEY DO THIS ONE from http://cribbagecorner.com/cribbage-rules-play
 #
@@ -590,6 +602,7 @@ class PlayTest100_runof4(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN4])
+        self.assertEqual(totalscore,4)
 
 class PlayTest110_runof4ooo(unittest.TestCase):
     def test_playtest_runof4ooo(self):
@@ -606,6 +619,7 @@ class PlayTest110_runof4ooo(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN4])
+        self.assertEqual(totalscore,4)
 
 class PlayTest120_runof4intervening(unittest.TestCase):
     def test_playtest_runof4int(self):
@@ -622,6 +636,7 @@ class PlayTest120_runof4intervening(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
+        self.assertEqual(totalscore,0)
 
 class PlayTest130_runof5(unittest.TestCase):
     def test_playtest_runof5(self):
@@ -638,6 +653,7 @@ class PlayTest130_runof5(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN5])
+        self.assertEqual(totalscore,5)
 
 class PlayTest140_runof5ooo(unittest.TestCase):
     def test_playtest_runof5ooo(self):
@@ -654,6 +670,7 @@ class PlayTest140_runof5ooo(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN5])
+        self.assertEqual(totalscore,5)
 
 class PlayTest150_runof5intervening(unittest.TestCase):
     def test_playtest_runof5int(self):
@@ -670,6 +687,7 @@ class PlayTest150_runof5intervening(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
+        self.assertEqual(totalscore,0)
 
 class PlayTest160_runof6(unittest.TestCase):
     def test_playtest_runof6(self):
@@ -686,6 +704,7 @@ class PlayTest160_runof6(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN6])
+        self.assertEqual(totalscore,6)
 
 class PlayTest170_runof6ooo(unittest.TestCase):
     def test_playtest_runof6ooo(self):
@@ -702,6 +721,7 @@ class PlayTest170_runof6ooo(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN6])
+        self.assertEqual(totalscore,6)
 
 class PlayTest180_runof6intervening(unittest.TestCase):
     def test_playtest_runof6int(self):
@@ -718,6 +738,7 @@ class PlayTest180_runof6intervening(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
+        self.assertEqual(totalscore,0)
 
 class PlayTest190_runof7(unittest.TestCase):
     def test_playtest_runof7(self):
@@ -734,6 +755,7 @@ class PlayTest190_runof7(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN7])
+        self.assertEqual(totalscore,7)
 
 class PlayTest200_runof7ooo(unittest.TestCase):
     def test_playtest_runof7ooo(self):
@@ -750,6 +772,7 @@ class PlayTest200_runof7ooo(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_RUN7])
+        self.assertEqual(totalscore,7)
 
 class PlayTest210_runof7intervening(unittest.TestCase):
     def test_playtest_runof7int(self):
@@ -766,6 +789,8 @@ class PlayTest210_runof7intervening(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[])
+        self.assertEqual(totalscore,0)
+
 
 class PlayTest220_fifteen_and_3kind(unittest.TestCase):
     def test_playtest_15and3kind(self):
@@ -782,6 +807,7 @@ class PlayTest220_fifteen_and_3kind(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_FIFTEEN,pyb.SCORE_PAIRROYAL])
+        self.assertEqual(totalscore,8)
 
 class PlayTest230_31_and_4kind(unittest.TestCase):
     def test_playtest_31and4kind(self):
@@ -798,6 +824,7 @@ class PlayTest230_31_and_4kind(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_THIRTYONE,pyb.SCORE_4KIND])
+        self.assertEqual(totalscore,14)
 
 class PlayTest240_fifteen_run5(unittest.TestCase):
     def test_playtest_15run5(self):
@@ -814,6 +841,7 @@ class PlayTest240_fifteen_run5(unittest.TestCase):
         self.assertEqual(resultcards,curcards + [newcard])
         self.assertEqual(curtotal,sum([pyb.val(x) for x in curcards]) + pyb.val(newcard))
         self.assertEqual(scorelist,[pyb.SCORE_FIFTEEN,pyb.SCORE_RUN5])
+        self.assertEqual(totalscore,7)
 
 # TODO: OK, do some more of those
 
