@@ -45,11 +45,13 @@ class Player(arcade.Sprite):
 # for cards
 class Card(arcade.Sprite):
     # init adds the highlighted parameter to the regular sprite parameters
+    # also the visible parameter - which should be a part of my arduino base sprite class
     def __init__(self,filename: str = None, scale: float = 1, image_x: float = 0, image_y: float = 0,
                  image_width: float = 0, image_height: float = 0, center_x: float = 0, center_y: float = 0,
                  repeat_count_x: int = 1, repeat_count_y: int = 1,
-                 highlighted = False):
+                 highlighted = False, visible = True):
         self.highlighted = highlighted
+        self.visible = visible
         super().__init__(filename,scale,image_x,image_y,image_width,image_height,center_x,center_y,
                          repeat_count_x,repeat_count_y)
 
@@ -58,6 +60,12 @@ class Card(arcade.Sprite):
 
     def is_highlighted(self):
         return self.highlighted
+
+    def set_visible(self,visible):
+        self.visible = visible
+
+    def is_visible(self):
+        return self.visible
 
     # currently not much needs to be done
     def update(self):
@@ -320,7 +328,8 @@ class Mode:
         # call update on all the sprite lists
         if self.sprite_lists is not None:
             for sl in self.sprite_lists:
-                sl["SpriteList"].update()
+                if sl["SpriteList"] is not None:
+                    sl["SpriteList"].update()
 
     def on_key_press(self, key, modifiers):
         # how to handle? maybe a dict of key constant -> member function to handle it?

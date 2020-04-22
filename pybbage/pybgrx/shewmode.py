@@ -99,7 +99,7 @@ class ShewMode(Mode):
         # works, but seems clumsy; better way might be ... different textures? Alpha? I dunno. Stick w/this for now
         # so we don't even really need self.highligh_list - but might if we do this a different way
         # now it gets rebuilt every frame in onDraw.
-        # TODO have a flag for highlights_changed and only rebuild (and clear the flag) on frames where it's true
+        # - have a flag for highlights_changed and only rebuild (and clear the flag) on frames where it's true
         # actually now will just keep an array of previous highlighted cards and compare in the draw
         # and highlight_list will get re-created there
         # but create it here and register

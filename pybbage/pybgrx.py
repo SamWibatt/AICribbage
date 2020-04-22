@@ -122,6 +122,8 @@ class MyGame(arcade.Window):
         # ugh, players need a parent pybbage object, which would be the one we're creating with the players in
         # its init params. So, set their parents to none and use the accessor to set them later.
         # GROSS. seat of the pants design, ew
+        # It would likely be better to organize it so that Pybbage is the parent and the GUI / console output
+        # handler is the child - but bull on here
         randseed = 1043685
         self.player0 = PybgrxHumanPlayer(None,name="You")
         self.player1 = PybgrxComputerPlayer(None,"Me")
