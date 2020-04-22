@@ -163,6 +163,12 @@ class Player:
     def set_name(self,name):
         self.name = name
 
+    def get_parent(self):
+        return parent
+
+    def set_parent(self,parent):
+        self.parent = parent
+
     # =================================================================================================================
     # HERE ARE OVERRIDEABLE STRATEGY METHODS like playing a card in the play or shew
     # easy ones are using human input and choosing cards at random
@@ -380,9 +386,12 @@ from typing import List, Any
 
 class Pybbage:
 
-    def __init__(self):
+    def __init__(self,randseed=1043685,player0=None,player1=None):
         self.rand_next = 1
         self.random_max = 0x7FFFFFFF
+        self.randseed = randseed
+        self.player0 = player0
+        self.player1 = player1
 
         # global score list
         self.SCORE_NOBS = 0          #  0. nobs - 1
@@ -1301,7 +1310,13 @@ class Pybbage:
     def new_game(self,randseed):
         # Create players
         print("Creating players...")
-        players = [HumanPlayer(self,name="Human"), Player(self,name="Computer")]
+        if self.player0 is None:
+            self.player0 = HumanPlayer(self,name="Human")
+
+        if self.player1 is None:
+            self.player1 = Player(self, name="Computer")
+
+        players = [self.player0, self.player1]
         dealer = None
         pone = None
         for player in players:

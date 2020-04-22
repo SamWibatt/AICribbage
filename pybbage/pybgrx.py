@@ -39,6 +39,39 @@ from pybgrx.titlemode import TitleMode
 from pybgrx.playmode import PlayMode
 
 
+# *********************************************************************************************************************
+# PYBGRX PLAYER OBJECTS
+# *********************************************************************************************************************
+
+class PybgrxHumanPlayer(pyb.HumanPlayer):
+    def advance_peg_by_score_callback(self,score):
+        # OVERRIDE to do graphics of peg advancement, given a total score (for shew)
+        print("Advance peg by score callback",score)
+        pass
+
+    # this is used by play, and every scoring combination of cards in play is a contiguous set including the
+    # newly played card. so if num_cards is 1, the top card is highlighted, on up to e.g. run of 4, highlight
+    # 4 cards, top and 3 preceding.
+    def advance_peg_by_index_callback(self,score_index,num_cards):
+        # OVERRIDE to do graphics of peg advancement, given a score index (for play)
+        print("Advance peg by index callback",self.parent.scoreStringsNPoints[score_index][0],"for",
+              self.parent.scoreStringsNPoints[score_index][1],"including this many cards:",num_cards)
+        pass
+
+class PybgrxComputerPlayer(pyb.PlayFirstLegalCardPlayer):
+    def advance_peg_by_score_callback(self,score):
+        # OVERRIDE to do graphics of peg advancement, given a total score (for shew)
+        print("Advance peg by score callback",score)
+        pass
+
+    # this is used by play, and every scoring combination of cards in play is a contiguous set including the
+    # newly played card. so if num_cards is 1, the top card is highlighted, on up to e.g. run of 4, highlight
+    # 4 cards, top and 3 preceding.
+    def advance_peg_by_index_callback(self,score_index,num_cards):
+        # OVERRIDE to do graphics of peg advancement, given a score index (for play)
+        print("Advance peg by index callback",self.parent.scoreStringsNPoints[score_index][0],"for",
+              self.parent.scoreStringsNPoints[score_index][1],"including this many cards:",num_cards)
+        pass
 
 
 # *********************************************************************************************************************
@@ -86,7 +119,16 @@ class MyGame(arcade.Window):
         """ Set up the game and initialize the variables. """
 
         # so here's our game state!
-        self.gamestate = pyb.Pybbage()
+        # ugh, players need a parent pybbage object, which would be the one we're creating with the players in
+        # its init params. So, set their parents to none and use the accessor to set them later.
+        # GROSS. seat of the pants design, ew
+        randseed = 1043685
+        self.player0 = PybgrxHumanPlayer(None,name="You")
+        self.player1 = PybgrxComputerPlayer(None,"Me")
+        self.gamestate = pyb.Pybbage(randseed, player0 = self.player0, player1 = self.player1)
+        # hopework! I assume this will affect the object off in gamestate
+        self.player0.set_parent(self.gamestate)
+        self.player1.set_parent(self.gamestate)
 
         self.modes = []
         titlemode = TitleMode(parent = self)

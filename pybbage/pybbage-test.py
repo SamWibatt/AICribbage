@@ -51,7 +51,7 @@ class CardstrTestAllLegit(unittest.TestCase):
 # Numbering by 10s a la BASIC so can keep them in order and have room to add more
 
 # nothing
-class ShowTest000_Nothing(unittest.TestCase):
+class aShowTest000_Nothing(unittest.TestCase):
     def test_shewtest_nothing(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -64,7 +64,7 @@ class ShowTest000_Nothing(unittest.TestCase):
         self.assertEqual(score,0)
 
 # fifteens - two card, have a couple
-class ShowTest010_2CardFifteen(unittest.TestCase):
+class aShowTest010_2CardFifteen(unittest.TestCase):
     def test_shewtest_2card15(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -77,7 +77,7 @@ class ShowTest010_2CardFifteen(unittest.TestCase):
         self.assertEqual(score,4)
 
 # 3 card 15
-class ShowTest020_3CardFifteen(unittest.TestCase):
+class aShowTest020_3CardFifteen(unittest.TestCase):
     def test_shewtest_3card15(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -90,7 +90,7 @@ class ShowTest020_3CardFifteen(unittest.TestCase):
         self.assertEqual(score,4)
 
 # 4 card 15
-class ShowTest030_4CardFifteen(unittest.TestCase):
+class aShowTest030_4CardFifteen(unittest.TestCase):
     def test_shewtest_4card15(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -103,7 +103,7 @@ class ShowTest030_4CardFifteen(unittest.TestCase):
         self.assertEqual(score,2)
 
 # 5 card 15
-class ShowTest040_5CardFifteen(unittest.TestCase):
+class aShowTest040_5CardFifteen(unittest.TestCase):
     def test_shewtest_5card15(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -116,7 +116,7 @@ class ShowTest040_5CardFifteen(unittest.TestCase):
         self.assertEqual(score,7)
 
 # pair
-class ShowTest050_1Pair(unittest.TestCase):
+class aShowTest050_1Pair(unittest.TestCase):
     def test_shewtest_1pair(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -129,7 +129,7 @@ class ShowTest050_1Pair(unittest.TestCase):
         self.assertEqual(score,2)
 
 # 2 pair
-class ShowTest060_2Pair(unittest.TestCase):
+class aShowTest060_2Pair(unittest.TestCase):
     def test_shewtest_2pair(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -142,7 +142,7 @@ class ShowTest060_2Pair(unittest.TestCase):
         self.assertEqual(score,4)
 
 # 3 of a kind
-class ShowTest070_3Pair(unittest.TestCase):
+class aShowTest070_3Pair(unittest.TestCase):
     def test_shewtest_2pair(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -155,7 +155,7 @@ class ShowTest070_3Pair(unittest.TestCase):
         self.assertEqual(score,6)
 
 # 3 of a kind and pair
-class ShowTest080_3PairAndPair(unittest.TestCase):
+class aShowTest080_3PairAndPair(unittest.TestCase):
     def test_shewtest_2pair(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -168,7 +168,7 @@ class ShowTest080_3PairAndPair(unittest.TestCase):
         self.assertEqual(score,8)
 
 # 4 of a kind
-class ShowTest090_4PairOfAKind(unittest.TestCase):
+class aShowTest090_4PairOfAKind(unittest.TestCase):
     def test_shewtest_6pair(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -181,7 +181,7 @@ class ShowTest090_4PairOfAKind(unittest.TestCase):
         self.assertEqual(score,12)
 
 # run of 3
-class ShowTest100_RunOf3(unittest.TestCase):
+class aShowTest100_RunOf3(unittest.TestCase):
     def test_shewtest_run3(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -194,7 +194,7 @@ class ShowTest100_RunOf3(unittest.TestCase):
         self.assertEqual(score,3)
 
 # run of 4, bottom (i.e., the odd card out is the highest ranked)
-class ShowTest110_RunOf4Low(unittest.TestCase):
+class aShowTest110_RunOf4Low(unittest.TestCase):
     def test_shewtest_run4low(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orerings of hand and starter
@@ -207,7 +207,7 @@ class ShowTest110_RunOf4Low(unittest.TestCase):
         self.assertEqual(score,8)
 
 # run of 4, top (i.e., odd card out is lowest ranked)
-class ShowTest120_RunOf4High(unittest.TestCase):
+class aShowTest120_RunOf4High(unittest.TestCase):
     def test_shewtest_run4hi(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter (watch for nobs)
@@ -220,7 +220,7 @@ class ShowTest120_RunOf4High(unittest.TestCase):
         self.assertEqual(score,4)
 
 # run of 5
-class ShowTest130_RunOf5(unittest.TestCase):
+class aShowTest130_RunOf5(unittest.TestCase):
     def test_shewtest_run5(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter (watch for nobs)
@@ -233,7 +233,7 @@ class ShowTest130_RunOf5(unittest.TestCase):
         self.assertEqual(score,5)
 
 # double run (3)
-class ShowTest140_RunOf3Dbl(unittest.TestCase):
+class aShowTest140_RunOf3Dbl(unittest.TestCase):
     def test_shewtest_run3dbl(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -246,7 +246,7 @@ class ShowTest140_RunOf3Dbl(unittest.TestCase):
         self.assertEqual(score,8)
 
 # double run (4)
-class ShowTest150_RunOf4Dbl(unittest.TestCase):
+class aShowTest150_RunOf4Dbl(unittest.TestCase):
     def test_shewtest_run4dbl(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -259,7 +259,7 @@ class ShowTest150_RunOf4Dbl(unittest.TestCase):
         self.assertEqual(score,10)
 
 # double double run
-class ShowTest160_RunOf3DblDbl(unittest.TestCase):
+class aShowTest160_RunOf3DblDbl(unittest.TestCase):
     def test_shewtest_run3dbldbl(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -272,7 +272,7 @@ class ShowTest160_RunOf3DblDbl(unittest.TestCase):
         self.assertEqual(score,16)
 
 # triple run
-class ShowTest170_RunOf3Triple(unittest.TestCase):
+class aShowTest170_RunOf3Triple(unittest.TestCase):
     def test_shewtest_run3triple(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -285,7 +285,7 @@ class ShowTest170_RunOf3Triple(unittest.TestCase):
         self.assertEqual(score,15)
 
 # 4 card flush
-class ShowTest180_4CardFlush(unittest.TestCase):
+class aShowTest180_4CardFlush(unittest.TestCase):
     def test_shewtest_4cardflush(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand, keep starter same
@@ -298,7 +298,7 @@ class ShowTest180_4CardFlush(unittest.TestCase):
         self.assertEqual(score,4)
 
 # 5 card flush
-class ShowTest190_5CardFlush(unittest.TestCase):
+class aShowTest190_5CardFlush(unittest.TestCase):
     def test_shewtest_5cardflush(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand and starter
@@ -311,7 +311,7 @@ class ShowTest190_5CardFlush(unittest.TestCase):
         self.assertEqual(score,5)
 
 # not 4 card flush bc the 4 incl starter
-class ShowTest200_Not4CardFlush(unittest.TestCase):
+class aShowTest200_Not4CardFlush(unittest.TestCase):
     def test_shewtest_not4cardflush(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand, keep starter same
@@ -324,7 +324,7 @@ class ShowTest200_Not4CardFlush(unittest.TestCase):
         self.assertEqual(score,0)
 
 # nobs
-class ShowTest210_Nobs(unittest.TestCase):
+class aShowTest210_Nobs(unittest.TestCase):
     def test_shewtest_nobs(self):
         pyb = pybbage.Pybbage()
         # todo should work in all orderings of hand, jack must be in hand, starter w suit of j
@@ -337,7 +337,7 @@ class ShowTest210_Nobs(unittest.TestCase):
         self.assertEqual(score,1)
 
 # 29
-class ShowTest220_Z29(unittest.TestCase):
+class aShowTest220_Z29(unittest.TestCase):
     def test_shewtest_Z29(self):
         pyb = pybbage.Pybbage()
         # TODO Should work in all scrambles except that jack must not be starter and starter must have same suit as j
@@ -367,7 +367,7 @@ class ShowTest220_Z29(unittest.TestCase):
 #         print("Result cards:",[cardstring(x) for x in resultcards],"score",resscore)
 # Numbering by 10s a la BASIC so can keep them in order and have room to add more
 
-class PlayTest000_firstcard(unittest.TestCase):
+class bPlayTest000_firstcard(unittest.TestCase):
     def test_playtest_1stcard(self):
         print("Play first card --------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -383,7 +383,7 @@ class PlayTest000_firstcard(unittest.TestCase):
         self.assertEqual(scorelist,[])
         self.assertEqual(totalscore,0)
 
-class PlayTest003_fifteen(unittest.TestCase):
+class bPlayTest003_fifteen(unittest.TestCase):
     def test_playtest_fifteen(self):
         print("Play fifteen -----------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -399,7 +399,7 @@ class PlayTest003_fifteen(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_FIFTEEN,2)])
         self.assertEqual(totalscore,2)
 
-class PlayTest007_thirtyone(unittest.TestCase):
+class bPlayTest007_thirtyone(unittest.TestCase):
     def test_playtest_thirtyone(self):
         print("Play thirtyone ---------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -416,7 +416,7 @@ class PlayTest007_thirtyone(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_THIRTYONE,len(resultcards))])
         self.assertEqual(totalscore,2)
 
-class PlayTest010_pair(unittest.TestCase):
+class bPlayTest010_pair(unittest.TestCase):
     def test_playtest_pair(self):
         print("Play pair --------------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -433,7 +433,7 @@ class PlayTest010_pair(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_PAIR,2)])
         self.assertEqual(totalscore,2)
 
-class PlayTest020_notpair(unittest.TestCase):
+class bPlayTest020_notpair(unittest.TestCase):
     def test_playtest_notpair(self):
         print("Play not pair bc intervening card --------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -450,7 +450,7 @@ class PlayTest020_notpair(unittest.TestCase):
         self.assertEqual(scorelist,[])
         self.assertEqual(totalscore,0)
 
-class PlayTest030_3ofakind(unittest.TestCase):
+class bPlayTest030_3ofakind(unittest.TestCase):
     def test_playtest_3ofakind(self):
         print("Play 3 of a kind -------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -467,7 +467,7 @@ class PlayTest030_3ofakind(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_PAIRROYAL,3)])
         self.assertEqual(totalscore,6)
 
-class PlayTest040_not3ofakind(unittest.TestCase):
+class bPlayTest040_not3ofakind(unittest.TestCase):
     def test_playtest_not3ofakind(self):
         print("Play 3 of a kind not bc intervening pair instead -----------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -484,7 +484,7 @@ class PlayTest040_not3ofakind(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_PAIR,2)])
         self.assertEqual(totalscore,2)
 
-class PlayTest050_4ofakind(unittest.TestCase):
+class bPlayTest050_4ofakind(unittest.TestCase):
     def test_playtest_4ofakind(self):
         print("Play 4 of a kind -------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -501,7 +501,7 @@ class PlayTest050_4ofakind(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_4KIND,4)])
         self.assertEqual(totalscore,12)
 
-class PlayTest060_not4ofakind(unittest.TestCase):
+class bPlayTest060_not4ofakind(unittest.TestCase):
     def test_playtest_not4ofakind(self):
         print("Play 4 of a kind not bc intervening pair instead -----------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -519,7 +519,7 @@ class PlayTest060_not4ofakind(unittest.TestCase):
         self.assertEqual(totalscore,2)
 
 # runs
-class PlayTest070_runof3(unittest.TestCase):
+class bPlayTest070_runof3(unittest.TestCase):
     def test_playtest_runof3(self):
         print("Play run of 3 ----------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -536,7 +536,7 @@ class PlayTest070_runof3(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN3,3)])
         self.assertEqual(totalscore,3)
 
-class PlayTest080_runof3ooo(unittest.TestCase):
+class bPlayTest080_runof3ooo(unittest.TestCase):
     def test_playtest_runof3ooo(self):
         print("Play run of 3 out of order ---------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -553,7 +553,7 @@ class PlayTest080_runof3ooo(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN3,3)])
         self.assertEqual(totalscore,3)
 
-class PlayTest090_runof3intervening(unittest.TestCase):
+class bPlayTest090_runof3intervening(unittest.TestCase):
     def test_playtest_runof3int(self):
         print("Play run of 3 broken with intervening card -----------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -587,7 +587,7 @@ class PlayTest090_runof3intervening(unittest.TestCase):
 # would have interrupted the second sequence.
 
 
-class PlayTest100_runof4(unittest.TestCase):
+class bPlayTest100_runof4(unittest.TestCase):
     def test_playtest_runof4(self):
         print("Play run of 4 ----------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -604,7 +604,7 @@ class PlayTest100_runof4(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN4,4)])
         self.assertEqual(totalscore,4)
 
-class PlayTest110_runof4ooo(unittest.TestCase):
+class bPlayTest110_runof4ooo(unittest.TestCase):
     def test_playtest_runof4ooo(self):
         print("Play run of 4 out of order ---------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -621,7 +621,7 @@ class PlayTest110_runof4ooo(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN4,4)])
         self.assertEqual(totalscore,4)
 
-class PlayTest120_runof4intervening(unittest.TestCase):
+class bPlayTest120_runof4intervening(unittest.TestCase):
     def test_playtest_runof4int(self):
         print("Play run of 4 broken with intervening card -----------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -638,7 +638,7 @@ class PlayTest120_runof4intervening(unittest.TestCase):
         self.assertEqual(scorelist,[])
         self.assertEqual(totalscore,0)
 
-class PlayTest130_runof5(unittest.TestCase):
+class bPlayTest130_runof5(unittest.TestCase):
     def test_playtest_runof5(self):
         print("Play run of 5 ----------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -655,7 +655,7 @@ class PlayTest130_runof5(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN5,5)])
         self.assertEqual(totalscore,5)
 
-class PlayTest140_runof5ooo(unittest.TestCase):
+class bPlayTest140_runof5ooo(unittest.TestCase):
     def test_playtest_runof5ooo(self):
         print("Play run of 5 out of order ---------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -672,7 +672,7 @@ class PlayTest140_runof5ooo(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN5,5)])
         self.assertEqual(totalscore,5)
 
-class PlayTest150_runof5intervening(unittest.TestCase):
+class bPlayTest150_runof5intervening(unittest.TestCase):
     def test_playtest_runof5int(self):
         print("Play run of 5 broken with intervening card -----------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -689,7 +689,7 @@ class PlayTest150_runof5intervening(unittest.TestCase):
         self.assertEqual(scorelist,[])
         self.assertEqual(totalscore,0)
 
-class PlayTest160_runof6(unittest.TestCase):
+class bPlayTest160_runof6(unittest.TestCase):
     def test_playtest_runof6(self):
         print("Play run of 6 ----------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -706,7 +706,7 @@ class PlayTest160_runof6(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN6,6)])
         self.assertEqual(totalscore,6)
 
-class PlayTest170_runof6ooo(unittest.TestCase):
+class bPlayTest170_runof6ooo(unittest.TestCase):
     def test_playtest_runof6ooo(self):
         print("Play run of 6 out of order ---------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -723,7 +723,7 @@ class PlayTest170_runof6ooo(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN6,6)])
         self.assertEqual(totalscore,6)
 
-class PlayTest180_runof6intervening(unittest.TestCase):
+class bPlayTest180_runof6intervening(unittest.TestCase):
     def test_playtest_runof6int(self):
         print("Play run of 6 broken with intervening card -----------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -740,7 +740,7 @@ class PlayTest180_runof6intervening(unittest.TestCase):
         self.assertEqual(scorelist,[])
         self.assertEqual(totalscore,0)
 
-class PlayTest190_runof7(unittest.TestCase):
+class bPlayTest190_runof7(unittest.TestCase):
     def test_playtest_runof7(self):
         print("Play run of 7 ----------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -757,7 +757,7 @@ class PlayTest190_runof7(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN7,7)])
         self.assertEqual(totalscore,7)
 
-class PlayTest200_runof7ooo(unittest.TestCase):
+class bPlayTest200_runof7ooo(unittest.TestCase):
     def test_playtest_runof7ooo(self):
         print("Play run of 7 out of order ---------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -774,7 +774,7 @@ class PlayTest200_runof7ooo(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_RUN7,7)])
         self.assertEqual(totalscore,7)
 
-class PlayTest210_runof7intervening(unittest.TestCase):
+class bPlayTest210_runof7intervening(unittest.TestCase):
     def test_playtest_runof7int(self):
         print("Play run of 7 broken with intervening card -----------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -792,7 +792,7 @@ class PlayTest210_runof7intervening(unittest.TestCase):
         self.assertEqual(totalscore,0)
 
 
-class PlayTest220_fifteen_and_3kind(unittest.TestCase):
+class bPlayTest220_fifteen_and_3kind(unittest.TestCase):
     def test_playtest_15and3kind(self):
         print("Play fifteen and 3 of a kind -------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -809,7 +809,7 @@ class PlayTest220_fifteen_and_3kind(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_FIFTEEN,3),(pyb.SCORE_PAIRROYAL,3)])
         self.assertEqual(totalscore,8)
 
-class PlayTest230_31_and_4kind(unittest.TestCase):
+class bPlayTest230_31_and_4kind(unittest.TestCase):
     def test_playtest_31and4kind(self):
         print("Play 31 and 4 of a kind ------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -826,7 +826,7 @@ class PlayTest230_31_and_4kind(unittest.TestCase):
         self.assertEqual(scorelist,[(pyb.SCORE_THIRTYONE,len(resultcards)),(pyb.SCORE_4KIND,4)])
         self.assertEqual(totalscore,14)
 
-class PlayTest240_fifteen_run5(unittest.TestCase):
+class bPlayTest240_fifteen_run5(unittest.TestCase):
     def test_playtest_15run5(self):
         print("Play fifteen and run of 5 ----------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
@@ -847,7 +847,7 @@ class PlayTest240_fifteen_run5(unittest.TestCase):
 
 
 
-class PlayTest900_overflow(unittest.TestCase):
+class bPlayTest900_overflow(unittest.TestCase):
     def test_playtest_overflow(self):
         print("Play overflow ----------------------------------------------------------------------------------------")
         pyb = pybbage.Pybbage()
