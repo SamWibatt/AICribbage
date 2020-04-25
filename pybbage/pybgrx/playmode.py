@@ -61,30 +61,44 @@ class PlayMode(Mode):
 
         # 8 cards in the play - draw the ones that have been played so start them all invisible.
         # making non-static
-        play_card_list = arcade.SpriteList(is_static = False)
-        play_card_sprites = []
+        # actually let's do a single list for both cards and highlights
+        # bc they both end up getting drawn in the same list
+        play_card_n_hl_list = arcade.SpriteList(is_static = False)
+        play_card_n_hl_sprites = []
+        # build it s.t. first 8 sprites are cards, then second 8 are hls
         for j in range(8):
             # this is a kludge, load a card back sprite to set the image size, then use texture
-            newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING,visible=False,highlighted=False)
+            newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING,visible=True,highlighted=True)
             for t in range(52):
                 newcard.append_texture(card_textures[t])  # swh
             newcard.left = CARD_PLAY_LEFT_MARGIN + (j * CARD_PLAY_NEXTCARD_DIST)
             newcard.bottom = CARD_PLAY_BOTTOM_MARGIN
             newcard.set_texture(1+ (4*j))   # temp
-            play_card_sprites.append(newcard)
+            play_card_n_hl_sprites.append(newcard)
             # we're going to do a thing like with higlights in shew, build sprite list at display time with
             # visible cards and these are all invisible
-            #play_card_list.append(newcard)
-        self.add_sprite_list("playcards",play_card_list,play_card_sprites)
 
-        # TODO HERE ADD PLAY-CARD HIGHLIGHT SPRITES
+        # THEN PLAY-CARD HIGHLIGHT SPRITES
+        for j in range(8):
+            # For now there is only one kind of highlight, later can use others like I do with cards and pegs
+            newhighlight = Highlight("pybgrx_assets/YellowHighlight.png",scale=SPRITE_SCALING)
+            newhighlight.left = (CARD_PLAY_LEFT_MARGIN - HIGHLIGHT_SCREEN_WIDTH) + \
+                                (j * CARD_PLAY_NEXTCARD_DIST)
+            newhighlight.bottom = CARD_PLAY_BOTTOM_MARGIN - HIGHLIGHT_SCREEN_WIDTH
+            play_card_n_hl_sprites.append(newhighlight)
+
+        self.add_sprite_list("playcardsnhighlights",None,play_card_n_hl_sprites)
+        # build visible and highlighted lists to detect if we need to
+        # update display - start out with empties to force draw
+        self.play_last_visible = [] #[play_card_n_hl_sprites[x].is_visible() for x in range(8)]
+        self.play_last_highlighted = [] #[play_card_n_hl_sprites[x].is_highlighted() for x in range(8)]
 
         # we have 4 cards in the hand
-        hand_card_list = arcade.SpriteList(is_static = True)
+        hand_card_list = arcade.SpriteList(is_static = False)
         hand_card_sprites = []
         for j in range(4):
             # this is a kludge, load a card back sprite to set the image size, then use texture
-            newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
+            newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING,visible=True,highlighted=False)
             for t in range(52):
                 newcard.append_texture(card_textures[t])  # swh
             newcard.left = CARD_PLAY_HAND_LEFT_MARGIN + (j * (CARD_SCREEN_WIDTH + CARD_PLAY_INTERCARD_MARGIN))
@@ -92,7 +106,13 @@ class PlayMode(Mode):
             newcard.set_texture(1+ (38 + (4*j)))   # temp
             hand_card_sprites.append(newcard)
             hand_card_list.append(newcard)
+        hand_card_sprites[0].set_highlighted(True)  # TEMP TEST KLUDGE RIP OUT
+        hand_card_sprites[2].set_highlighted(True)  # TEMP TEST KLUDGE RIP OUT
         self.add_sprite_list("handcards",hand_card_list,hand_card_sprites)
+        # build visible and highlighted lists to detect if we need to
+        # update display - start out with empties to force draw
+        self.hand_last_visible = [] # x.is_visible() for x in hand_card_sprites]
+        self.hand_last_highlighted = [] # [x.is_highlighted() for x in hand_card_sprites]
 
         # then the deck up in the corner - should prolly be part of bg
         deck_list = arcade.SpriteList(is_static=True)
@@ -115,7 +135,7 @@ class PlayMode(Mode):
             newhighlight.bottom = CARD_PLAY_BOTTOM_MARGIN - HIGHLIGHT_SCREEN_WIDTH
             hand_highlight_sprites.append(newhighlight)
         #highlight_list.append(newhighlight)
-        self.add_sprite_list("highlights",None,hand_highlight_sprites)
+        self.add_sprite_list("handhighlights",None,hand_highlight_sprites)
 
 
 
@@ -146,10 +166,53 @@ class PlayMode(Mode):
         # out of the list if if its visible flag is false.
         # reckon we need a list of invisible highlight sprites too? That's the way I did it in shewmode but
         # kind of silly. Welp, prototype. It's also not that bad.
+        sl_handcards = self.get_sprite_list_by_name("handcards")
+
+        # first see if anything has changed in visibility or highlights.
+        hand_visible = [x.is_visible() for x in sl_handcards["sprites"]]
+        hand_highlighted = [x.is_highlighted() for x in sl_handcards["sprites"]]
+
+        if hand_visible != self.hand_last_visible or hand_highlighted != self.hand_last_highlighted:
+            sl_handhl = self.get_sprite_list_by_name("handhighlights")
+            highlight_list = arcade.SpriteList()
+            handcard_list = arcade.SpriteList()
+            # ok so build the card list: card = visible means put the card in
+            # the card list; if card also = highlighted means put the corresponding
+            # highlight in the highlight list.
+            for j in range(4):      # danger hardcodey 4 - but I won't change the # of cards in a hand
+                if sl_handcards["sprites"][j].is_visible():
+                    handcard_list.append(sl_handcards["sprites"][j])
+                    if sl_handcards["sprites"][j].is_highlighted():
+                        highlight_list.append(sl_handhl["sprites"][j])
+
+            self.replace_sprite_list_by_name("handcards",handcard_list,sl_handcards["sprites"])
+            self.replace_sprite_list_by_name("handhighlights",highlight_list,sl_handhl["sprites"])
+            self.hand_last_visible = hand_visible
+            self.hand_last_highlighted = hand_highlighted
 
         # TODO HERE build sprite list for  stack cards - this is a little different - build a list of card, highlight,
         # TODO card, highlight - where highlight is driven by card's highlight flag.
         # TODO also mind the card's visible flag.
+        sl_playcards_n_hl = self.get_sprite_list_by_name("playcardsnhighlights")
+        playcard_n_hl_list = arcade.SpriteList()
+
+        # look for changes - a little bit different since both card & hl in same list
+        play_visible = [sl_playcards_n_hl["sprites"][x].is_visible() for x in range(8)]
+        play_highlighted = [sl_playcards_n_hl["sprites"][x].is_highlighted() for x in range(8)]
+
+        if play_visible != self.play_last_visible or play_highlighted != self.play_last_highlighted:
+            # so for each card, if it's visible:
+            # - add it to the list ["sprites"][j]
+            # - if it's visible, also add its highlight ["sprites"][j+8]
+            for j in range(8):
+                if sl_playcards_n_hl["sprites"][j].is_visible():
+                    playcard_n_hl_list.append(sl_playcards_n_hl["sprites"][j])
+                    if sl_playcards_n_hl["sprites"][j].is_highlighted():
+                        playcard_n_hl_list.append(sl_playcards_n_hl["sprites"][j+8])
+
+            self.replace_sprite_list_by_name("playcardsnhighlights",playcard_n_hl_list,sl_playcards_n_hl["sprites"])
+            self.play_last_visible = play_visible
+            self.play_last_highlighted = play_highlighted
 
         # then render all the sprite lists
         for sl in self.sprite_lists:
