@@ -42,6 +42,8 @@ CARD_SCREEN_WIDTH = (CARD_WIDTH * SCALE_FACTOR)                # hm
 CARD_SHOW_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 
 # highlight offset from card left/bottom
+# THIS IS THE THICKNESS OF THE HIGHLIGHT, BASICALLY, or half the difference in width bt the highlight sprite
+# and the card sprites. If the highlight or card sizes change, re-figure.
 HIGHLIGHT_SCREEN_WIDTH = (3*SCALE_FACTOR)
 
 # for putting the starter to the right of the hand
@@ -65,6 +67,21 @@ CARD_PLAY_LEFT_MARGIN = (21 * SCALE_FACTOR)
 CARD_PLAY_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 # distance from the left edge of one card to the next, they overlap
 CARD_PLAY_NEXTCARD_DIST = (21 * SCALE_FACTOR)
+
+# TODO discard mode
+
+# cut for starter mode
+# row of 40 cards
+CARD_CUTST_LEFT_MARGIN = (23 * SCALE_FACTOR)
+CARD_CUTST_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
+# slider for cut arrow
+SLIDER_CUTST_LEFT_MARGIN = (51 * SCALE_FACTOR)
+SLIDER_CUTST_BOTTOM_MARGIN = (106 * SCALE_FACTOR)
+# arrow bottom and min/max left - center would work better
+ARROW_CUTST_MIN_CENTER_X = (52 * SCALE_FACTOR)
+ARROW_CUTST_MAX_CENTER_X = (238 * SCALE_FACTOR)
+ARROW_CUTST_BOTTOM_MARGIN = (94 * SCALE_FACTOR)
+
 
 # left, bottom coords for all the holes in the cribbage board
 # TODO add starter and finish holes

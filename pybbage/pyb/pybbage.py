@@ -460,6 +460,12 @@ class Pybbage:
     def srandom(self,seed):
         self.rand_next = seed;
 
+    def set_randseed(self,randseed):
+        self.randseed = randseed
+
+    def get_randseed(self):
+        return self.randseed
+
 
     # card handling routines -------------------------------------------------------------------------
 
@@ -1307,7 +1313,7 @@ class Pybbage:
             if len(pone.get_cards()) == 0 and len(dealer.get_cards()) == 0:
                 play_is_done = True
 
-    def new_game(self,randseed):
+    def new_game(self):
         # Create players
         print("Creating players...")
         if self.player0 is None:
@@ -1325,7 +1331,7 @@ class Pybbage:
 
         # Initial shuffle
         print("*** Initial shuffle...")
-        self.srandom(randseed)
+        self.srandom(self.randseed)
         deck = self.shuffle()
         cardnum = 0;  # first card to be dealt, when dealing in order
         # print("deck is",deck)
@@ -1336,9 +1342,8 @@ class Pybbage:
 
     def do_game(self):
         # initialize players
-        randseed = 1043865
         # TODO this is gross and I should do more refactor to make stuff be data members
-        (players, dealer, pone, deck, cardnum) = self.new_game(randseed)
+        (players, dealer, pone, deck, cardnum) = self.new_game()
 
         # TODO TEMP FIGURE OUT HOW TO DO THIS IN UNIT TESTS
         do_play_tests = False

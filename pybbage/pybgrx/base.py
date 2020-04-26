@@ -24,6 +24,13 @@ from pyb import pybbage as pyb
 # TODO move sprite classes to a game-specific file
 # SPRITE CLASSES ======================================================================================================
 
+# for general purpose unmoving stuff
+class Generic(arcade.Sprite):
+
+    # currently not much needs to be done
+    def update(self):
+        pass
+
 class Player(arcade.Sprite):
 
     def update(self):

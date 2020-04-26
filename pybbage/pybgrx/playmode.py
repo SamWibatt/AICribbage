@@ -114,13 +114,6 @@ class PlayMode(Mode):
         self.hand_last_visible = [] # x.is_visible() for x in hand_card_sprites]
         self.hand_last_highlighted = [] # [x.is_highlighted() for x in hand_card_sprites]
 
-        # then the deck up in the corner - should prolly be part of bg
-        deck_list = arcade.SpriteList(is_static=True)
-        newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
-        newcard.left = CARD_DECK_LEFT
-        newcard.bottom = CARD_DECK_BOTTOM
-        deck_list.append(newcard)
-        self.add_sprite_list("deck",deck_list,[newcard])
 
         # TODO HERE SPECIAL WEIRD highlights for hand cards' highlights: just make the sprites and have a
         # None list for them; their list will be built at draw time
@@ -141,7 +134,7 @@ class PlayMode(Mode):
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.SPACE:
-            self.parent.set_nextmode_index(0)
+            self.parent.set_nextmode_index(3)
 
     # need to do custom on_draw here because cards can move, appear, and disappear
 
