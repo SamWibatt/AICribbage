@@ -81,7 +81,12 @@ SLIDER_CUTST_BOTTOM_MARGIN = (106 * SCALE_FACTOR)
 ARROW_CUTST_MIN_CENTER_X = (52 * SCALE_FACTOR)
 ARROW_CUTST_MAX_CENTER_X = (238 * SCALE_FACTOR)
 ARROW_CUTST_BOTTOM_MARGIN = (94 * SCALE_FACTOR)
-
+# distance bt cards
+ARROW_CUTST_CARD_STRIDE = (6 * SCALE_FACTOR)
+# pixels to subract from arrow center to get card highlight left
+CARDHL_CUTST_ARROWCTR_OFFSET = (4 * SCALE_FACTOR)
+# pixels to add to card bottom to get card highlight bottom
+CARDHL_CUTST_BOTTOM_OFFSET = (1 * SCALE_FACTOR)
 
 # left, bottom coords for all the holes in the cribbage board
 # TODO add starter and finish holes

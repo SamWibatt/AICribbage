@@ -60,11 +60,21 @@ class CutStarterMode(Mode):
         arrow_list = arcade.SpriteList(is_static=False)
         newarrow = Generic("pybgrx_assets/StarterCutArrow.png",scale=SPRITE_SCALING)
         # try putting it in the middle
-        newarrow.center_x = ARROW_CUTST_MIN_CENTER_X + ((ARROW_CUTST_MAX_CENTER_X - ARROW_CUTST_MIN_CENTER_X) // 2)
+        # self.arrow_position is the arrow's position in cards i.e. widths of card showing in the stack
+        self.arrow_position = 16;
+        newarrow.center_x = ARROW_CUTST_MIN_CENTER_X + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)
         newarrow.bottom = ARROW_CUTST_BOTTOM_MARGIN
         arrow_list.append(newarrow)
         self.add_sprite_list("arrow",arrow_list,[newarrow])
 
+        # highlight showing which card the arrow is pointing at
+        cardhighlight_list = arcade.SpriteList(is_static=False)
+        newchl = Generic("pybgrx_assets/StarterCutCardHighlight.png",scale=SPRITE_SCALING)
+        newchl.left = (ARROW_CUTST_MIN_CENTER_X + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)) - \
+                      CARDHL_CUTST_ARROWCTR_OFFSET
+        newchl.bottom = CARD_CUTST_BOTTOM_MARGIN + CARDHL_CUTST_BOTTOM_OFFSET
+        cardhighlight_list.append(newchl)
+        self.add_sprite_list("cardhighlight",cardhighlight_list,[newchl])
 
 
     def on_key_release(self, key, modifiers):
