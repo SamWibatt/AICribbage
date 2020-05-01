@@ -15,8 +15,11 @@ SCREEN_TITLE = "Hello and welcome to PYBBAGE"
 
 SPRITE_SCALING = 1.0 * SCALE_FACTOR
 
+# length of a game "tick" in seconds
+TICK_LENGTH = 1 / 50
 
 
+# FOR MODES - TODO these should be relocated to the mode files, probably
 
 # sprite h/w for score names and numbers (i.e., play and show incremental scores, not total scores.)
 # given in literal pixel dimensions for cutting out of a sprite sheet
@@ -78,15 +81,20 @@ CARD_CUTST_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
 SLIDER_CUTST_LEFT_MARGIN = (51 * SCALE_FACTOR)
 SLIDER_CUTST_BOTTOM_MARGIN = (106 * SCALE_FACTOR)
 # arrow bottom and min/max left - center would work better
-ARROW_CUTST_MIN_CENTER_X = (52 * SCALE_FACTOR)
-ARROW_CUTST_MAX_CENTER_X = (238 * SCALE_FACTOR)
+#ARROW_CUTST_MIN_CENTER_X = (52 * SCALE_FACTOR)
+#ARROW_CUTST_MAX_CENTER_X = (238 * SCALE_FACTOR)
+# hm really that should be by card position - 40 cards total, 8 off limits
+ARROW_CUTST_MAX_POSITION = 31
 ARROW_CUTST_BOTTOM_MARGIN = (94 * SCALE_FACTOR)
 # distance bt cards
 ARROW_CUTST_CARD_STRIDE = (6 * SCALE_FACTOR)
 # pixels to subract from arrow center to get card highlight left
-CARDHL_CUTST_ARROWCTR_OFFSET = (4 * SCALE_FACTOR)
+CARDHL_CUTST_ARROWCTR_OFFSET = (3 * SCALE_FACTOR)
 # pixels to add to card bottom to get card highlight bottom
 CARDHL_CUTST_BOTTOM_OFFSET = (1 * SCALE_FACTOR)
+# number of game "ticks" per arrow move
+ARROW_CUTST_TICKS_PER_MOVE = 4
+
 
 # left, bottom coords for all the holes in the cribbage board
 # TODO add starter and finish holes

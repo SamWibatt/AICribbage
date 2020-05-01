@@ -151,7 +151,7 @@ class MyGame(arcade.Window):
         self.curmode = self.modes[self.curmode_index]   # start at mode 0
 
         # set up the "tick" timer which in real thing will be a 1/50s or so interrupt
-        arcade.schedule(self.on_tick, 1 / 50)
+        arcade.schedule(self.on_tick, TICK_LENGTH)
 
 
     def set_nextmode_index(self,nextmode_index):
