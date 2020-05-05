@@ -1465,6 +1465,7 @@ class Pybbage:
         comprank = -1
         playerrank = -1
         while comprank == playerrank:
+            # TODO HEY make this a method call on player object
             print("*** Cut for deal!")
             cutspot = self.get_input(4, 48)
             deck = self.cut(deck, cutspot)
