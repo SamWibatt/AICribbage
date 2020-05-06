@@ -5,12 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2428a544-b4ca-425e-a062-d816a5c7fdf4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../kicad/samd21g18Mega/fp-info-cache" beforeDir="false" afterPath="$PROJECT_DIR$/../kicad/samd21g18Mega/fp-info-cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega-cache.lib" beforeDir="false" afterPath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega-cache.lib" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.kicad_pcb" beforeDir="false" afterPath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.kicad_pcb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.kicad_pcb-bak" beforeDir="false" afterPath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.kicad_pcb-bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.sch" beforeDir="false" afterPath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.sch" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.sch-bak" beforeDir="false" afterPath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.sch-bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx_assets/DeckCut-ArrowRail.png" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx_assets/DeckCut-ArrowRail.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,11 +43,11 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/pybgrx" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/pybbage" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pybgrx" />
     </key>
   </component>
   <component name="RunManager" selected="Python tests.Unittests in pybbage-test.py">

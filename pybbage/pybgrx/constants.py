@@ -95,6 +95,15 @@ CARDHL_CUTST_BOTTOM_OFFSET = (1 * SCALE_FACTOR)
 # number of game "ticks" per arrow move
 ARROW_CUTST_TICKS_PER_MOVE = 4
 
+# cut for deal mode
+# row of 50 cards
+CARD_CUTDL_LEFT_MARGIN = (37 * SCALE_FACTOR)
+CARD_CUTDL_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
+# slider for cut arrow
+SLIDER_CUTDL_LEFT_MARGIN = (51 * SCALE_FACTOR)
+SLIDER_CUTDL_BOTTOM_MARGIN = (106 * SCALE_FACTOR)
+
+
 
 # left, bottom coords for all the holes in the cribbage board
 # TODO add starter and finish holes

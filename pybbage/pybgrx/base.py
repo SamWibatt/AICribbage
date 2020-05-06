@@ -24,8 +24,23 @@ from pyb import pybbage as pyb
 # TODO move sprite classes to a game-specific file
 # SPRITE CLASSES ======================================================================================================
 
-# for general purpose unmoving stuff
+# for general purpose stuff that is either visible or not
 class Generic(arcade.Sprite):
+    # init adds the highlighted parameter to the regular sprite parameters
+    # also the visible parameter - which should be a part of my arduino base sprite class
+    def __init__(self,filename: str = None, scale: float = 1, image_x: float = 0, image_y: float = 0,
+                 image_width: float = 0, image_height: float = 0, center_x: float = 0, center_y: float = 0,
+                 repeat_count_x: int = 1, repeat_count_y: int = 1,
+                 visible = True):
+        self.visible = visible
+        super().__init__(filename,scale,image_x,image_y,image_width,image_height,center_x,center_y,
+                         repeat_count_x,repeat_count_y)
+
+    def set_visible(self,visible):
+        self.visible = visible
+
+    def is_visible(self):
+        return self.visible
 
     # currently not much needs to be done
     def update(self):
