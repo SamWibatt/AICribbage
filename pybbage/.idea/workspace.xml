@@ -5,12 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2428a544-b4ca-425e-a062-d816a5c7fdf4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.kicad_pcb" beforeDir="false" afterPath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.kicad_pcb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.kicad_pcb-bak" beforeDir="false" afterPath="$PROJECT_DIR$/../kicad/samd21g18Mega/samd21g18Mega.kicad_pcb-bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/sean.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pybgrx/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pybgrx/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pybgrx_assets/DeckCut-ArrowRail.png" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx_assets/DeckCut-ArrowRail.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx/cutfordealmode.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/cutfordealmode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybgrx/cutstartermode.py" beforeDir="false" afterPath="$PROJECT_DIR$/pybgrx/cutstartermode.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +40,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/pybgrx" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.intentionPowerPack" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -143,11 +143,11 @@
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state width="1310" height="557" key="GridCell.Tab.0.right/35.27.1331.741@35.27.1331.741" timestamp="1586568536667" />
-    <state x="185" y="27" width="1022" height="737" key="SettingsEditor" timestamp="1586013506063">
+    <state x="185" y="27" width="1022" height="737" key="SettingsEditor" timestamp="1588866091492">
       <screen x="35" y="27" width="1331" height="741" />
     </state>
     <state x="173" y="0" key="SettingsEditor/0.0.1536.834/3840.0.1920.1080@0.0.1536.834" timestamp="1585771474062" />
-    <state x="185" y="27" width="1022" height="737" key="SettingsEditor/35.27.1331.741@35.27.1331.741" timestamp="1586013506063" />
+    <state x="185" y="27" width="1022" height="737" key="SettingsEditor/35.27.1331.741@35.27.1331.741" timestamp="1588866091492" />
     <state x="370" y="223" key="com.intellij.ide.util.TipDialog" timestamp="1585770916579">
       <screen x="0" y="0" width="1536" height="834" />
     </state>

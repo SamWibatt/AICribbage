@@ -38,6 +38,7 @@ from pybgrx.shewmode import ShewMode
 from pybgrx.titlemode import TitleMode
 from pybgrx.playmode import PlayMode
 from pybgrx.cutstartermode import CutStarterMode
+from pybgrx.cutfordealmode import CutForDealMode
 
 
 # *********************************************************************************************************************
@@ -146,6 +147,9 @@ class MyGame(arcade.Window):
         cutstmode = CutStarterMode(parent=self)
         cutstmode.setup()
         self.modes.append(cutstmode)     # mode 3: (though later another) cut for starter
+        cutdlmode = CutForDealMode(parent=self)
+        cutdlmode.setup()
+        self.modes.append(cutdlmode)     # mode 4: (though later another) cut for deal
 
         self.curmode_index = 0
         self.curmode = self.modes[self.curmode_index]   # start at mode 0

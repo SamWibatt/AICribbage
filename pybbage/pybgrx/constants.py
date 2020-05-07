@@ -99,9 +99,22 @@ ARROW_CUTST_TICKS_PER_MOVE = 4
 # row of 50 cards
 CARD_CUTDL_LEFT_MARGIN = (37 * SCALE_FACTOR)
 CARD_CUTDL_BOTTOM_MARGIN = (29 * SCALE_FACTOR)
-# slider for cut arrow
-SLIDER_CUTDL_LEFT_MARGIN = (51 * SCALE_FACTOR)
+# slider for cut arrow - 51 cards, extender takes it to 52
+SLIDER_CUTDL_LEFT_MARGIN = (57 * SCALE_FACTOR)
 SLIDER_CUTDL_BOTTOM_MARGIN = (106 * SCALE_FACTOR)
+# extension - TODO deliberately wrong so I can be sure where it is
+SLIDEREXT_CUTDL_LEFT_MARGIN = (231 * SCALE_FACTOR)
+# 52 cards, 8 disallowed so 44, 0-rel = 43. this is before first player cuts
+ARROW_CUTDL_MAX_POSITION = 43
+ARROW_CUTDL_BOTTOM_MARGIN = (94 * SCALE_FACTOR)
+# distance bt cards
+ARROW_CUTDL_CARD_STRIDE = (4 * SCALE_FACTOR)
+# pixels to subract from arrow center to get card highlight left
+CARDHL_CUTDL_ARROWCTR_OFFSET = (3 * SCALE_FACTOR)
+# pixels to add to card bottom to get card highlight bottom
+CARDHL_CUTDL_BOTTOM_OFFSET = (1 * SCALE_FACTOR)
+# number of game "ticks" per arrow move
+ARROW_CUTDL_TICKS_PER_MOVE = 3
 
 
 

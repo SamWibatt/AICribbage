@@ -122,10 +122,8 @@ class CutStarterMode(Mode):
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.SPACE:
-            self.parent.set_nextmode_index(0)
+            self.parent.set_nextmode_index(4)
 
-        # TODO make it so that if they haven't moved the arrow, it picks a random card
-        # that will be a nice shortcut in the real game
         elif key == arcade.key.ENTER:
             if self.card_cut == False:
                 # note that we've cut a card! and stop arrow!
