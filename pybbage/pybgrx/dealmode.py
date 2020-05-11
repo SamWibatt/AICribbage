@@ -1,4 +1,5 @@
-# cut for starter card mode!
+# deal mode!
+# includes pone cut!
 
 import arcade
 import os
@@ -10,17 +11,27 @@ from pyb import pybbage as pyb
 from pybgrx.constants import *
 from pybgrx.base import *
 
+# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
+# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
+# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
+# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
+# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
+# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
+# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
+
+#NEXT UP ADD THE CARD POSITIONS SETTING UP FOR DISCARD MODE!
+
 # play screen =====================================================================================================
 
-class CutStarterMode(Mode):
+class DealMode(Mode):
     def setup(self):
         self.add_textures("background", [arcade.load_texture("pybgrx_assets/CribbageBoardBackground.png")])
 
         # HERE put in a deck of cards, yes? TODO replace this with new_game and all the stuff
         self.deck = self.get_parent().gamestate.shuffle()
 
-        # on enter we have not cut a card
-        self.card_cut = False
+        # on enter we have not cut the deck
+        self.deck_cut = False
 
         # then some peg sprites! Would be nice not to have to copy this everywhere. REFACTOR
         peg_textures = arcade.load_spritesheet("pybgrx_assets/Pegs.png",sprite_width=9,sprite_height=9,
@@ -46,21 +57,25 @@ class CutStarterMode(Mode):
                 peg_list.append(newpeg)
         self.add_sprite_list("pegs",peg_list,peg_sprites)
 
-        # sprite for big long streak of 40 card backs
+        # sprite for big long streak of 50 card backs
         cards_list = arcade.SpriteList(is_static=True)
-        newcards = Generic("pybgrx_assets/StarterCut-40cards.png",scale=SPRITE_SCALING)
-        newcards.left = CARD_CUTST_LEFT_MARGIN
-        newcards.bottom = CARD_CUTST_BOTTOM_MARGIN
+        newcards = Generic("pybgrx_assets/DeckCut-50cards.png",scale=SPRITE_SCALING)
+        newcards.left = CARD_DEAL_LEFT_MARGIN
+        newcards.bottom = CARD_DEAL_BOTTOM_MARGIN
         cards_list.append(newcards)
         self.add_sprite_list("stack",cards_list,[newcards])
 
-        # sprite for rail for arrow to slide along
+        # sprites for rail for arrow to slide along - also little extender for before one card is cut
         rail_list = arcade.SpriteList(is_static=True)
-        newrail = Generic("pybgrx_assets/StarterCut-ArrowRail.png",scale=SPRITE_SCALING)
-        newrail.left = SLIDER_CUTST_LEFT_MARGIN
-        newrail.bottom = SLIDER_CUTST_BOTTOM_MARGIN
+        newrail = Generic("pybgrx_assets/DeckCut-ArrowRail.png",scale=SPRITE_SCALING)
+        newrail.left = SLIDER_DEAL_LEFT_MARGIN
+        newrail.bottom = SLIDER_DEAL_BOTTOM_MARGIN
         rail_list.append(newrail)
-        self.add_sprite_list("rail",rail_list,[newrail])
+        newrailext = Generic("pybgrx_assets/DeckCut-ArrowRailExtender.png",scale=SPRITE_SCALING)
+        newrailext.left = SLIDEREXT_DEAL_LEFT_MARGIN
+        newrailext.bottom = SLIDER_DEAL_BOTTOM_MARGIN
+        rail_list.append(newrailext)
+        self.add_sprite_list("rail",rail_list,[newrail,newrailext])
 
         # arrow sprite - it will move
         arrow_list = arcade.SpriteList(is_static=False)
@@ -71,37 +86,42 @@ class CutStarterMode(Mode):
         # also it is not in motion
         self.arrow_motion = 0
         # also once it is in motion it needs some ticks before it moves
-        self.arrow_move_tick_counter = ARROW_CUTST_TICKS_PER_MOVE
+        self.arrow_move_tick_counter = ARROW_DEAL_TICKS_PER_MOVE
         # if player presses enter/action before moving the arrow, it hops to a random spot and picks a card
         self.arrow_has_been_moved = False
-        newarrow.center_x = SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)
-        newarrow.bottom = ARROW_CUTST_BOTTOM_MARGIN
+        newarrow.center_x = SLIDER_DEAL_LEFT_MARGIN + (self.arrow_position * ARROW_DEAL_CARD_STRIDE)
+        newarrow.bottom = ARROW_DEAL_BOTTOM_MARGIN
         arrow_list.append(newarrow)
         self.add_sprite_list("arrow",arrow_list,[newarrow])
 
         # highlight showing which card the arrow is pointing at
         cardhighlight_list = arcade.SpriteList(is_static=False)
-        newchl = Generic("pybgrx_assets/StarterCutCardHighlight.png",scale=SPRITE_SCALING)
-        newchl.left = (SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)) - \
-                      CARDHL_CUTST_ARROWCTR_OFFSET
-        newchl.bottom = CARD_CUTST_BOTTOM_MARGIN + CARDHL_CUTST_BOTTOM_OFFSET
+        newchl = Generic("pybgrx_assets/DealCutCardHighlight.png",scale=SPRITE_SCALING)
+        newchl.left = (SLIDER_DEAL_LEFT_MARGIN + (self.arrow_position * ARROW_DEAL_CARD_STRIDE)) - \
+                      CARDHL_DEAL_ARROWCTR_OFFSET
+        newchl.bottom = CARD_DEAL_BOTTOM_MARGIN + CARDHL_DEAL_BOTTOM_OFFSET
         cardhighlight_list.append(newchl)
         self.add_sprite_list("cardhighlight",cardhighlight_list,[newchl])
 
-        # turned-up card
+        # turned-up cards TODO Deal only has 1 - actually, none, just cutting the deck
         card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=CARD_WIDTH,
                                                 sprite_height=CARD_HEIGHT,columns=4,count=52)
         self.add_textures("cards",card_textures)
-        # make a card, invisible bc no card has been cut
-        newupcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING) #,visible=False)
-        for t in range(52):
-            newupcard.append_texture(card_textures[t])  # swh
-        # location is irrelevant, we'll just stick it in the corner
-        newupcard.left = 0
-        newupcard.bottom = 0
-        self.add_sprite_list("upcard",None,[newupcard])
+        # make two cards, backs-up and at the two rightmost positions to start
+        # ...although we do need those last 2 card backs
+        newendcards = []
+        newendcards_list = arcade.SpriteList(is_static=False)
+        for j in range(2):
+            newendcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING) 
+            # put at the right end of the deck
+            newendcard.left = CARD_DEAL_LEFT_MARGIN  + (ARROW_DEAL_CARD_STRIDE * (50+j))
+            newendcard.bottom = CARD_DEAL_BOTTOM_MARGIN
+            newendcards_list.append(newendcard)
+            newendcards.append(newendcard)
+        self.add_sprite_list("endcards",newendcards_list,newendcards)
 
-
+        # TODO HERE HAVE DEALT CARDS - no need for highlight in this screen
+        # cards dealt to player after deck is cut
 
     # the way I'm handling motion isn't cricket according to how you're supposed to do it with arcade - but
     # I really want an on_key_held_down but they don't have it. That's more arduiny
@@ -110,7 +130,8 @@ class CutStarterMode(Mode):
     # card to the next in the stack, so I'll do it in on_tick, hopework.
     def on_key_press(self, key, modifiers):
         # once a card has been cut, stop taking moves
-        if self.card_cut == False:
+        # let's say human always goes first - but we'll get to that later
+        if self.deck_cut == False:
             if key == arcade.key.RIGHT:
                 self.arrow_motion = 1
                 self.arrow_has_been_moved = True
@@ -122,38 +143,29 @@ class CutStarterMode(Mode):
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.SPACE:
-            self.parent.set_nextmode_index(4)
+            self.parent.set_nextmode_index(0)
 
         elif key == arcade.key.ENTER:
-            if self.card_cut == False:
+            if self.deck_cut == False:
                 # note that we've cut a card! and stop arrow!
-                self.card_cut = True
+                self.deck_cut = True
                 self.arrow_motion = 0
 
                 # if the arrow hasn't been moved, pick a random card
                 # for now, jump-cut, can do fancy in real game or later in this
                 if self.arrow_has_been_moved == False:
-                    self.position_arrow(self.parent.gamestate.random_at_most(ARROW_CUTST_MAX_POSITION))
+                    self.position_arrow(self.parent.gamestate.random_at_most(ARROW_DEAL_MAX_POSITION))
+                # TODO here switch to the mode that shows the cards actually being dealt -
+                # really should have some cool animation of the deck cutting and cards twirling to their
+                # spots, but wev.
+                # TODO make arrow, rail, rail extension, stack, cardhighlight, and end cards invisible
+                # easy way is just to none-out their sprite lists, yes?
+                self.replace_sprite_list_by_name("stack", None, None)
+                self.replace_sprite_list_by_name("arrow", None, None)
+                self.replace_sprite_list_by_name("rail", None, None)
+                self.replace_sprite_list_by_name("cardhighlight", None, None)
+                self.replace_sprite_list_by_name("endcards", None, None)
 
-                # choose the current card! the 4 is there bc if arrow position is 0, 4 cards are to its left by the
-                # RULES
-                self.deck = self.parent.gamestate.cut(self.deck,4+self.arrow_position)
-                (self.deck,cutcard) = self.parent.gamestate.deal_card(self.deck)
-                print("Cut card value is",cutcard)
-                sl_upcard = self.get_sprite_list_by_name("upcard")
-                upcard_list = arcade.SpriteList()
-                # grab the upcard and set its texture to the value of the cut card (plus one to skip the back, yes?)
-                upcard_sprite = sl_upcard["sprites"][0]
-                upcard_sprite.set_texture(1+cutcard)
-                # set position center to same as arrow center, swh - kludgy copy of calculation for arrow center so don't
-                # have to fetch arrow sprite list, etc. Will break if the calculation for arrow center x changes
-                # (see on_tick below)
-                upcard_sprite.center_x = SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)
-                upcard_sprite.bottom = CARD_CUTST_BOTTOM_MARGIN
-                print("Upcard sprite position = (",upcard_sprite.center_x,",",upcard_sprite.bottom,")")
-                upcard_sprite.set_visible(True)
-                upcard_list.append(upcard_sprite)
-                self.replace_sprite_list_by_name("upcard",upcard_list,sl_upcard["sprites"])
         elif key == arcade.key.RIGHT or key == arcade.key.LEFT:
             self.arrow_motion = 0
 
@@ -165,11 +177,11 @@ class CutStarterMode(Mode):
         cardhighlight_sprite = cardhighlight_list["sprites"][0]
         if self.arrow_position < 0:
             self.arrow_position = 0
-        elif self.arrow_position > ARROW_CUTST_MAX_POSITION:
-            self.arrow_position = ARROW_CUTST_MAX_POSITION
-        arrow_sprite.center_x = SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)
-        cardhighlight_sprite.left = (SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)) - \
-                                    CARDHL_CUTST_ARROWCTR_OFFSET
+        elif self.arrow_position > ARROW_DEAL_MAX_POSITION:
+            self.arrow_position = ARROW_DEAL_MAX_POSITION
+        arrow_sprite.center_x = SLIDER_DEAL_LEFT_MARGIN + (self.arrow_position * ARROW_DEAL_CARD_STRIDE)
+        cardhighlight_sprite.left = (SLIDER_DEAL_LEFT_MARGIN + (self.arrow_position * ARROW_DEAL_CARD_STRIDE)) - \
+                                    CARDHL_DEAL_ARROWCTR_OFFSET
         # do I need to do this? not building a new list
         # self.replace_sprite_list_by_name("cardhighlight", cardhighlight_list["SpriteList"], cardhighlight_list["sprites"])
         # self.replace_sprite_list_by_name("arrow", arrow_list["SpriteList"], arrow_list["sprites"])
@@ -180,10 +192,11 @@ class CutStarterMode(Mode):
         self.arrow_move_tick_counter -= 1       # was delta_time but let's just call everything 1 tick
         if self.arrow_move_tick_counter <= 0:
             # reset tick counter
-            self.arrow_move_tick_counter = ARROW_CUTST_TICKS_PER_MOVE
+            self.arrow_move_tick_counter = ARROW_DEAL_TICKS_PER_MOVE
             # move arrow and card highlight if able to move
             if self.arrow_motion != 0:
                 self.position_arrow(self.arrow_position + self.arrow_motion)
+
 
     def on_leave(self):
         self.arrow_motion = 0
@@ -194,10 +207,13 @@ class CutStarterMode(Mode):
         #self.setup()
         # instead, just reset things...? We don't really need this to work right bc it's not the real game
         # parent will have smarter setup code
-        self.card_cut = False
-        sl_upcard = self.get_sprite_list_by_name("upcard")
-        if sl_upcard is not None:
-            upcard_sprite = sl_upcard["sprites"][0]
-            upcard_sprite.set_visible(False)
-            self.replace_sprite_list_by_name("upcard", None, sl_upcard["sprites"])
-            self.deck = self.get_parent().gamestate.shuffle()
+        self.deck_cut = False
+        # TODO FIGURE OUT HOW TO HANDLE UPCARDS - SEE SETUP
+        sl_upcards = self.get_sprite_list_by_name("upcards")
+        print("sl_upcards is:",sl_upcards)
+        # if sl_upcards is not None:
+        #     for j in range(2):
+        #         upcards_sprite = sl_upcards["sprites"][j]
+        #         #upcards_sprite.set_visible(False)
+        #     self.replace_sprite_list_by_name("upcards", None, sl_upcards["sprites"])
+        self.deck = self.get_parent().gamestate.shuffle()

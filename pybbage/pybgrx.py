@@ -39,6 +39,7 @@ from pybgrx.titlemode import TitleMode
 from pybgrx.playmode import PlayMode
 from pybgrx.cutstartermode import CutStarterMode
 from pybgrx.cutfordealmode import CutForDealMode
+from pybgrx.dealmode import DealMode
 
 
 # *********************************************************************************************************************
@@ -150,6 +151,9 @@ class MyGame(arcade.Window):
         cutdlmode = CutForDealMode(parent=self)
         cutdlmode.setup()
         self.modes.append(cutdlmode)     # mode 4: (though later another) cut for deal
+        dealmode = DealMode(parent=self)
+        dealmode.setup()
+        self.modes.append(dealmode)     # mode 5: (though later another) deal incl pone cut
 
         self.curmode_index = 0
         self.curmode = self.modes[self.curmode_index]   # start at mode 0

@@ -53,7 +53,7 @@ class CutForDealMode(Mode):
         newcards.left = CARD_CUTDL_LEFT_MARGIN
         newcards.bottom = CARD_CUTDL_BOTTOM_MARGIN
         cards_list.append(newcards)
-        self.add_sprite_list("cards",cards_list,[newcards])
+        self.add_sprite_list("stack",cards_list,[newcards])
 
         # sprites for rail for arrow to slide along - also little extender for before one card is cut
         rail_list = arcade.SpriteList(is_static=True)
@@ -135,7 +135,7 @@ class CutForDealMode(Mode):
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.SPACE:
-            self.parent.set_nextmode_index(0)
+            self.parent.set_nextmode_index(5)
 
         # TODO holdover from cutstarter - need to implement this - first player is human, chooses a card, second
         # TODO is computer, handled in on_tick or something

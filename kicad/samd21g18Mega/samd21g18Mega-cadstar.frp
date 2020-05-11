@@ -1,0 +1,93 @@
+.HEA
+.TIM Sun 10 May 2020 12:17:23 PM PDT
+.APP "Eeschema 5.1.5-52549c5~86~ubuntu18.04.1"
+.TYP FULL
+
+.ADD_COM     P8     "CONN_01X01"     "Socket_Arduino_Mega:Arduino_1pin"
+.ADD_COM     P9     "CONN_01X01"     "Socket_Arduino_Mega:Arduino_1pin"
+.ADD_COM     P10     "CONN_01X01"     "Socket_Arduino_Mega:Arduino_1pin"
+.ADD_COM     P11     "CONN_01X01"     "Socket_Arduino_Mega:Arduino_1pin"
+.ADD_COM     P12     "CONN_01X01"     "Socket_Arduino_Mega:Arduino_1pin"
+.ADD_COM     P13     "CONN_01X01"     "Socket_Arduino_Mega:Arduino_1pin"
+.ADD_COM     P2     "Power"     "Socket_Arduino_Mega:Socket_Strip_Arduino_1x08"
+.ADD_COM     P5     "PWM"     "Socket_Arduino_Mega:Socket_Strip_Arduino_1x10"
+.ADD_COM     P6     "PWM"     "Socket_Arduino_Mega:Socket_Strip_Arduino_1x08"
+.ADD_COM     P4     "Analog"     "Socket_Arduino_Mega:Socket_Strip_Arduino_1x08"
+.ADD_COM     P7     "Communication"     "Socket_Arduino_Mega:Socket_Strip_Arduino_1x08"
+.ADD_COM     P1     "Digital"     "Socket_Arduino_Mega:Socket_Strip_Arduino_2x18"
+.ADD_COM     U1     "ATSAMD21G18A-AU"     "Package_DIP:DIP-48_W15.24mm"
+.ADD_COM     U2     "L7805"     "Package_TO_SOT_THT:TO-220-3_Horizontal_TabUp"
+.ADD_COM     P3     "Analog"     "Socket_Arduino_Mega:Socket_Strip_Arduino_1x08"
+
+
+.ADD_TER   P2   6     "GND"
+.TER       P5   4
+            P1   2
+            P2   7
+            P1   1
+
+.ADD_TER   P1   36     "+5V"
+.TER       P2   5
+            P1   35
+
+.ADD_TER   P3   2     "/A1"
+.TER       U1   7
+
+.ADD_TER   U1   8     "/A2"
+.TER       P3   3
+
+.ADD_TER   P3   6     "/A5"
+.TER       U1   47
+
+.ADD_TER   U1   10     "/A4"
+.TER       P3   5
+
+.ADD_TER   P3   4     "/A3"
+.TER       U1   9
+
+.ADD_TER   P3   1     "/A0"
+.TER       U1   3
+
+.ADD_TER   P6   4     "/4(**)"
+.TER       U1   13
+
+.ADD_TER   U1   16     "/0(Rx0)"
+.TER       P6   8
+
+.ADD_TER   U1   15     "/1(Tx0)"
+.TER       P6   7
+
+.ADD_TER   P6   6     "/2(**)"
+.TER       U1   23
+
+.ADD_TER   U1   14     "/3(**)"
+.TER       P6   5
+
+.ADD_TER   U1   24     "/5(**)"
+.TER       P6   3
+
+.ADD_TER   U1   29     "/6(**)"
+.TER       P6   2
+
+.ADD_TER   P6   1     "/7(**)"
+.TER       U1   30
+
+.ADD_TER   P5   10     "/8(**)"
+.TER       U1   11
+
+.ADD_TER   P5   9     "/9(**)"
+.TER       U1   12
+
+.ADD_TER   U1   27     "/10(**)"
+.TER       P5   8
+
+.ADD_TER   P5   7     "/11(**)"
+.TER       U1   25
+
+.ADD_TER   U1   28     "/12(**)"
+.TER       P5   6
+
+.ADD_TER   P5   5     "/13(**)"
+.TER       U1   26
+
+.END
