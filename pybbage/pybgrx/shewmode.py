@@ -11,52 +11,14 @@ from pybgrx.base import *
 
 # shew mode ==========================================================================================================
 
-class ShewMode(Mode):
+class ShewMode(GameMode):
 
     # default init should work
 
     def setup(self):
-        # Load the background image. Do this in the setup so we don't keep reloading it all the time.
-        # Image from:
-        # http://wallpaper-gallery.net/single/free-background-images/free-background-images-22.html
-        # self.background = arcade.load_texture(":resources:images/backgrounds/abstract_1.jpg")
-        # note that we need a list of textures in the Mode object, for every texture set
-        # main py file sets the working directory to its own so relative from there?
-        self.add_textures("background", [arcade.load_texture("pybgrx_assets/CribbageBoardBackground.png")])     # hopework
+        super().setup()         # do GameMode setup: bg, pegs, card textures
 
-        # Sprite lists
-        # THEY WILL BE DRAWN IN THE ORDER THEY'RE ADDED, SO LAST ONE IS FRONT
-
-
-        # then some peg sprites!
-        peg_textures = arcade.load_spritesheet("pybgrx_assets/Pegs.png",sprite_width=9,sprite_height=9,
-                                                columns=8,count=8)
-        self.add_textures("pegs",peg_textures)
-
-        peg_list = arcade.SpriteList()
-        peg_sprites = []       # for keeping track of each player's front and back peg
-        peg_colors = [1,7]          # hardcoded orange and pink
-        peg_positions = [[[182,141],[121, 141]],[[207,125],[45,125]]]
-        for plnum in range(0,2):          # each player's pegs = list of 2 sprites, peg_sprites = list of those lists
-            peg_sprites.append([])
-            # argh we need a dummy peg to load for this until I figure out how to get None filename constructed
-            # sprites to work, which might be never, bc this is a prototype
-            # two pegs per player
-            for j in range(0,2):
-                newpeg = Peg("pybgrx_assets/GreenPeg.png",scale=SPRITE_SCALING)
-                newpeg.append_texture(peg_textures[peg_colors[plnum]])  # swh
-                newpeg.set_texture(1)
-                newpeg.left = peg_positions[plnum][j][0] * SCALE_FACTOR
-                newpeg.bottom = peg_positions[plnum][j][1] * SCALE_FACTOR
-                peg_sprites[plnum].append(newpeg)
-                peg_list.append(newpeg)
-        self.add_sprite_list("pegs",peg_list,peg_sprites)
-
-        # then let's make some stationary card sprites for where I think they might be in the real game
-        # normal list of them to be able to access each and change things - do we need it?
-        card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=CARD_WIDTH,
-                                                sprite_height=CARD_HEIGHT,columns=4,count=52)
-        self.add_textures("cards",card_textures)
+        # make cards
         card_list = arcade.SpriteList(is_static = True)
         card_sprites = []
         # so let's do 4 cards and a starter, say, and see what we get trying to use pixels
@@ -67,7 +29,7 @@ class ShewMode(Mode):
             # this is a kludge, load a card back sprite to set the image size, then use texture
             newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
             for t in range(52):
-                newcard.append_texture(card_textures[t])  # swh
+                newcard.append_texture(self.get_textures("cards")[t])  # swh
             #newcard.set_texture(1)
             newcard.left = CARD_SHOW_LEFT_MARGIN + (j * (CARD_SCREEN_WIDTH + CARD_SHOW_INTERCARD_MARGIN))
             newcard.bottom = CARD_SHOW_BOTTOM_MARGIN
@@ -76,7 +38,7 @@ class ShewMode(Mode):
         # then the starter card
         newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING)
         for t in range(52):
-            newcard.append_texture(card_textures[t])  # swh
+            newcard.append_texture(self.get_textures("cards")[t])  # swh
         #newcard.set_texture(1)
         newcard.left = CARD_STARTER_LEFT
         newcard.bottom = CARD_STARTER_BOTTOM

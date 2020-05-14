@@ -376,6 +376,52 @@ class Mode:
         pass
 
 
+# Mode for game windows that have bg and pegs, which is most of them **************************************************
+
+class GameMode(Mode):
+    def __init__(self, sprite_lists = None, textures = None, parent = None):
+        super().__init__(sprite_lists,textures,parent)
+
+    def setup(self):
+        super().setup()
+        # Load the background image. Do this in the setup so we don't keep reloading it all the time.
+        self.add_textures("background", [arcade.load_texture("pybgrx_assets/CribbageBoardBackground.png")])
+
+        # Sprite lists
+        # THEY WILL BE DRAWN IN THE ORDER THEY'RE ADDED, SO LAST ONE IS FRONT
+        # then some peg sprites!
+        peg_textures = arcade.load_spritesheet("pybgrx_assets/Pegs.png",sprite_width=9,sprite_height=9,
+                                                columns=8,count=8)
+        self.add_textures("pegs",peg_textures)
+
+        peg_list = arcade.SpriteList()
+        peg_sprites = []       # for keeping track of each player's front and back peg
+        peg_colors = [1,7]          # hardcoded orange and pink - TODO figure out how to set this at game level
+        peg_positions = [[[182,141],[121, 141]],[[207,125],[45,125]]]
+        for plnum in range(0,2):          # each player's pegs = list of 2 sprites, peg_sprites = list of those lists
+            peg_sprites.append([])
+            # argh we need a dummy peg to load for this until I figure out how to get None filename constructed
+            # sprites to work, which might be never, bc this is a prototype
+            # two pegs per player
+            for j in range(0,2):
+                newpeg = Peg("pybgrx_assets/GreenPeg.png",scale=SPRITE_SCALING)
+                newpeg.append_texture(peg_textures[peg_colors[plnum]])  # swh
+                newpeg.set_texture(1)
+                newpeg.left = peg_positions[plnum][j][0] * SCALE_FACTOR
+                newpeg.bottom = peg_positions[plnum][j][1] * SCALE_FACTOR
+                peg_sprites[plnum].append(newpeg)
+                peg_list.append(newpeg)
+        self.add_sprite_list("pegs",peg_list,peg_sprites)
+
+        # then let's make some stationary card sprites for where I think they might be in the real game
+        # normal list of them to be able to access each and change things - do we need it?
+        card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=CARD_WIDTH,
+                                                sprite_height=CARD_HEIGHT,columns=4,count=52)
+        self.add_textures("cards",card_textures)
+
+
+
+
 # *********************************************************************************************************************
 # *********************************************************************************************************************
 # *********************************************************************************************************************

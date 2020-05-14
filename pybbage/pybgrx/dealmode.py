@@ -14,39 +14,15 @@ from pybgrx.base import *
 
 # play screen =====================================================================================================
 
-class DealMode(Mode):
+class DealMode(GameMode):
     def setup(self):
-        self.add_textures("background", [arcade.load_texture("pybgrx_assets/CribbageBoardBackground.png")])
+        super().setup()         # do GameMode setup: bg, pegs, card textures
 
         # HERE put in a deck of cards, yes? TODO replace this with new_game and all the stuff
         self.deck = self.get_parent().gamestate.shuffle()
 
         # on enter we have not cut the deck
         self.deck_cut = False
-
-        # then some peg sprites! Would be nice not to have to copy this everywhere. REFACTOR
-        peg_textures = arcade.load_spritesheet("pybgrx_assets/Pegs.png",sprite_width=9,sprite_height=9,
-                                                columns=8,count=8)
-        self.add_textures("pegs",peg_textures)
-
-        peg_list = arcade.SpriteList()
-        peg_sprites = []       # for keeping track of each player's front and back peg
-        peg_colors = [1,7]          # hardcoded orange and pink
-        peg_positions = [[[182,141],[121, 141]],[[207,125],[45,125]]]
-        for plnum in range(0,2):          # each player's pegs = list of 2 sprites, peg_sprites = list of those lists
-            peg_sprites.append([])
-            # argh we need a dummy peg to load for this until I figure out how to get None filename constructed
-            # sprites to work, which might be never, bc this is a prototype
-            # two pegs per player
-            for j in range(0,2):
-                newpeg = Peg("pybgrx_assets/GreenPeg.png",scale=SPRITE_SCALING)
-                newpeg.append_texture(peg_textures[peg_colors[plnum]])  # swh
-                newpeg.set_texture(1)
-                newpeg.left = peg_positions[plnum][j][0] * SCALE_FACTOR
-                newpeg.bottom = peg_positions[plnum][j][1] * SCALE_FACTOR
-                peg_sprites[plnum].append(newpeg)
-                peg_list.append(newpeg)
-        self.add_sprite_list("pegs",peg_list,peg_sprites)
 
         # sprite for big long streak of 50 card backs
         cards_list = arcade.SpriteList(is_static=True)
@@ -95,9 +71,6 @@ class DealMode(Mode):
         self.add_sprite_list("cardhighlight",cardhighlight_list,[newchl])
 
         # turned-up cards TODO Deal only has 1 - actually, none, just cutting the deck
-        card_textures = arcade.load_spritesheet("pybgrx_assets/CardDeck.png",sprite_width=CARD_WIDTH,
-                                                sprite_height=CARD_HEIGHT,columns=4,count=52)
-        self.add_textures("cards",card_textures)
         # make two cards, backs-up and at the two rightmost positions to start
         # ...although we do need those last 2 card backs
         newendcards = []
@@ -120,7 +93,7 @@ class DealMode(Mode):
             # this is a kludge, load a card back sprite to set the image size, then use texture
             newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING, visible=False)
             for t in range(52):
-                newcard.append_texture(card_textures[t])  # swh
+                newcard.append_texture(self.get_textures("cards")[t])  # swh
             # TODO TEMP set texture to a real card
             newcard.set_texture(2 + (7*j))
 
