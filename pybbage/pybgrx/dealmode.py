@@ -11,15 +11,6 @@ from pyb import pybbage as pyb
 from pybgrx.constants import *
 from pybgrx.base import *
 
-# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
-# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
-# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
-# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
-# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
-# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
-# TODO HEREAFTER UNCHANGED FROM CUTFORDEAL MODE ==============================================================
-
-#NEXT UP ADD THE CARD POSITIONS SETTING UP FOR DISCARD MODE!
 
 # play screen =====================================================================================================
 
@@ -60,8 +51,8 @@ class DealMode(Mode):
         # sprite for big long streak of 50 card backs
         cards_list = arcade.SpriteList(is_static=True)
         newcards = Generic("pybgrx_assets/DeckCut-50cards.png",scale=SPRITE_SCALING)
-        newcards.left = CARD_DEAL_LEFT_MARGIN
-        newcards.bottom = CARD_DEAL_BOTTOM_MARGIN
+        newcards.left = STACK_DEAL_LEFT_MARGIN
+        newcards.bottom = STACK_DEAL_BOTTOM_MARGIN
         cards_list.append(newcards)
         self.add_sprite_list("stack",cards_list,[newcards])
 
@@ -98,8 +89,8 @@ class DealMode(Mode):
         cardhighlight_list = arcade.SpriteList(is_static=False)
         newchl = Generic("pybgrx_assets/DealCutCardHighlight.png",scale=SPRITE_SCALING)
         newchl.left = (SLIDER_DEAL_LEFT_MARGIN + (self.arrow_position * ARROW_DEAL_CARD_STRIDE)) - \
-                      CARDHL_DEAL_ARROWCTR_OFFSET
-        newchl.bottom = CARD_DEAL_BOTTOM_MARGIN + CARDHL_DEAL_BOTTOM_OFFSET
+                      STACKHL_DEAL_ARROWCTR_OFFSET
+        newchl.bottom = STACK_DEAL_BOTTOM_MARGIN + STACKHL_DEAL_BOTTOM_OFFSET
         cardhighlight_list.append(newchl)
         self.add_sprite_list("cardhighlight",cardhighlight_list,[newchl])
 
@@ -114,14 +105,31 @@ class DealMode(Mode):
         for j in range(2):
             newendcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING) 
             # put at the right end of the deck
-            newendcard.left = CARD_DEAL_LEFT_MARGIN  + (ARROW_DEAL_CARD_STRIDE * (50+j))
-            newendcard.bottom = CARD_DEAL_BOTTOM_MARGIN
+            newendcard.left = STACK_DEAL_LEFT_MARGIN  + (ARROW_DEAL_CARD_STRIDE * (50+j))
+            newendcard.bottom = STACK_DEAL_BOTTOM_MARGIN
             newendcards_list.append(newendcard)
             newendcards.append(newendcard)
         self.add_sprite_list("endcards",newendcards_list,newendcards)
 
-        # TODO HERE HAVE DEALT CARDS - no need for highlight in this screen
         # cards dealt to player after deck is cut
+        # initially invisible though TODO that isn't enforced until I write an on_draw
+        card_list = arcade.SpriteList(is_static = True)
+        card_sprites = []
+
+        for j in range(6):
+            # this is a kludge, load a card back sprite to set the image size, then use texture
+            newcard = Card("pybgrx_assets/CardBack.png",scale=SPRITE_SCALING, visible=False)
+            for t in range(52):
+                newcard.append_texture(card_textures[t])  # swh
+            # TODO TEMP set texture to a real card
+            newcard.set_texture(2 + (7*j))
+
+            newcard.left = CARD_DEAL_LEFT_MARGIN + (j * (CARD_SCREEN_WIDTH + CARD_DEAL_INTERCARD_MARGIN))
+            newcard.bottom = STACK_DEAL_BOTTOM_MARGIN
+            card_sprites.append(newcard)
+            card_list.append(newcard)
+        self.add_sprite_list("cards",card_list,card_sprites)
+
 
     # the way I'm handling motion isn't cricket according to how you're supposed to do it with arcade - but
     # I really want an on_key_held_down but they don't have it. That's more arduiny
@@ -181,7 +189,7 @@ class DealMode(Mode):
             self.arrow_position = ARROW_DEAL_MAX_POSITION
         arrow_sprite.center_x = SLIDER_DEAL_LEFT_MARGIN + (self.arrow_position * ARROW_DEAL_CARD_STRIDE)
         cardhighlight_sprite.left = (SLIDER_DEAL_LEFT_MARGIN + (self.arrow_position * ARROW_DEAL_CARD_STRIDE)) - \
-                                    CARDHL_DEAL_ARROWCTR_OFFSET
+                                    STACKHL_DEAL_ARROWCTR_OFFSET
         # do I need to do this? not building a new list
         # self.replace_sprite_list_by_name("cardhighlight", cardhighlight_list["SpriteList"], cardhighlight_list["sprites"])
         # self.replace_sprite_list_by_name("arrow", arrow_list["SpriteList"], arrow_list["sprites"])

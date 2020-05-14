@@ -49,8 +49,8 @@ class CutStarterMode(Mode):
         # sprite for big long streak of 40 card backs
         cards_list = arcade.SpriteList(is_static=True)
         newcards = Generic("pybgrx_assets/StarterCut-40cards.png",scale=SPRITE_SCALING)
-        newcards.left = CARD_CUTST_LEFT_MARGIN
-        newcards.bottom = CARD_CUTST_BOTTOM_MARGIN
+        newcards.left = STACK_CUTST_LEFT_MARGIN
+        newcards.bottom = STACK_CUTST_BOTTOM_MARGIN
         cards_list.append(newcards)
         self.add_sprite_list("stack",cards_list,[newcards])
 
@@ -83,8 +83,8 @@ class CutStarterMode(Mode):
         cardhighlight_list = arcade.SpriteList(is_static=False)
         newchl = Generic("pybgrx_assets/StarterCutCardHighlight.png",scale=SPRITE_SCALING)
         newchl.left = (SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)) - \
-                      CARDHL_CUTST_ARROWCTR_OFFSET
-        newchl.bottom = CARD_CUTST_BOTTOM_MARGIN + CARDHL_CUTST_BOTTOM_OFFSET
+                      STACKHL_CUTST_ARROWCTR_OFFSET
+        newchl.bottom = STACK_CUTST_BOTTOM_MARGIN + STACKHL_CUTST_BOTTOM_OFFSET
         cardhighlight_list.append(newchl)
         self.add_sprite_list("cardhighlight",cardhighlight_list,[newchl])
 
@@ -149,7 +149,7 @@ class CutStarterMode(Mode):
                 # have to fetch arrow sprite list, etc. Will break if the calculation for arrow center x changes
                 # (see on_tick below)
                 upcard_sprite.center_x = SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)
-                upcard_sprite.bottom = CARD_CUTST_BOTTOM_MARGIN
+                upcard_sprite.bottom = STACK_CUTST_BOTTOM_MARGIN
                 print("Upcard sprite position = (",upcard_sprite.center_x,",",upcard_sprite.bottom,")")
                 upcard_sprite.set_visible(True)
                 upcard_list.append(upcard_sprite)
@@ -169,7 +169,7 @@ class CutStarterMode(Mode):
             self.arrow_position = ARROW_CUTST_MAX_POSITION
         arrow_sprite.center_x = SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)
         cardhighlight_sprite.left = (SLIDER_CUTST_LEFT_MARGIN + (self.arrow_position * ARROW_CUTST_CARD_STRIDE)) - \
-                                    CARDHL_CUTST_ARROWCTR_OFFSET
+                                    STACKHL_CUTST_ARROWCTR_OFFSET
         # do I need to do this? not building a new list
         # self.replace_sprite_list_by_name("cardhighlight", cardhighlight_list["SpriteList"], cardhighlight_list["sprites"])
         # self.replace_sprite_list_by_name("arrow", arrow_list["SpriteList"], arrow_list["sprites"])

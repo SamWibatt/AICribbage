@@ -50,8 +50,8 @@ class CutForDealMode(Mode):
         # sprite for big long streak of 50 card backs
         cards_list = arcade.SpriteList(is_static=True)
         newcards = Generic("pybgrx_assets/DeckCut-50cards.png",scale=SPRITE_SCALING)
-        newcards.left = CARD_CUTDL_LEFT_MARGIN
-        newcards.bottom = CARD_CUTDL_BOTTOM_MARGIN
+        newcards.left = STACK_CUTDL_LEFT_MARGIN
+        newcards.bottom = STACK_CUTDL_BOTTOM_MARGIN
         cards_list.append(newcards)
         self.add_sprite_list("stack",cards_list,[newcards])
 
@@ -88,8 +88,8 @@ class CutForDealMode(Mode):
         cardhighlight_list = arcade.SpriteList(is_static=False)
         newchl = Generic("pybgrx_assets/DeckCutCardHighlight.png",scale=SPRITE_SCALING)
         newchl.left = (SLIDER_CUTDL_LEFT_MARGIN + (self.arrow_position * ARROW_CUTDL_CARD_STRIDE)) - \
-                      CARDHL_CUTDL_ARROWCTR_OFFSET
-        newchl.bottom = CARD_CUTDL_BOTTOM_MARGIN + CARDHL_CUTDL_BOTTOM_OFFSET
+                      STACKHL_CUTDL_ARROWCTR_OFFSET
+        newchl.bottom = STACK_CUTDL_BOTTOM_MARGIN + STACKHL_CUTDL_BOTTOM_OFFSET
         cardhighlight_list.append(newchl)
         self.add_sprite_list("cardhighlight",cardhighlight_list,[newchl])
 
@@ -108,8 +108,8 @@ class CutForDealMode(Mode):
             # TODO TEMP set texture to a real card
             newupcard.set_texture(1+j)
             # put at the right end of the deck
-            newupcard.left = CARD_CUTDL_LEFT_MARGIN  + (ARROW_CUTDL_CARD_STRIDE * (50+j))
-            newupcard.bottom = CARD_CUTDL_BOTTOM_MARGIN
+            newupcard.left = STACK_CUTDL_LEFT_MARGIN  + (ARROW_CUTDL_CARD_STRIDE * (50+j))
+            newupcard.bottom = STACK_CUTDL_BOTTOM_MARGIN
             newupcards_list.append(newupcard)
             newupcards.append(newupcard)
         self.add_sprite_list("upcards",newupcards_list,newupcards)
@@ -184,7 +184,7 @@ class CutForDealMode(Mode):
             self.arrow_position = ARROW_CUTDL_MAX_POSITION
         arrow_sprite.center_x = SLIDER_CUTDL_LEFT_MARGIN + (self.arrow_position * ARROW_CUTDL_CARD_STRIDE)
         cardhighlight_sprite.left = (SLIDER_CUTDL_LEFT_MARGIN + (self.arrow_position * ARROW_CUTDL_CARD_STRIDE)) - \
-                                    CARDHL_CUTDL_ARROWCTR_OFFSET
+                                    STACKHL_CUTDL_ARROWCTR_OFFSET
         # do I need to do this? not building a new list
         # self.replace_sprite_list_by_name("cardhighlight", cardhighlight_list["SpriteList"], cardhighlight_list["sprites"])
         # self.replace_sprite_list_by_name("arrow", arrow_list["SpriteList"], arrow_list["sprites"])
