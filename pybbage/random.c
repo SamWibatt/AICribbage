@@ -121,15 +121,16 @@ long random_at_most(long max) {
 int main(int argc, char *argv) {
     printf("Hello and welcome to random, the randiculent random number printing utility.\n");
     //print A HUNDRED MILLION random numbers to compare to python version
-    //for(int j=0;j<100000000;j++) {
-    //    printf("%lu\n",random());
-    //}
+    my_srandom(9999);
+    for(int j=0;j<10;j++) {
+        printf("%lu\n",random());
+    }
     //let's test random_at_most, say 1000,000 each of 52 and 6, just for fun
-    for(int j=0;j<1000000;j++) {
-        printf("%ld\n",random_at_most(52));
-    }
-    for(int j=0;j<1000000;j++) {
-        printf("%ld\n",random_at_most(6));
-    }
+    //for(int j=0;j<1000000;j++) {
+    //    printf("%ld\n",random_at_most(52));
+    //}
+    //for(int j=0;j<1000000;j++) {
+    //    printf("%ld\n",random_at_most(6));
+    //}
 
 }

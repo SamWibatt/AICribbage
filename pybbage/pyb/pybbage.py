@@ -524,17 +524,23 @@ class Pybbage:
     # on ardy it can be discarded once the ordering is redone.
     # Uno R3 / atmega328 has 2K ram, yes? Some taken by the arduino core but not lots
     def shuffle(self):
-        newdeck = {'order':[self.random() for i in range(0,52)],
-                'value':[-1 for i in range(0,52)]}
-        curmin = min(newdeck['order'])
-        # the arduino version will look quite different, searching instead of listbuilding
-        for val in range(0,52):
-            card = newdeck['order'].index(curmin)
-            newdeck['value'][card] = val
-            gtmin = list(filter(lambda x:x>curmin,newdeck['order']))
-            if len(gtmin) > 0:
-                curmin = min(gtmin)
-        return newdeck['value']
+        # srsly wtf was I thinking here
+        # newdeck = {'order':[self.random() for i in range(0,52)],
+        #         'value':[-1 for i in range(0,52)]}
+        # curmin = min(newdeck['order'])
+        # # the arduino version will look quite different, searching instead of listbuilding
+        # for val in range(0,52):
+        #     card = newdeck['order'].index(curmin)
+        #     newdeck['value'][card] = val
+        #     gtmin = list(filter(lambda x:x>curmin,newdeck['order']))
+        #     if len(gtmin) > 0:
+        #         curmin = min(gtmin)
+        # return newdeck['value']
+        # simple way, list of tuples where they're (random #, card) then sort by random #
+        newdeck = [(self.random(),x) for x in range(52)]        # init to cards in order and unsorted randoms
+        # I believe sorting a list of tuples will default to sorting by the first item
+        return [t[1] for t in sorted(newdeck)]
+
 
     # COULD ALSO TRY THE SHUFFLE WAY WHERE YOU JUST PICK TWO CARDS TO SWAP AND DO THAT A BUNCH OF TIMES.
     # THAT'S MORE THE TINY861 VERSION - how many times is enough, etc.
@@ -1341,9 +1347,26 @@ class Pybbage:
 
 
     def do_game(self):
+
+        # moar dumb tests
+        # # shuffle a deck and see what we get
+        # print("First 10 randoms!")
+        # self.srandom(9999)
+        # for j in range(10):
+        #     print(self.random())
+        # self.srandom(9999)
+        # deck = self.shuffle();
+        # for j in range(52):
+        #     print("{}: {} - {}".format(j,deck[j],self.cardstring(deck[j])))
+        # sys.exit(0)
+
+        # end temp crap
+
         # initialize players
         # TODO this is gross and I should do more refactor to make stuff be data members
         (players, dealer, pone, deck, cardnum) = self.new_game()
+
+
 
         # TODO TEMP FIGURE OUT HOW TO DO THIS IN UNIT TESTS
         do_play_tests = False
