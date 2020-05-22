@@ -548,10 +548,11 @@ class Pybbage:
 
     # deck is just an array now
     # let's just have the deck be an array and pull cards off of its front
+    # NO NOW WE WILL POP IT OFF THE BACK
     def deal_card(self,deck):
         if deck is not None and len(deck) > 0:
-            card = deck[0]
-            deck = deck[1:]
+            card = deck[-1]
+            deck = deck[:-1]
             return (deck,card)
         return (None,None)
 
@@ -568,9 +569,12 @@ class Pybbage:
     # card, no less than four cards shall be taken from
     # the top and no less than four left on the bottom.
     # This will be enforced by the calls to the random number gettors below.
+    # TURNING CUT SEMANTICS BACKWARDS BC WE DEAL OFF THE END OF THE DECK NOW NOT THE FRONT
+    # this is making my head hurt
     def cut(self,deck,index):
         if index >= 1 and index < len(deck):
-            return deck[index:] + deck[:index]
+            cutspot = len(deck) - index;
+            return deck[cutspot:] + deck[:cutspot]
         print("Illegal cut index",index,"- not doing cut")
         return deck;
 
