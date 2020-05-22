@@ -387,6 +387,9 @@ from typing import List, Any
 class Pybbage:
 
     def __init__(self,randseed=1043685,player0=None,player1=None):
+        #     uint32_t nextvpok = 1;
+        self.nextvpok = 1;
+
         self.rand_next = 1
         self.random_max = 0x7FFFFFFF
         self.randseed = randseed
@@ -439,7 +442,17 @@ class Pybbage:
             ("double double run",16)    # SCORE_DBLDBLRUN = 19
         ]
 
+    # vpok-style random
+    #     void v_srandom(uint32_t n) { nextvpok = n; }
+    def v_srandom(self,n):
+        self.nextvpok = n
 
+    #     uint32_t v_random() { nextvpok = (1664525ul * nextvpok) + 1013904223ul; return nextvpok; }
+    def v_random(self):
+        self.nextvpok = ((1664525 * self.nextvpok) + 1013904223) % (2**32)
+        return self.nextvpok;
+
+    # original random =========================
     def do_random(self,ctx):
         x = ctx
         # Can't be initialized with 0, so use another value.
@@ -537,7 +550,8 @@ class Pybbage:
         #         curmin = min(gtmin)
         # return newdeck['value']
         # simple way, list of tuples where they're (random #, card) then sort by random #
-        newdeck = [(self.random(),x) for x in range(52)]        # init to cards in order and unsorted randoms
+        # OLD: newdeck = [(self.random(),x) for x in range(52)]        # init to cards in order and unsorted randoms
+        newdeck = [(self.v_random(), x) for x in range(52)]  # init to cards in order and unsorted randoms
         # I believe sorting a list of tuples will default to sorting by the first item
         return [t[1] for t in sorted(newdeck)]
 
@@ -1657,7 +1671,6 @@ class Pybbage:
 
 
 if __name__ == "__main__":
-
     print("Hello and welcome to PYBBAGE, the python cribbage mockup for my mcu cribbage games.")
 
     pyb = Pybbage()
