@@ -453,25 +453,25 @@ class Pybbage:
         return self.nextvpok;
 
     # original random =========================
-    def do_random(self,ctx):
-        x = ctx
-        # Can't be initialized with 0, so use another value.
-        if (x == 0):
-            x = 123459876
-        hi = x // 127773       # // should be integer divide
-        lo = x % 127773
-        x = 16807 * lo - 2836 * hi
-        if (x < 0):
-            x += 0x7fffffff
-        self.rand_next = x
-        return x % (self.random_max + 1)
+    # def do_random(self,ctx):
+    #     x = ctx
+    #     # Can't be initialized with 0, so use another value.
+    #     if (x == 0):
+    #         x = 123459876
+    #     hi = x // 127773       # // should be integer divide
+    #     lo = x % 127773
+    #     x = 16807 * lo - 2836 * hi
+    #     if (x < 0):
+    #         x += 0x7fffffff
+    #     self.rand_next = x
+    #     return x % (self.random_max + 1)
 
 
     def random(self):
-        return self.do_random(self.rand_next)
+        return self.v_random(self.rand_next)
 
     def srandom(self,seed):
-        self.rand_next = seed;
+        self.nextvpok = seed;
 
     def set_randseed(self,randseed):
         self.randseed = randseed
@@ -1154,6 +1154,14 @@ class Pybbage:
     # might be more trouble than it's worth - https://docs.python.org/3.7/extending/extending.html
     # though not if I end up having to do a bunch of iteration for learning models &c.
     def random_at_most(self,max):
+        # make sure max is not > random_max or negative
+        if(max < 0 or max > self.random_max):
+            return 0xFFFFFFFF
+
+        # trivial case, if max is 0, return 0.
+        if max == 0:
+            return 0
+
     #   unsigned long
     #     // max <= RAND_MAX < ULONG_MAX, so this is okay.
         num_bins = max + 1
@@ -1171,7 +1179,7 @@ class Pybbage:
         firstloop = True
         while (firstloop or (num_rand - defect <= x)):
             firstloop = False
-            x = self.random()
+            x = self.v_random() // 2        # divide down by 2 assuming random_max is 1/2 of ulong_max
 
         # Truncated division is intentional
         return x//bin_size;

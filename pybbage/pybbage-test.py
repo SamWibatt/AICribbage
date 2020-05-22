@@ -71,6 +71,25 @@ class VpokRandomDeal10FromShuf9999(unittest.TestCase):
             self.assertEqual(card, dealorder[j])
             self.assertEqual(len(deck),52-(j+1))
 
+# this test is a bit icky, runs 10 million iterations of random_at_most and just tests that none fell outside
+# the range. So, not conclusive, but suggestive, if the given max << ten million
+# wait, 10M is SLOW in this implementation, let's just do like 100K?
+class RandomAtMostTenMillion(unittest.TestCase):
+    def test_random_at_most_10m(self):
+        expmin = 0
+        expmax = 3333
+        minny = expmax + 1
+        maxy = 0
+        pyb = pybbage.Pybbage()
+        for j in range(100000):
+            x = pyb.random_at_most(expmax)
+            if x < minny:
+                minny = x
+            if x > maxy:
+                maxy = x
+        self.assertLessEqual(maxy,expmax)
+        self.assertGreaterEqual(minny,0)
+
 
         # end rng tests =====================================================================================================
 
