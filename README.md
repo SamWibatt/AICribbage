@@ -1,9 +1,13 @@
 # AICribbage
 Learned models for cribbage playing: discard, next card in count.
 
+No learned players have yet been constructed - computer player is random / first legal pick.
+
 # Status
 
-As of (7/27/20), early. Python prototype that is the framework for learned players is complete, as well as a text interface for playing it. No learned players have yet been constructed - computer player is random / first legal pick.
+As of (7/27/20), early. Python prototype (pybbage) that is the framework for learned players is complete and its correctness wrt American Cribbage Congress rules verified through unit testing. It has a text interface for playing it. 
+
+**C++ development has been split off into [cribbage_cpp](https://github.com/SamWibatt/cribbage_cpp), where pybbage's functionality has been duplicated and verified through unit testing**.
 
 # objective
 
