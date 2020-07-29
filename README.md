@@ -1,3 +1,5 @@
+# MIGRATING FROM GITHUB TO GITLAB AT https://gitlab.com/SamWibatt/aicribbage - please go to that repository (unless you're already there.)
+
 # AICribbage
 Learned models for cribbage playing: discard, next card in count.
 
